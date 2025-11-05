@@ -4,17 +4,55 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import io.github.dr4c0nix.survivorgame.Main;
 
-/** Launches the desktop (LWJGL3) application. */
+/**
+ * Lanceur de l'application de bureau (LWJGL3).
+ * 
+ * Cette classe est responsable du lancement et de la configuration
+ * de l'application SurvivorGame pour la plateforme de bureau.
+ * 
+ * @author Dr4c0nix, Roceann, Abdelkader1900
+ * @version 1.0
+ */
 public class Lwjgl3Launcher {
+    /**
+     * Point d'entrée principal de l'application.
+     * 
+     * Cette méthode lance l'application en :
+     * - Vérifiant la compatibilité avec macOS et Windows
+     * - Créant l'application LibGDX avec la configuration appropriée
+     * 
+     * @param args Les arguments en ligne de commande (non utilisés)
+     */
     public static void main(String[] args) {
         if (StartupHelper.startNewJvmIfRequired()) return; // This handles macOS support and helps on Windows.
         createApplication();
     }
 
+    /**
+     * Crée l'application LibGDX.
+     * 
+     * Cette méthode instancie l'application principale avec la configuration
+     * de la plateforme LWJGL3.
+     * 
+     * @return L'application LibGDX créée
+     */
     private static Lwjgl3Application createApplication() {
         return new Lwjgl3Application(new Main(), getDefaultConfiguration());
     }
 
+    /**
+     * Obtient la configuration par défaut de l'application.
+     * 
+     * Cette méthode configure :
+     * - Le titre de la fenêtre
+     * - La synchronisation verticale (VSync)
+     * - La limite d'images par seconde (FPS)
+     * - Le mode plein écran
+     * - Les icônes de la fenêtre
+     * - L'émulation OpenGL
+     * 
+     * @return La configuration LWJGL3 complètement configurée
+     */
     private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
         Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
         configuration.setTitle("SurvivorGameTest");
@@ -27,8 +65,9 @@ public class Lwjgl3Launcher {
         //// If you remove the above line and set Vsync to false, you can get unlimited FPS, which can be
         //// useful for testing performance, but can also be very stressful to some hardware.
         //// You may also need to configure GPU drivers to fully disable Vsync; this can cause screen tearing.
-
-        configuration.setWindowedMode(640, 480);
+        // Start the application in fullscreen by default.
+        // Use the current display mode; if you prefer a windowed default, replace with setWindowedMode(w,h).
+        configuration.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
         //// You can change these files; they are in lwjgl3/src/main/resources/ .
         //// They can also be loaded from the root of assets/ .
         configuration.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png");
