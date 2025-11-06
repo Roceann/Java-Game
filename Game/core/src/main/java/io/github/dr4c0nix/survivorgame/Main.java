@@ -2,7 +2,6 @@ package io.github.dr4c0nix.survivorgame;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 
 import io.github.dr4c0nix.survivorgame.screens.Gameplay;
 import io.github.dr4c0nix.survivorgame.screens.Menu;

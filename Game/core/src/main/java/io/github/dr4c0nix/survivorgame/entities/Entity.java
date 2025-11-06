@@ -1,5 +1,10 @@
 package io.github.dr4c0nix.survivorgame.entities;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+
 public abstract class Entity {
     protected Vector2 position;
     protected Rectangle hitbox;
@@ -23,8 +28,9 @@ public abstract class Entity {
     public abstract void update(float delta);
 
     public Vector2 getPosition() {
-      return this.position;
+        return this.position;
     }
+
     public void setPosition(Vector2 value) {
       this.position = value;
     }
@@ -36,6 +42,7 @@ public abstract class Entity {
     public float getMovementSpeed() {
       return this.movementSpeed;
     }
+
     public void setMovementSpeed(float value) {
       this.movementSpeed = value;
     }
@@ -47,6 +54,7 @@ public abstract class Entity {
     public TextureRegion getCurrentFrame() {
       return this.currentFrame;
     }
+
     public void setCurrentFrame(TextureRegion value) {
       this.currentFrame = value;
     }
