@@ -18,7 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import java.util.ArrayList;
 import java.util.List;
-
+import io.github.dr4c0nix.survivorgame.Main;
 /**
  * Classe Menu qui implémente l'interface Screen de LibGDX.
  * 
@@ -74,7 +74,7 @@ public class Menu implements Screen {
         play.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("Menu", "clique sur play");
+                Main.changeScreen("Gameplay");
             }
         });
         options.addListener(new ClickListener() {
@@ -199,7 +199,13 @@ public class Menu implements Screen {
                     Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
                     isFullscreen = true;
                 }
-                fullscreenBtn.setText("Fullscreen: " + (isFullscreen ? "ON" : "OFF"));
+                String fullScreenStaus; 
+                if (isFullscreen) {
+                    fullScreenStaus = "ON";
+                } else {
+                    fullScreenStaus = "OFF";
+                }
+                fullscreenBtn.setText("Fullscreen: " + fullScreenStaus);
             }
         });
 
@@ -222,6 +228,8 @@ public class Menu implements Screen {
      */
     @Override
     public void show() {
+        Gdx.app.log("Menu", "Screen shown");
+
         stage = new Stage(viewport);
 
         Gdx.input.setInputProcessor(stage);
@@ -308,7 +316,8 @@ public class Menu implements Screen {
      */
     @Override
     public void hide() {
-        // This method is called when another screen replaces this one.
+        clearMenu();   
+        dispose();
     }
 
     /**
