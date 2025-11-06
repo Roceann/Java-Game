@@ -10,7 +10,9 @@ import io.github.dr4c0nix.survivorgame.Main;
  * Cette classe est responsable du lancement et de la configuration
  * de l'application SurvivorGame pour la plateforme de bureau.
  * 
- * @author Dr4c0nix, Roceann, Abdelkader1900
+ * @author Dr4c0nix
+ * @author Abdelkader1900
+ * @author Roceann
  * @version 1.0
  */
 public class Lwjgl3Launcher {
