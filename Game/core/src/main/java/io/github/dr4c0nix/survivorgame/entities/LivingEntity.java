@@ -80,9 +80,6 @@ public abstract class LivingEntity extends Entity {
             hp = 0;
             isAlive = false;
         }
-        if (hp <= maxHp && hp >= 0) {
-            hp -= (int) damageReduced;
-        }
     }
 
     /**
@@ -97,7 +94,7 @@ public abstract class LivingEntity extends Entity {
      * @param dx déplacement en X (peut être négatif)
      * @param dy déplacement en Y (peut être négatif)
      */
-    public void moveBy(float dx, float dy) {
+    protected void moveBy(float dx, float dy) {
         if (!isAlive) return;
         position.add(dx * movementSpeed, dy * movementSpeed);
         hitbox.setPosition(position.x, position.y);
