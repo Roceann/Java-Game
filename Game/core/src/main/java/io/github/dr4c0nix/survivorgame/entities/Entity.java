@@ -22,12 +22,12 @@ import com.badlogic.gdx.math.Vector2;
  * @version 1.0
  */
 public abstract class Entity {
-    private Vector2 position;
-    private Rectangle hitbox;
-    private float movementSpeed;
-    private boolean isAlive = true;
-    private Texture texture;
-    private TextureRegion currentFrame;
+    protected Vector2 position;
+    protected Rectangle hitbox;
+    protected float movementSpeed;
+    protected boolean isAlive = true;
+    protected Texture texture;
+    protected TextureRegion currentFrame;
 
     /**
      * Constructeur de l'entité.
