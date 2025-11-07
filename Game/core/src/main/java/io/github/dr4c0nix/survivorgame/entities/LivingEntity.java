@@ -80,9 +80,6 @@ public abstract class LivingEntity extends Entity {
             hp = 0;
             isAlive = false;
         }
-        if (hp <= maxHp && hp >= 0) {
-            hp -= (int) damageReduced;
-        }
     }
 
     /**
