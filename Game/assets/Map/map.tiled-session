@@ -1,0 +1,57 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "map.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "items1.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "items2.tsx": {
+            "scaleInDock": 1.0044,
+            "scaleInEditor": 1
+        },
+        "items3.tsx": {
+            "scaleInDock": 0.6368,
+            "scaleInEditor": 1
+        },
+        "map.tmx": {
+            "scale": 1.37,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": -253.64963503649636,
+                "y": 80.65693430656935
+            }
+        },
+        "room1.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "frame.defaultDuration": 150,
+    "last.imagePath": "/Users/alex/Epitech/Pré-Msc/2D game/T-JAV-501-PAR_1/Game/assets/Map/img/Epic RPG World - Village(interiors) V1.2/assets",
+    "map.fixedSize": false,
+    "map.lastUsedFormat": "tmx",
+    "openFiles": [
+        "map.tmx",
+        "room1.tsx",
+        "items1.tsx",
+        "items2.tsx",
+        "items3.tsx"
+    ],
+    "project": "map.tiled-project",
+    "recentFiles": [
+        "items3.tsx",
+        "items2.tsx",
+        "items1.tsx",
+        "room1.tsx",
+        "map.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx"
+}
