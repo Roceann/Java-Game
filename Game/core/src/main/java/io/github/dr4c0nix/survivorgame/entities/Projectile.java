@@ -10,6 +10,7 @@ public class Projectile extends Entity implements Poolable {
     protected int maxRange;
     protected LivingEntity source;
 
+    // ADD projectiles sprite and logic later
     public Projectile(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, float damage, float lifespan, Enemy target) {
         super(spawnPoint, hitboxWidth, hitboxHeight);
         this.damage = damage;
