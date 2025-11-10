@@ -17,13 +17,11 @@ public abstract class Entity {
         this.hitbox = new Rectangle(spawnPoint.x, spawnPoint.y, hitboxWidth, hitboxHeight);
     }
 
-  
-
     public void draw(SpriteBatch batch) {
-    if (currentFrame != null) {
-        batch.draw(currentFrame, position.x, position.y); // ca c pour redessiner mon entitée chq frame via batch(car sprite)
+      if (currentFrame != null) {
+          batch.draw(currentFrame, position.x, position.y); // ca c pour redessiner mon entitée chq frame via batch(car sprite)
+      }
     }
-}
 
     public abstract void update(float delta);
 
