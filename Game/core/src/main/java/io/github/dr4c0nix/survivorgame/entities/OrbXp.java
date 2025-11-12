@@ -13,8 +13,8 @@ public class OrbXp extends Entity implements Poolable {
 
 
     // ADD orb sprite and logic later
-    public OrbXp(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, int xpValue) {
-        super(spawnPoint, hitboxWidth, hitboxHeight);
+    public OrbXp(int xpValue) {
+        super(new Vector2(0, 0), 5, 5);
         this.xpValue = xpValue;
     }
 
@@ -24,17 +24,14 @@ public class OrbXp extends Entity implements Poolable {
     // }
 
     @Override
-    public void update(float delta) {
-        // Implementation here
-    }
+    public void update(float delta) {}
 
     @Override
     public void reset() {
         xpValue = 0;
-        isAlive = true;
+        isAlive = false;
         position.set(0, 0);
         // target = null;
         // isSeeking = false;
-        // seekSpeed = 300.0f;
     }
 }

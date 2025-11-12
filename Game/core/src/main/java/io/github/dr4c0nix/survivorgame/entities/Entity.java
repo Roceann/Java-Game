@@ -15,6 +15,7 @@ public abstract class Entity {
     public Entity (Vector2 spawnPoint, float hitboxWidth, float hitboxHeight){
         this.position = new Vector2(spawnPoint);
         this.hitbox = new Rectangle(spawnPoint.x, spawnPoint.y, hitboxWidth, hitboxHeight);
+        this.isAlive = true;
     }
 
     public void draw(SpriteBatch batch) {
