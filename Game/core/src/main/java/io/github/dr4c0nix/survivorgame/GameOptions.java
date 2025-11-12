@@ -33,6 +33,7 @@ public class GameOptions {
     private GameOptions() {
         prefs = Gdx.app.getPreferences(PREFS_NAME);
         loadPreferences();
+        syncFullscreenState();
     }
     
     /**
@@ -55,7 +56,18 @@ public class GameOptions {
         keyDown = prefs.getInteger("keyDown", Keys.S);
         keyLeft = prefs.getInteger("keyLeft", Keys.Q);
         keyRight = prefs.getInteger("keyRight", Keys.D);
-        fullscreen = prefs.getBoolean("fullscreen", false);
+        fullscreen = prefs.getBoolean("fullscreen", true);
+    }
+    
+    /**
+     * Synchronise l'état du fullscreen avec l'état réel de la fenêtre.
+     */
+    private void syncFullscreenState() {
+        boolean actualFullscreen = Gdx.graphics.isFullscreen();
+        if (fullscreen != actualFullscreen) {
+            fullscreen = actualFullscreen;
+            savePreferences();
+        }
     }
     
     /**
@@ -78,7 +90,7 @@ public class GameOptions {
         keyDown = Keys.S;
         keyLeft = Keys.Q;
         keyRight = Keys.D;
-        fullscreen = false;
+        fullscreen = true;
         savePreferences();
     }
     
