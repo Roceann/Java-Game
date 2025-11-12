@@ -246,10 +246,13 @@ public class Menu implements Screen {
         table.add(titleLabel).colspan(2).pad(20);
         table.row();
 
-        final TextButton upBtn = createKeybindButton("Move Up: ", options.getKeyUp(), table);
-        final TextButton downBtn = createKeybindButton("Move Down: ", options.getKeyDown(), table);
-        final TextButton leftBtn = createKeybindButton("Move Left: ", options.getKeyLeft(), table);
-        final TextButton rightBtn = createKeybindButton("Move Right: ", options.getKeyRight(), table);
+        final TextButton upBtn = createKeybindButtonInline("Move Up: ", options.getKeyUp(), table);
+        final TextButton downBtn = createKeybindButtonInline("Move Down: ", options.getKeyDown(), table);
+        table.row();
+
+        final TextButton leftBtn = createKeybindButtonInline("Move Left: ", options.getKeyLeft(), table);
+        final TextButton rightBtn = createKeybindButtonInline("Move Right: ", options.getKeyRight(), table);
+        table.row();
 
         upBtn.addListener(new ClickListener() {
             @Override
@@ -280,8 +283,11 @@ public class Menu implements Screen {
         });
 
         table.row();
-        final TextButton resetBtn = createButtons("Reset to Default", table);
-        final TextButton backBtn = createButtons("Back", table);
+        table.add().height(20).colspan(2);
+        table.row();
+
+        final TextButton resetBtn = createButtonInline("Reset to Default", table);
+        final TextButton backBtn = createButtonInline("Back", table);
 
         resetBtn.addListener(new ClickListener() {
             @Override
@@ -302,51 +308,133 @@ public class Menu implements Screen {
     /**
      * Crée un bouton pour afficher et modifier une touche.
      */
-    private TextButton createKeybindButton(String label, int currentKey, Table table) {
+    private TextButton createKeybindButtonInline(String label, int currentKey, Table table) {
         ensureStyle();
         String keyName = GameOptions.getKeyName(currentKey);
         TextButton btn = new TextButton(label + keyName, textButtonStyle);
         Label buttonLabel = btn.getLabel();
         buttonLabel.setFontScale(1.2f);
-        table.add(btn).width(350).height(70).pad(8).center();
-        table.row();
+        table.add(btn).width(300).height(80).pad(10).center();
+        currentButtons.add(btn);
+        return btn;
+    }
+
+    /**
+     * Crée un bouton standard pour la section de modification des touches.
+     */
+    private TextButton createButtonInline(String label, Table table) {
+        ensureStyle();
+        TextButton btn = new TextButton(label, textButtonStyle);
+        Label buttonLabel = btn.getLabel();
+        buttonLabel.setFontScale(1.4f);
+        table.add(btn).width(300).height(80).pad(10).center();
         currentButtons.add(btn);
         return btn;
     }
 
     /**
      * Active le mode d'attente d'une touche pour le binding.
+     * Si une touche interdite est pressée, ignore la modification.
      */
     private void waitForKeyInput(final TextButton button, final String keyType, final GameOptions options) {
         waitingForKeyButton = button;
         waitingForKeyType = keyType;
         button.setText("Press any key...");
         
+        final int[] forbiddenKeys = {
+            com.badlogic.gdx.Input.Keys.SHIFT_LEFT,
+            com.badlogic.gdx.Input.Keys.SHIFT_RIGHT,
+            com.badlogic.gdx.Input.Keys.CONTROL_LEFT,
+            com.badlogic.gdx.Input.Keys.CONTROL_RIGHT,
+            com.badlogic.gdx.Input.Keys.ALT_LEFT,
+            com.badlogic.gdx.Input.Keys.ALT_RIGHT,
+            com.badlogic.gdx.Input.Keys.SYM,
+            com.badlogic.gdx.Input.Keys.CAPS_LOCK,
+            com.badlogic.gdx.Input.Keys.SCROLL_LOCK,
+            com.badlogic.gdx.Input.Keys.NUM_LOCK,
+            com.badlogic.gdx.Input.Keys.ESCAPE,
+            com.badlogic.gdx.Input.Keys.TAB,
+            com.badlogic.gdx.Input.Keys.DEL,
+            com.badlogic.gdx.Input.Keys.ENTER,
+            com.badlogic.gdx.Input.Keys.BACKSPACE,
+            com.badlogic.gdx.Input.Keys.SPACE,
+            com.badlogic.gdx.Input.Keys.F1,
+            com.badlogic.gdx.Input.Keys.F2,
+            com.badlogic.gdx.Input.Keys.F3,
+            com.badlogic.gdx.Input.Keys.F4,
+            com.badlogic.gdx.Input.Keys.F5,
+            com.badlogic.gdx.Input.Keys.F6,
+            com.badlogic.gdx.Input.Keys.F7,
+            com.badlogic.gdx.Input.Keys.F8,
+            com.badlogic.gdx.Input.Keys.F9,
+            com.badlogic.gdx.Input.Keys.F10,
+            com.badlogic.gdx.Input.Keys.F11,
+            com.badlogic.gdx.Input.Keys.F12
+        };
+        
         Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
             public boolean keyDown(int keycode) {
                 if (waitingForKeyButton != null && waitingForKeyType != null) {
+                    boolean isForbidden = false;
+                    for (int forbiddenKey : forbiddenKeys) {
+                        if (keycode == forbiddenKey) {
+                            isForbidden = true;
+                            break;
+                        }
+                    }
+                    
+                    String keyLabel = "";
+
+                    if (isForbidden) {
+                        int currentKey = 0;
+                        switch (waitingForKeyType) {
+                            case "up":
+                                currentKey = options.getKeyUp();
+                                keyLabel = "Move Up: ";
+                                break;
+                            case "down":
+                                currentKey = options.getKeyDown();
+                                keyLabel = "Move Down: ";
+                                break;
+                            case "left":
+                                currentKey = options.getKeyLeft();
+                                keyLabel = "Move Left: ";
+                                break;
+                            case "right":
+                                currentKey = options.getKeyRight();
+                                keyLabel = "Move Right: ";
+                                break;
+                        }
+                        waitingForKeyButton.setText(keyLabel + GameOptions.getKeyName(currentKey));
+                        waitingForKeyButton = null;
+                        waitingForKeyType = null;
+                        Gdx.input.setInputProcessor(stage);
+                        return true;
+                    }
+                    
                     switch (waitingForKeyType) {
                         case "up":
                             options.setKeyUp(keycode);
+                            keyLabel = "Move Up: ";
                             break;
                         case "down":
                             options.setKeyDown(keycode);
+                            keyLabel = "Move Down: ";
                             break;
                         case "left":
                             options.setKeyLeft(keycode);
+                            keyLabel = "Move Left: ";
                             break;
                         case "right":
                             options.setKeyRight(keycode);
+                            keyLabel = "Move Right: ";
                             break;
                     }
                     
-                    String label = waitingForKeyButton.getText().toString().split(":")[0] + ": ";
-                    waitingForKeyButton.setText(label + GameOptions.getKeyName(keycode));
-                    
+                    waitingForKeyButton.setText(keyLabel + GameOptions.getKeyName(keycode));
                     waitingForKeyButton = null;
                     waitingForKeyType = null;
-                    
                     Gdx.input.setInputProcessor(stage);
                 }
                 return true;
