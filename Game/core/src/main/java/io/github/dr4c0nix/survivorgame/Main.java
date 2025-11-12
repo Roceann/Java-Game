@@ -22,10 +22,16 @@ public class Main extends Game {
         Main mainInstance = ((Main) Gdx.app.getApplicationListener());
         switch (screenName) {
             case "Menu":
+                if (mainInstance.menu != null) {
+                    mainInstance.menu.dispose();
+                }
+                mainInstance.menu = new Menu();
                 mainInstance.setScreen(mainInstance.menu);
                 break;
             case "Gameplay":
-                mainInstance.gameplay.dispose();
+                if (mainInstance.gameplay != null) {
+                    mainInstance.gameplay.dispose();
+                }
                 mainInstance.gameplay = new Gameplay();
                 mainInstance.setScreen(mainInstance.gameplay);
                 break;
