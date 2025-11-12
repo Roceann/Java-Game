@@ -28,7 +28,7 @@ public class Gameplay implements Screen {
     private Texture backgroundTexture;
     private LevelUp levelUpOverlay;
     private InputProcessor previousInputProcessor;
-    // private List<Enemy> enemies; 
+    // private List<Class<? extends Enemy>> enemies; 
 
     private Texture createBackgroundTexture() {
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -72,8 +72,14 @@ public class Gameplay implements Screen {
 
     private void initPlayer() {
         Texture playerTexture = new Texture(Gdx.files.internal("personages/Jhonny/Jhonny-3/Jhonny-3.png"));
-        this.player = new Player(100, 10, 1.0f, "personages/Jhonny/Jhonny-3/Jhonny-3.png", playerTexture,
-                "Jhonny Player");
+        // this.player = new Player(100, 10, 1.0f, "personages/Jhonny/Jhonny-3/Jhonny-3.png", playerTexture, "Jhonny Player");
+        // player.setGameplay(this);
+        // Instanciation minimale du Player (classe abstraite -> classe anonyme)
+        this.player = new Player(100, 10, 1.0f, "personages/Jhonny/Jhonny-3/Jhonny-3.png", playerTexture, "Jhonny Player") {
+            @Override
+            public void animation() {
+            }
+        };
         player.setGameplay(this);
     }
 
@@ -85,7 +91,7 @@ public class Gameplay implements Screen {
     }
 
     @Override
-    void render(float delta) {
+    public void render(float delta) {
         clearScreen();
         updateCamera();
         player.update(delta);
@@ -176,17 +182,14 @@ public class Gameplay implements Screen {
 
     @Override
     public void dispose() {
-        if (batch != null) {
-            batch.dispose();
-        }
+        batch.dispose();
         if (player != null) {
-            player.dispose();
+            try {
+                player.dispose();
+            } catch (Exception ignored) {
+            }
         }
-        if (font != null) {
-            font.dispose();
-        }
-        if (backgroundTexture != null) {
-            backgroundTexture.dispose();
-        }
+        font.dispose();
+        backgroundTexture.dispose();
     }
 }

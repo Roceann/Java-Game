@@ -252,11 +252,42 @@ public class LevelUp {
      * Après appel, getStage() retournera null.
      */
     public void hide() {
-        stage.dispose(); 
-        font.dispose();
-        titleFont.dispose();
-        rectTex.dispose();
-        contourTex.dispose();
+        try {
+            if (Gdx.input.getInputProcessor() == stage) {
+                Gdx.input.setInputProcessor(null);
+            }
+        } catch (Exception ignored) {}
+
+        if (stage != null) {
+            try {
+                stage.clear();
+                stage.dispose();
+            } catch (IllegalArgumentException | IllegalStateException e) {
+            } finally {
+                stage = null;
+            }
+        }
+
+        if (rectTex != null) {
+            rectTex.dispose();
+            rectTex = null;
+        }
+        if (contourTex != null) {
+            contourTex.dispose();
+            contourTex = null;
+        }
+        if (font != null) {
+            font.dispose();
+            font = null;
+        }
+        if (titleFont != null) {
+            titleFont.dispose();
+            titleFont = null;
+        }
+
+        try {
+            if (gameplay != null) gameplay.setIsPaused(false);
+        } catch (Exception ignored) {}
     }
 
     /**
