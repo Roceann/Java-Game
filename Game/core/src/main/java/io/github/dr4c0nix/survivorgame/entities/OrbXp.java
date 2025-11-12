@@ -14,7 +14,7 @@ public class OrbXp extends Entity implements Poolable {
 
     // ADD orb sprite and logic later
     public OrbXp(int xpValue) {
-        super(new Vector2(0, 0), 5, 5);
+        super(new Vector2(0, 0), 5f, 5f, "");  // ADD TEXTURE PATH LATER
         this.xpValue = xpValue;
     }
 

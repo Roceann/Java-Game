@@ -13,7 +13,7 @@ public class Projectile extends Entity implements Poolable {
 
     // ADD projectiles sprite and logic later
     public Projectile(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, float damage, float lifespan, Enemy target, LivingEntity source) {
-        super(spawnPoint, hitboxWidth, hitboxHeight);
+        super(spawnPoint, hitboxWidth, hitboxHeight, "");  // ADD TEXTURE PATH LATER
         this.damage = damage;
         this.lifespan = lifespan;
         this.target = target;
