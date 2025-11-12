@@ -20,7 +20,7 @@ import io.github.dr4c0nix.survivorgame.entities.player.Player;
 
 public class Gameplay implements Screen {
     Main main;
-    private OrthographicCamera camera;;
+    private OrthographicCamera camera;
     private SpriteBatch batch;
     private Player player;
     private boolean isPaused = false;
