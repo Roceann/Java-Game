@@ -1,5 +1,7 @@
 package io.github.dr4c0nix.survivorgame.screens;
 
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import io.github.dr4c0nix.survivorgame.Main;
@@ -12,6 +14,8 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.InputProcessor;
+
+import io.github.dr4c0nix.survivorgame.entities.Enemy;
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
 
 public class Gameplay implements Screen {
@@ -24,6 +28,7 @@ public class Gameplay implements Screen {
     private Texture backgroundTexture;
     private LevelUp levelUpOverlay;
     private InputProcessor previousInputProcessor;
+    // private List<Enemy> enemies; 
 
     private Texture createBackgroundTexture() {
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -80,8 +85,6 @@ public class Gameplay implements Screen {
     }
 
     @Override
-    public    private boolean isPaused = false
-
     void render(float delta) {
         clearScreen();
         updateCamera();
