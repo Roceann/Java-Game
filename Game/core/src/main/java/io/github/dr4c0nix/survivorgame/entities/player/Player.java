@@ -36,16 +36,17 @@ public abstract class Player extends LivingEntity {
      *
      * Initialise les stats de base (hp, armure, force, etc.) et les valeurs de progression.
      *
+     * @param spawnPoint point d'apparition (coordonnées x,y)
      * @param baseHp points de vie de base (max et courant)
      * @param baseArmor armure de base
      * @param baseForce multiplicateur de dégâts de base
-     * @param texturePath chemin vers la texture principale (transmis à la superclasse)
+     * @param texturePath chemin vers la texture principale (fichier)
      * @param walkingTexture texture de marche / animation
      * @param description description textuelle du joueur
      */
-    public Player(int baseHp, int baseArmor, float baseForce, String texturePath, Texture walkingTexture,
+    public Player(Vector2 spawnPoint, int baseHp, int baseArmor, float baseForce, String texturePath, Texture walkingTexture,
         String description) {
-        super(new Vector2(0, 0), 0, 0, baseHp, baseArmor, baseForce, texturePath, walkingTexture);
+        super(spawnPoint, 32, 32, baseHp, baseArmor, baseForce, texturePath, walkingTexture); // Assuming 32x32 hitbox for player
         this.description = description;
         this.level = 1;
         this.experienceToNextLevel = 100;

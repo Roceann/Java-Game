@@ -14,6 +14,14 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.math.Vector2;
 
 import io.github.dr4c0nix.survivorgame.entities.Enemy;
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
@@ -21,30 +29,23 @@ import io.github.dr4c0nix.survivorgame.entities.player.Player;
 public class Gameplay implements Screen {
     Main main;
     private OrthographicCamera camera;
+    private StretchViewport viewport;
     private SpriteBatch batch;
     private Player player;
     private boolean isPaused = false;
     private BitmapFont font;
-    private Texture backgroundTexture;
     private LevelUp levelUpOverlay;
     private InputProcessor previousInputProcessor;
+    private TiledMap map;
+    private OrthogonalTiledMapRenderer mapRenderer;
+    private Vector2 spawnPoint;
     // private List<Class<? extends Enemy>> enemies; 
-
-    private Texture createBackgroundTexture() {
-        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(0, 0, 0, 1);
-        pixmap.fill();
-        Texture texture = new Texture(pixmap);
-        pixmap.dispose();
-        return texture;
-    }
 
     public Gameplay() {
         this.main = (Main) Gdx.app.getApplicationListener();
         initCameras();
         initGraphics();
         initPlayer();
-        this.backgroundTexture = createBackgroundTexture();
     }
 
     public boolean getIsPaused() {
@@ -57,8 +58,7 @@ public class Gameplay implements Screen {
 
     private void initCameras() {
         this.camera = new OrthographicCamera();
-        this.camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        this.camera.position.set(0, 0, 0);
+        this.viewport = new StretchViewport(800, 600, camera);
         this.camera.zoom = 0.5f;
         this.camera.update();
     }
@@ -68,6 +68,22 @@ public class Gameplay implements Screen {
         this.font = new BitmapFont();
         this.font.setColor(Color.WHITE);
         this.font.getData().setScale(2.0f);
+        this.map = new TmxMapLoader().load("Map/map.tmx");
+        this.mapRenderer = new OrthogonalTiledMapRenderer(map, 1f);
+        MapLayer spawnLayer = map.getLayers().get("spawn");
+        if (spawnLayer != null) {
+            MapObjects objects = spawnLayer.getObjects();
+            MapObject spawnObj = objects.get("spawnpoint");
+            if (spawnObj != null) {
+                float x = spawnObj.getProperties().get("x", Float.class);
+                float y = spawnObj.getProperties().get("y", Float.class);
+                this.spawnPoint = new Vector2(x, y);
+            } else {
+                this.spawnPoint = new Vector2(0, 0);
+            }
+        } else {
+            this.spawnPoint = new Vector2(0, 0);
+        }
     }
 
     private void initPlayer() {
@@ -75,7 +91,7 @@ public class Gameplay implements Screen {
         // this.player = new Player(100, 10, 1.0f, "personages/Jhonny/Jhonny-3/Jhonny-3.png", playerTexture, "Jhonny Player");
         // player.setGameplay(this);
         // Instanciation minimale du Player (classe abstraite -> classe anonyme)
-        this.player = new Player(100, 10, 1.0f, "personages/Jhonny/Jhonny-3/Jhonny-3.png", playerTexture, "Jhonny Player") {
+        this.player = new Player(spawnPoint, 100, 10, 1.0f, "personages/Jhonny/Jhonny-3/Jhonny-3.png", playerTexture, "Jhonny Player") {
             @Override
             public void animation() {
             }
@@ -85,15 +101,16 @@ public class Gameplay implements Screen {
 
     @Override
     public void show() {
-        this.camera.viewportWidth = Gdx.graphics.getWidth();
-        this.camera.viewportHeight = Gdx.graphics.getHeight();
-        this.camera.update();
+        this.viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
     }
 
     @Override
     public void render(float delta) {
         clearScreen();
         updateCamera();
+        viewport.apply();
+        mapRenderer.setView(camera);
+        mapRenderer.render();
         player.update(delta);
         drawScene();
         drawOverlayIfActive(delta);
@@ -106,7 +123,7 @@ public class Gameplay implements Screen {
     }
 
     private void updateCamera() {
-        camera.position.set(0, 0, 0);
+        camera.position.set(player.getPosition().x, player.getPosition().y, 0);
         camera.update();
     }
 
@@ -163,9 +180,8 @@ public class Gameplay implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        camera.viewportWidth = width;
-        camera.viewportHeight = height;
-        camera.update();
+        if (width <= 0 || height <= 0) return;
+        viewport.update(width, height, true);
     }
 
     @Override
@@ -190,6 +206,11 @@ public class Gameplay implements Screen {
             }
         }
         font.dispose();
-        backgroundTexture.dispose();
+        if (map != null) {
+            map.dispose();
+        }
+        if (mapRenderer != null) {
+            mapRenderer.dispose();
+        }
     }
 }
