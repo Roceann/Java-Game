@@ -3,7 +3,7 @@ package io.github.dr4c0nix.survivorgame.entities;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool.Poolable;
-
+import io.github.dr4c0nix.survivorgame.entities.enemy.Enemy;
 /*
  * Classe représentant un projectile lancé par une arme
  * Contient les informations sur les dégâts, la durée de vie, la cible, etc.
