@@ -1,16 +1,12 @@
 package io.github.dr4c0nix.survivorgame.screens;
 
-import java.util.List;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import io.github.dr4c0nix.survivorgame.Main;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.InputProcessor;
@@ -23,7 +19,10 @@ import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.math.Vector2;
 
-import io.github.dr4c0nix.survivorgame.entities.Enemy;
+import io.github.dr4c0nix.survivorgame.Main;
+import io.github.dr4c0nix.survivorgame.entities.EntityFactory;
+import io.github.dr4c0nix.survivorgame.entities.OrbXp;
+
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
 
 public class Gameplay implements Screen {
@@ -40,12 +39,14 @@ public class Gameplay implements Screen {
     private OrthogonalTiledMapRenderer mapRenderer;
     private Vector2 spawnPoint;
     // private List<Class<? extends Enemy>> enemies; 
+    private EntityFactory entityFactory;
 
     public Gameplay() {
         this.main = (Main) Gdx.app.getApplicationListener();
         initCameras();
         initGraphics();
         initPlayer();
+        this.entityFactory = new EntityFactory();
     }
 
     public boolean getIsPaused() {
@@ -112,6 +113,14 @@ public class Gameplay implements Screen {
         mapRenderer.setView(camera);
         mapRenderer.render();
         player.update(delta);
+
+        for (OrbXp orb : entityFactory.getActiveOrbs()) {
+            orb.update(delta);
+            if(player.getHitbox().overlaps(orb.getHitbox())) {
+                player.addXp(orb.getXpValue());
+                entityFactory.releaseOrbXp(orb);
+            }
+        }
         drawScene();
         drawOverlayIfActive(delta);
         handleGlobalInput();
@@ -131,6 +140,7 @@ public class Gameplay implements Screen {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         player.draw(batch);
+        entityFactory.drawActiveOrbs(batch);
         batch.end();
     }
 
@@ -150,7 +160,7 @@ public class Gameplay implements Screen {
         }
     }
 
-    private void showLevelUpScreen() {
+    public void showLevelUpScreen() {
         isPaused = true;
         previousInputProcessor = Gdx.input.getInputProcessor();
         if (levelUpOverlay == null) {

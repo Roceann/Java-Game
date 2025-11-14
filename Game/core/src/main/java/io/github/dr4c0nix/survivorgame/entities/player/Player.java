@@ -6,7 +6,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import io.github.dr4c0nix.survivorgame.screens.LevelUp;
 import io.github.dr4c0nix.survivorgame.screens.Gameplay;
 
 /**
@@ -30,7 +29,8 @@ public abstract class Player extends LivingEntity {
     protected float durationEffect;
     protected String description;
     // protected List<Weapon> weapon;
-    protected LevelUp levelUpOverlay;
+    protected Gameplay gameplay;
+
     /**
      * Constructeur du Player.
      *
@@ -46,7 +46,7 @@ public abstract class Player extends LivingEntity {
      */
     public Player(Vector2 spawnPoint, int baseHp, int baseArmor, float baseForce, String texturePath, Texture walkingTexture,
         String description) {
-        super(spawnPoint, 32, 32, baseHp, baseArmor, baseForce, texturePath, walkingTexture); // Assuming 32x32 hitbox for player
+        super(spawnPoint, 32, 32, baseHp, baseArmor, baseForce, texturePath, walkingTexture);
         this.description = description;
         this.level = 1;
         this.experienceToNextLevel = 100;
@@ -90,20 +90,20 @@ public abstract class Player extends LivingEntity {
     public abstract void animation() ;
 
     /**
-     * Ouvre l'overlay de montée de niveau pré-configuré dans levelUp.
-     *
-     * Doit être précédé par setGameplay(...) pour que levelUpOverlay soit initialisé.
+     * Demande à Gameplay d'afficher l'overlay de montée de niveau.
+     * Gameplay centralise l'affichage / gestion d'input et la pause.
      */
     public void levelUp(){
-        levelUpOverlay.show();
+        if (gameplay != null) {
+            gameplay.showLevelUpScreen();
+        }
     }
 
     /**
-     * Initialise le LevelUp overlay depuis Gameplay.
-     * Appeler ceci depuis Gameplay (ou tout code d'initialisation) avant d'appeler levelUp().
+     * Stocke la référence Gameplay (appelé depuis Gameplay lors de l'initialisation).
      */
     public void setGameplay(Gameplay gameplay) {
-        this.levelUpOverlay = new LevelUp(gameplay);
+        this.gameplay = gameplay;
     }
 
     /**

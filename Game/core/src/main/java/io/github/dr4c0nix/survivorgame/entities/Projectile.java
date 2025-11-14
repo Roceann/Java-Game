@@ -1,9 +1,17 @@
 package io.github.dr4c0nix.survivorgame.entities;
 
-import com.badlogic.gdx.Gdx;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool.Poolable;
 
+/*
+ * Classe représentant un projectile lancé par une arme
+ * Contient les informations sur les dégâts, la durée de vie, la cible, etc.
+ * Implémente Poolable pour réutilisation via un pool d'objets
+ * 
+ * @author Dr4c0nix, Abdelkader1900
+ * @version 1.0
+ */
 public class Projectile extends Entity implements Poolable {
     protected float damage;
     protected float lifespan;
@@ -11,16 +19,19 @@ public class Projectile extends Entity implements Poolable {
     protected int maxRange;
     protected LivingEntity source;
 
-    // ADD projectiles sprite and logic later
-    public Projectile(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, float damage, float lifespan, Enemy target, LivingEntity source) {
-        super(spawnPoint, hitboxWidth, hitboxHeight, "");  // ADD TEXTURE PATH LATER
+    public Projectile(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, float damage, float lifespan, Enemy target, LivingEntity source, String pathFIle) {
+        super(spawnPoint, hitboxWidth, hitboxHeight, pathFIle);
         this.damage = damage;
         this.lifespan = lifespan;
         this.target = target;
-        this.maxRange = 100; //Change value later
+        this.maxRange = 100; 
         this.source = source;
     }
 
+    /*
+     * Met à jour l'état du projectile chaque frame
+     * Réduit la durée de vie et vérifie si le projectile doit être détruit
+     */
     @Override
     public void update(float delta) {
         if (!isAlive) return;
@@ -32,6 +43,9 @@ public class Projectile extends Entity implements Poolable {
         }
     }
 
+    /*
+     * Réinitialise l'état du projectile pour réutilisation dans le pool
+     */
     @Override
     public void reset() {
         damage = 0;

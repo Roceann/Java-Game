@@ -56,8 +56,9 @@ public abstract class Entity {
      * @param batch Le SpriteBatch utilisé pour le rendu
      */
     public void draw(SpriteBatch batch) {
+        if (!isAlive) return;
         if (currentFrame != null) {
-            batch.draw(currentFrame, position.x, position.y);
+            batch.draw(currentFrame, position.x, position.y, hitbox.width, hitbox.height);
         }
     }
 
@@ -84,7 +85,8 @@ public abstract class Entity {
      * @param value La nouvelle position
      */
     public void setPosition(Vector2 value) {
-        this.position = value;
+        this.position.set(value);
+        this.hitbox.setPosition(value.x, value.y);
     }
 
     /**
