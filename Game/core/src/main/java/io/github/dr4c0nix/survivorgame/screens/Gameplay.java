@@ -88,13 +88,11 @@ public class Gameplay implements Screen {
     }
 
     private void initPlayer() {
-        Texture playerTexture = new Texture(Gdx.files.internal("personages/Jhonny/Jhonny-3/Jhonny-3.png"));
-        // this.player = new Player(100, 10, 1.0f, "personages/Jhonny/Jhonny-3/Jhonny-3.png", playerTexture, "Jhonny Player");
-        // player.setGameplay(this);
-        // Instanciation minimale du Player (classe abstraite -> classe anonyme)
-        this.player = new Player(spawnPoint, 100, 10, 1.0f, "personages/Jhonny/Jhonny-3/Jhonny-3.png", playerTexture, "Jhonny Player") {
+        Texture playerTexture = new Texture(Gdx.files.internal("Entity/Player/static1.png"));
+        this.player = new Player(spawnPoint, 100, 10, 1.0f, "Entity/Player/static1.png", playerTexture, "Jhonny Player") {
             @Override
             public void animation() {
+                super.animation();
             }
         };
         player.setGameplay(this);

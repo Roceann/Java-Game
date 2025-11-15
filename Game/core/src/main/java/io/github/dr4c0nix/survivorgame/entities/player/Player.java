@@ -5,6 +5,7 @@ import io.github.dr4c0nix.survivorgame.GameOptions;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import io.github.dr4c0nix.survivorgame.screens.Gameplay;
 
@@ -31,10 +32,23 @@ public abstract class Player extends LivingEntity {
     // protected List<Weapon> weapon;
     protected Gameplay gameplay;
 
+    // Animation
+    private TextureRegion[] staticFrames;
+    private TextureRegion[] downFrames;
+    private TextureRegion[] upFrames;
+    private TextureRegion[] rightFrames;
+    private TextureRegion[] leftFrames;
+    private float animationTimer = 0f;
+    private static final float STATIC_FRAME_DURATION = 0.5f;
+    private static final float WALK_FRAME_DURATION = 0.3f;
+    private Direction currentDirection = Direction.DOWN;
+    private boolean isMoving = false;
+    private enum Direction {UP, DOWN, LEFT, RIGHT}
+
     /**
      * Constructeur du Player.
      *
-     * Initialise les stats de base (hp, armure, force, etc.) et les valeurs de progression.
+     * Initialise les stats de base (hp, armure, force, etc...),les valeurs de progression et les frames d'animations.
      *
      * @param spawnPoint point d'apparition (coordonnées x,y)
      * @param baseHp points de vie de base (max et courant)
@@ -46,7 +60,7 @@ public abstract class Player extends LivingEntity {
      */
     public Player(Vector2 spawnPoint, int baseHp, int baseArmor, float baseForce, String texturePath, Texture walkingTexture,
         String description) {
-        super(spawnPoint, 32, 32, baseHp, baseArmor, baseForce, texturePath, walkingTexture);
+        super(spawnPoint, 32, 32 * 1.3f, baseHp, baseArmor, baseForce, texturePath, walkingTexture);
         this.description = description;
         this.level = 1;
         this.experienceToNextLevel = 100;
@@ -60,6 +74,39 @@ public abstract class Player extends LivingEntity {
         this.difficulter = 1.0f;
         this.critDamage = 1.5f;
         this.durationEffect = 1.0f;
+        
+        Texture static1 = new Texture(Gdx.files.internal("Entity/Player/static1.png"));
+        Texture static2 = new Texture(Gdx.files.internal("Entity/Player/static2.png"));
+        Texture dwalk1 = new Texture(Gdx.files.internal("Entity/Player/dwalk1.png"));
+        Texture dwalk2 = new Texture(Gdx.files.internal("Entity/Player/dwalk2.png"));
+        Texture uwalk1 = new Texture(Gdx.files.internal("Entity/Player/uwalk1.png"));
+        Texture uwalk2 = new Texture(Gdx.files.internal("Entity/Player/uwalk2.png"));
+        Texture rwalk1 = new Texture(Gdx.files.internal("Entity/Player/rwalk1.png"));
+        Texture rwalk2 = new Texture(Gdx.files.internal("Entity/Player/rwalk2.png"));
+        Texture lwalk1 = new Texture(Gdx.files.internal("Entity/Player/lwalk1.png"));
+        Texture lwalk2 = new Texture(Gdx.files.internal("Entity/Player/lwalk2.png"));
+        staticFrames = new TextureRegion[] {
+            new TextureRegion(static1),
+            new TextureRegion(static2)
+        };
+        downFrames = new TextureRegion[] {
+            new TextureRegion(dwalk1),
+            new TextureRegion(dwalk2)
+        };
+        upFrames = new TextureRegion[] {
+            new TextureRegion(uwalk1),
+            new TextureRegion(uwalk2)
+        };
+        rightFrames = new TextureRegion[] {
+            new TextureRegion(rwalk1),
+            new TextureRegion(rwalk2)
+        };
+        leftFrames = new TextureRegion[] {
+            new TextureRegion(lwalk1),
+            new TextureRegion(lwalk2)
+        };
+
+        currentFrame = staticFrames[0];
     }
 
     /**
@@ -69,25 +116,57 @@ public abstract class Player extends LivingEntity {
      */
     public void handleInput() {
         GameOptions options = GameOptions.getInstance();
+        isMoving = false;
         
         if (Gdx.input.isKeyPressed(options.getKeyUp())) {
             moveBy(0, 1);
+            currentDirection = Direction.UP;
+            isMoving = true;
         }
         if (Gdx.input.isKeyPressed(options.getKeyDown())) {
             moveBy(0, -1);
+            currentDirection = Direction.DOWN;
+            isMoving = true;
         }
         if (Gdx.input.isKeyPressed(options.getKeyLeft())) {
             moveBy(-1, 0);
+            currentDirection = Direction.LEFT;
+            isMoving = true;
         }
         if (Gdx.input.isKeyPressed(options.getKeyRight())) {
             moveBy(1, 0);
+            currentDirection = Direction.RIGHT;
+            isMoving = true;
         }
     }
 
     /**
      * permet de gérer l'animation de déplacement
      */
-    public abstract void animation() ;
+    public void animation() {
+        animationTimer += Gdx.graphics.getDeltaTime();
+
+        if (!isMoving) {
+            int frameIndex = (int)(animationTimer / STATIC_FRAME_DURATION) % 2;
+            currentFrame = staticFrames[frameIndex];
+        } else {
+            int frameIndex = (int)(animationTimer / WALK_FRAME_DURATION) % 2;
+            switch (currentDirection) {
+                case UP:
+                    currentFrame = upFrames[frameIndex];
+                    break;
+                case DOWN:
+                    currentFrame = downFrames[frameIndex];
+                    break;
+                case LEFT:
+                    currentFrame = leftFrames[frameIndex];
+                    break;
+                case RIGHT:
+                    currentFrame = rightFrames[frameIndex];
+                    break;
+            }
+        }
+    }
 
     /**
      * Demande à Gameplay d'afficher l'overlay de montée de niveau.
@@ -114,6 +193,7 @@ public abstract class Player extends LivingEntity {
     @Override
     public void update(float delta) {
         handleInput();
+        animation();
     }
 
     public int getXpactual() {
