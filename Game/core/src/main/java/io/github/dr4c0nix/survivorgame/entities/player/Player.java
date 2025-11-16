@@ -7,6 +7,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Rectangle;
 import io.github.dr4c0nix.survivorgame.screens.Gameplay;
 
 /**
@@ -39,11 +40,12 @@ public abstract class Player extends LivingEntity {
     private TextureRegion[] rightFrames;
     private TextureRegion[] leftFrames;
     private float animationTimer = 0f;
-    private static final float STATIC_FRAME_DURATION = 0.5f;
-    private static final float WALK_FRAME_DURATION = 0.3f;
-    private Direction currentDirection = Direction.DOWN;
+    private static final float staticFrameDuration = 0.5f;
+    private static final float walkFrameDuration = 0.3f;
+    private Direction currentDirection = Direction.down;
     private boolean isMoving = false;
-    private enum Direction {UP, DOWN, LEFT, RIGHT}
+    private enum Direction {up, down, left, right}
+    private static final float feetHeight = 10f;
 
     /**
      * Constructeur du Player.
@@ -110,6 +112,17 @@ public abstract class Player extends LivingEntity {
     }
 
     /**
+     * Teste si le joueur peut se déplacer de (dx,dy) en testant uniquement les pieds.
+     */
+    private boolean canMoveTo(float dx, float dy) {
+        if (gameplay == null) return true;
+        float newX = this.position.x + dx * this.movementSpeed;
+        float newY = this.position.y + dy * this.movementSpeed;
+        Rectangle feet = new Rectangle(newX, newY, this.hitbox.width, feetHeight);
+        return !gameplay.isColliding(feet);
+    }
+
+    /**
      * Gère l'entrée utilisateur pour déplacer le joueur.
      *
      * Utilise Z/S/Q/D pour monter/descendre/gauche/droite et appelle moveBy.
@@ -119,23 +132,31 @@ public abstract class Player extends LivingEntity {
         isMoving = false;
         
         if (Gdx.input.isKeyPressed(options.getKeyUp())) {
-            moveBy(0, 1);
-            currentDirection = Direction.UP;
+            if (canMoveTo(0, 1)) {
+                moveBy(0, 1);
+            }
+            currentDirection = Direction.up;
             isMoving = true;
         }
         if (Gdx.input.isKeyPressed(options.getKeyDown())) {
-            moveBy(0, -1);
-            currentDirection = Direction.DOWN;
+            if (canMoveTo(0, -1)) {
+                moveBy(0, -1);
+            }
+            currentDirection = Direction.down;
             isMoving = true;
         }
         if (Gdx.input.isKeyPressed(options.getKeyLeft())) {
-            moveBy(-1, 0);
-            currentDirection = Direction.LEFT;
+            if (canMoveTo(-1, 0)) {
+                moveBy(-1, 0);
+            }
+            currentDirection = Direction.left;
             isMoving = true;
         }
         if (Gdx.input.isKeyPressed(options.getKeyRight())) {
-            moveBy(1, 0);
-            currentDirection = Direction.RIGHT;
+            if (canMoveTo(1, 0)) {
+                moveBy(1, 0);
+            }
+            currentDirection = Direction.right;
             isMoving = true;
         }
     }
@@ -147,21 +168,21 @@ public abstract class Player extends LivingEntity {
         animationTimer += Gdx.graphics.getDeltaTime();
 
         if (!isMoving) {
-            int frameIndex = (int)(animationTimer / STATIC_FRAME_DURATION) % 2;
+            int frameIndex = (int)(animationTimer / staticFrameDuration) % 2;
             currentFrame = staticFrames[frameIndex];
         } else {
-            int frameIndex = (int)(animationTimer / WALK_FRAME_DURATION) % 2;
+            int frameIndex = (int)(animationTimer / walkFrameDuration) % 2;
             switch (currentDirection) {
-                case UP:
+                case up:
                     currentFrame = upFrames[frameIndex];
                     break;
-                case DOWN:
+                case down:
                     currentFrame = downFrames[frameIndex];
                     break;
-                case LEFT:
+                case left:
                     currentFrame = leftFrames[frameIndex];
                     break;
-                case RIGHT:
+                case right:
                     currentFrame = rightFrames[frameIndex];
                     break;
             }

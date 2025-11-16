@@ -16,8 +16,11 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.math.Vector2;
+import java.util.ArrayList;
 
 import io.github.dr4c0nix.survivorgame.Main;
 import io.github.dr4c0nix.survivorgame.entities.EntityFactory;
@@ -40,6 +43,7 @@ public class Gameplay implements Screen {
     private Vector2 spawnPoint;
     // private List<Class<? extends Enemy>> enemies; 
     private EntityFactory entityFactory;
+    private ArrayList<Rectangle> collisionRectangles;
 
     public Gameplay() {
         this.main = (Main) Gdx.app.getApplicationListener();
@@ -85,6 +89,35 @@ public class Gameplay implements Screen {
         } else {
             this.spawnPoint = new Vector2(0, 0);
         }
+
+        MapLayer collisionsLayer = map.getLayers().get("collisions");
+        collisionRectangles = new ArrayList<>();
+        if (collisionsLayer != null) {
+            MapObjects objects = collisionsLayer.getObjects();
+            for (MapObject obj : objects) {
+                if (obj instanceof RectangleMapObject) {
+                    Rectangle r = ((RectangleMapObject) obj).getRectangle();
+                    collisionRectangles.add(new Rectangle(r));
+                }
+            }
+        }
+    }
+
+    /**
+     * Vérifie si une hitbox intersecte la couche collisions (rectangle).
+     */
+    public boolean isColliding(Rectangle rect) {
+        if (collisionRectangles == null || collisionRectangles.isEmpty()) {
+            return false;
+        }
+
+        for (Rectangle r : collisionRectangles) {
+            if (rect.overlaps(r)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void initPlayer() {
