@@ -793,6 +793,6 @@
   <object id="211" x="2496" y="2688" width="32" height="256"/>
  </objectgroup>
  <objectgroup id="12" name="trigger">
-  <object id="170" name="trigger" x="571.264" y="615.65" width="106.444" height="16.8502"/>
+  <object id="170" name="trigger" x="571.636" y="635.15" width="106.444" height="4.80992"/>
  </objectgroup>
 </map>

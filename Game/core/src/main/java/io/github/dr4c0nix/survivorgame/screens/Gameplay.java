@@ -21,6 +21,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
+import com.badlogic.gdx.math.MathUtils;
 
 import io.github.dr4c0nix.survivorgame.Main;
 import io.github.dr4c0nix.survivorgame.entities.EntityFactory;
@@ -44,6 +45,9 @@ public class Gameplay implements Screen {
     // private List<Class<? extends Enemy>> enemies; 
     private EntityFactory entityFactory;
     private ArrayList<Rectangle> collisionRectangles;
+    private Rectangle triggerRect;
+    private boolean wasInTrigger = false;
+    private float targetZoom = 0.5f;
 
     public Gameplay() {
         this.main = (Main) Gdx.app.getApplicationListener();
@@ -65,6 +69,7 @@ public class Gameplay implements Screen {
         this.camera = new OrthographicCamera();
         this.viewport = new StretchViewport(800, 600, camera);
         this.camera.zoom = 0.5f;
+        this.targetZoom = 0.5f;
         this.camera.update();
     }
 
@@ -99,6 +104,15 @@ public class Gameplay implements Screen {
                     Rectangle r = ((RectangleMapObject) obj).getRectangle();
                     collisionRectangles.add(new Rectangle(r));
                 }
+            }
+        }
+
+        MapLayer triggerLayer = map.getLayers().get("trigger");
+        if (triggerLayer != null) {
+            MapObjects objects = triggerLayer.getObjects();
+            MapObject triggerObj = objects.get("trigger");
+            if (triggerObj instanceof RectangleMapObject) {
+                triggerRect = ((RectangleMapObject) triggerObj).getRectangle();
             }
         }
     }
@@ -145,6 +159,15 @@ public class Gameplay implements Screen {
         mapRenderer.render();
         player.update(delta);
 
+        if (triggerRect != null) {
+            boolean isInTrigger = player.getHitbox().overlaps(triggerRect);
+            if (wasInTrigger && !isInTrigger) {
+                targetZoom = 1.0f;
+                collisionRectangles.add(triggerRect);
+            }
+            wasInTrigger = isInTrigger;
+        }
+
         for (OrbXp orb : entityFactory.getActiveOrbs()) {
             orb.update(delta);
             if(player.getHitbox().overlaps(orb.getHitbox())) {
@@ -163,6 +186,7 @@ public class Gameplay implements Screen {
     }
 
     private void updateCamera() {
+        camera.zoom = MathUtils.lerp(camera.zoom, targetZoom, 0.05f);
         camera.position.set(player.getPosition().x, player.getPosition().y, 0);
         camera.update();
     }
