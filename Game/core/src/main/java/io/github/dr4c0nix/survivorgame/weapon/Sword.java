@@ -1,4 +1,4 @@
-package io.github.dr4c0nix.survivorgame.weapons;
+package io.github.dr4c0nix.survivorgame.weapon;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import io.github.dr4c0nix.survivorgame.entities.EntityFactory;
