@@ -25,4 +25,6 @@ public class Bow extends Weapon {
     public void update(float delta, Player player) {
         System.out.println("TEST");
     }
+
+    
 }

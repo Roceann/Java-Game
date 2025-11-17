@@ -19,6 +19,8 @@ public class Projectile extends Entity implements Poolable {
     protected int maxRange;
     protected LivingEntity source;
 
+    private final Vector2 velocity = new Vector2();
+
     public Projectile(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, float damage, float lifespan, Enemy target, LivingEntity source, String pathFIle) {
         super(spawnPoint, hitboxWidth, hitboxHeight, pathFIle);
         this.damage = damage;
@@ -27,6 +29,11 @@ public class Projectile extends Entity implements Poolable {
         this.maxRange = 100; 
         this.source = source;
     }
+
+
+    public void setVelocity(Vector2 direction, float speed) {
+        this.velocity.set(direction).scl(speed); // on multiplie la direction par la vitesse ici
+    } 
 
     /*
      * Met à jour l'état du projectile chaque frame
