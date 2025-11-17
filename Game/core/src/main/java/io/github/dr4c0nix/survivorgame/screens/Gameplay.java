@@ -22,6 +22,9 @@ import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.physics.box2d.World;
+import box2dLight.RayHandler;
+import box2dLight.PointLight;
 
 import io.github.dr4c0nix.survivorgame.Main;
 import io.github.dr4c0nix.survivorgame.entities.EntityFactory;
@@ -48,6 +51,23 @@ public class Gameplay implements Screen {
     private Rectangle triggerRect;
     private boolean wasInTrigger = false;
     private float targetZoom = 0.5f;
+    private World lightWorld;
+    private RayHandler rayHandler;
+    private PointLight playerLight;
+    private float currentLightRadius;
+    private float targetLightRadius;
+    private static final float minLightRadius = 60f;
+    private static final float maxLightRadius = 180f;
+    private ArrayList<PointLight> torchLights;
+    private Rectangle lightTogglerRect;
+    private boolean wasInLightToggler = false;
+    private boolean lightsEnabled = true;
+    private Rectangle comingFromR1;
+    private Rectangle comingFromR2;
+    private boolean ccomingFromR1 = true;
+    private boolean ccomingFromR2 = false;
+    private float targetAmbient = 0.5f;
+    private float currentAmbient = 0.5f;
 
     public Gameplay() {
         this.main = (Main) Gdx.app.getApplicationListener();
@@ -115,6 +135,42 @@ public class Gameplay implements Screen {
                 triggerRect = ((RectangleMapObject) triggerObj).getRectangle();
             }
         }
+
+        currentLightRadius = minLightRadius;
+        targetLightRadius = minLightRadius;
+
+        lightWorld = new World(new Vector2(0, 0), true);
+        RayHandler.setGammaCorrection(true);
+        rayHandler = new RayHandler(lightWorld);
+        rayHandler.setAmbientLight(0.5f);
+        torchLights = new ArrayList<>();
+        MapLayer lightsLayer = map.getLayers().get("lights");
+        if (lightsLayer != null) {
+            MapObjects lightObjects = lightsLayer.getObjects();
+            for (MapObject obj : lightObjects) {
+                float x = obj.getProperties().get("x", Float.class);
+                float y = obj.getProperties().get("y", Float.class);
+                PointLight torch = new PointLight(rayHandler, 64, new Color(1f, 0.6f, 0.1f, 0.6f), 130f, x, y);
+                torch.setSoft(true);
+                torchLights.add(torch);
+            }
+        }
+
+        MapLayer togglerLayer = map.getLayers().get("lightstoggler");
+        if (togglerLayer != null) {
+            MapObjects togglerObjs = togglerLayer.getObjects();
+            for (MapObject obj : togglerObjs) {
+                if (obj instanceof RectangleMapObject && obj.getName().equals("lightstoggler")) {
+                    lightTogglerRect = ((RectangleMapObject) obj).getRectangle();
+                }
+                if (obj instanceof RectangleMapObject && obj.getName().equals("comingfromr1")) {
+                    comingFromR1 = ((RectangleMapObject) obj).getRectangle();
+                }
+                if (obj instanceof RectangleMapObject && obj.getName().equals("comingfromr2")) {
+                    comingFromR2 = ((RectangleMapObject) obj).getRectangle();
+                }
+            }
+        }
     }
 
     /**
@@ -143,6 +199,11 @@ public class Gameplay implements Screen {
             }
         };
         player.setGameplay(this);
+
+        if (rayHandler != null && playerLight == null) {
+            playerLight = new PointLight(rayHandler, 128, null, currentLightRadius, player.getPosition().x + player.getHitbox().width / 2f, player.getPosition().y + player.getHitbox().height / 2f);
+            playerLight.setSoft(true);
+        }
     }
 
     @Override
@@ -160,12 +221,57 @@ public class Gameplay implements Screen {
         player.update(delta);
 
         if (triggerRect != null) {
-            boolean isInTrigger = player.getHitbox().overlaps(triggerRect);
+            Rectangle head = new Rectangle(player.getPosition().x, player.getPosition().y + player.getHitbox().height - 2f, player.getHitbox().width, 2f);
+            boolean isInTrigger = head.overlaps(triggerRect);
+            if (isInTrigger) wasInTrigger = true;
             if (wasInTrigger && !isInTrigger) {
                 targetZoom = 1.0f;
+                targetLightRadius = maxLightRadius;
                 collisionRectangles.add(triggerRect);
+                triggerRect = null;
+                for (PointLight torch : torchLights) {
+                    torch.remove();
+                }
+                torchLights.clear();
+                wasInTrigger = false;
             }
-            wasInTrigger = isInTrigger;
+        }
+
+        if (lightTogglerRect != null) {
+            Rectangle feet = new Rectangle(player.getPosition().x, player.getPosition().y, player.getHitbox().width, 5f);
+            boolean isInLightToggler = feet.overlaps(lightTogglerRect);
+            if (isInLightToggler) wasInLightToggler = true;
+            if (!isInLightToggler && wasInLightToggler) {
+                if ((ccomingFromR1 && feet.overlaps(comingFromR2)) || (ccomingFromR2 && feet.overlaps(comingFromR1))) {
+                    lightsEnabled = !lightsEnabled;
+                    if (!lightsEnabled) {
+                        targetAmbient = 1.0f;
+                        targetLightRadius = 0f;
+                    } else {
+                        targetAmbient = 0.5f;
+                        targetLightRadius = maxLightRadius;
+                    }
+
+                    if (ccomingFromR1) {
+                        ccomingFromR1 = false;
+                        ccomingFromR2 = true;
+                    } else {
+                        ccomingFromR1 = true;
+                        ccomingFromR2 = false;
+                    }
+                }
+            wasInLightToggler = false;
+            }
+        }
+
+        if (playerLight != null) {
+            playerLight.setPosition(player.getPosition().x + player.getHitbox().width / 2f, player.getPosition().y + player.getHitbox().height / 2f);
+            currentLightRadius = MathUtils.lerp(currentLightRadius, targetLightRadius, 0.05f);
+            playerLight.setDistance(currentLightRadius);
+            currentAmbient = MathUtils.lerp(currentAmbient, targetAmbient, 0.05f);
+            rayHandler.setAmbientLight(currentAmbient);
+            rayHandler.setCombinedMatrix(camera);
+            rayHandler.updateAndRender();
         }
 
         for (OrbXp orb : entityFactory.getActiveOrbs()) {
@@ -276,6 +382,18 @@ public class Gameplay implements Screen {
         }
         if (mapRenderer != null) {
             mapRenderer.dispose();
+        }
+        if (rayHandler != null) {
+            rayHandler.dispose();
+            rayHandler = null;
+        }
+        if (lightWorld != null) {
+            lightWorld.dispose();
+            lightWorld = null;
+        }
+        if (torchLights != null) {
+            torchLights.clear();
+            torchLights = null;
         }
     }
 }

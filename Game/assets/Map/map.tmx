@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="97" height="111" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="216">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="97" height="111" tilewidth="32" tileheight="32" infinite="0" nextlayerid="15" nextobjectid="223">
  <tileset firstgid="1" source="room1.tsx"/>
  <tileset firstgid="1025" source="items3.tsx"/>
  <tileset firstgid="1281" source="items1.tsx"/>
@@ -696,15 +696,20 @@
 </data>
  </layer>
  <objectgroup id="7" name="lights">
-  <object id="46" name="torch_light" x="720.771" y="122.244">
+  <object id="46" name="torch_light" x="720.5" y="130">
    <point/>
   </object>
-  <object id="50" name="torch_light" x="721.25" y="211.889">
+  <object id="50" name="torch_light" x="720.5" y="226">
    <point/>
   </object>
-  <object id="51" name="torch_light" x="528.058" y="119.367">
+  <object id="51" name="torch_light" x="528.5" y="130">
    <point/>
   </object>
+ </objectgroup>
+ <objectgroup id="14" name="lightstoggler">
+  <object id="217" name="lightstoggler" x="480" y="2605.75" width="274.394" height="0.5"/>
+  <object id="221" name="comingfromr1" x="480" y="2595" width="274.394" height="10"/>
+  <object id="222" name="comingfromr2" x="480" y="2607" width="274.394" height="10"/>
  </objectgroup>
  <objectgroup id="8" name="spawn">
   <object id="54" name="spawnpoint" x="608.635" y="184.918">
@@ -713,8 +718,9 @@
  </objectgroup>
  <objectgroup id="13" name="mobspawn">
   <object id="213" name="room1" x="32" y="736" width="1184" height="1056"/>
-  <object id="214" x="95.2948" y="2057.77"/>
   <object id="215" name="room2" x="1696" y="2208" width="1376" height="1312"/>
+  <object id="218" name="corridor" x="512" y="1792" width="224" height="1184"/>
+  <object id="219" name="corridor" x="512" y="2720" width="1184" height="256"/>
  </objectgroup>
  <objectgroup id="6" name="collisions">
   <object id="26" x="575.867" y="94.2295" width="30.492" height="16.1313"/>
@@ -798,6 +804,6 @@
   <object id="211" x="2496" y="2688" width="32" height="256"/>
  </objectgroup>
  <objectgroup id="12" name="trigger">
-  <object id="170" name="trigger" x="571.636" y="635.15" width="106.444" height="4.80992"/>
+  <object id="170" name="trigger" x="571.791" y="639.922" width="106.444"/>
  </objectgroup>
 </map>

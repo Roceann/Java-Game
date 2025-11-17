@@ -56,7 +56,7 @@ public abstract class LivingEntity extends Entity {
         this.armor = armor;
         this.force = force;
         this.walkingTexture = walkingTexture;
-        this.movementSpeed = 1.0f;
+        this.movementSpeed = 2.0f;
     }
 
     /**
