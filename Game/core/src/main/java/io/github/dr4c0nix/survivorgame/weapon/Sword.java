@@ -23,6 +23,8 @@ public class Sword extends Weapon {
 
 
     @Override
-    public void update(float delta, Player player) {}
+    public void update(float delta, Player player) {
+        System.out.println("TEST");
+    }
 
 }
