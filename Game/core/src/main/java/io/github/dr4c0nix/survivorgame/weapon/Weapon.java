@@ -22,8 +22,11 @@ public abstract class Weapon {
     protected String description;
     protected EffectType effectType = EffectType.NONE;
 
-    public Weapon(EntityFactory factory) {
+    protected TextureRegion ImageArme; // Pour faire apparaitre l'icone d'arme dans l e HUD j'ai add ca
+
+    public Weapon(EntityFactory factory, TextureRegion ImageArme) {
         this.factory = factory;
+        this.ImageArme = ImageArme;
     }
 
     public abstract void update(float delta, Player owner);
@@ -32,4 +35,7 @@ public abstract class Weapon {
         level += 1;
     }
 
+    public TextureRegion getIcon() {
+        return icon;
+    }
 }
