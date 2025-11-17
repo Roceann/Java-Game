@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="97" height="111" tilewidth="32" tileheight="32" infinite="0" nextlayerid="13" nextobjectid="213">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="97" height="111" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="216">
  <tileset firstgid="1" source="room1.tsx"/>
  <tileset firstgid="1025" source="items3.tsx"/>
  <tileset firstgid="1281" source="items1.tsx"/>
@@ -707,9 +707,14 @@
   </object>
  </objectgroup>
  <objectgroup id="8" name="spawn">
-  <object id="54" name="spawnpoint" x="611.076" y="184.918">
+  <object id="54" name="spawnpoint" x="608.635" y="184.918">
    <point/>
   </object>
+ </objectgroup>
+ <objectgroup id="13" name="mobspawn">
+  <object id="213" name="room1" x="32" y="736" width="1184" height="1056"/>
+  <object id="214" x="95.2948" y="2057.77"/>
+  <object id="215" name="room2" x="1696" y="2208" width="1376" height="1312"/>
  </objectgroup>
  <objectgroup id="6" name="collisions">
   <object id="26" x="575.867" y="94.2295" width="30.492" height="16.1313"/>
@@ -761,10 +766,10 @@
   <object id="173" x="512" y="384" width="64" height="32"/>
   <object id="175" x="704" y="288" width="32" height="96"/>
   <object id="176" x="672" y="384" width="64" height="32"/>
-  <object id="177" x="640" y="427.126" width="64" height="52.874"/>
+  <object id="177" x="641.434" y="427.126" width="62.5659" height="52.874"/>
   <object id="179" x="672" y="384" width="32" height="256"/>
   <object id="180" x="544" y="384" width="32" height="256"/>
-  <object id="181" x="544" y="554.606" width="64" height="53.3937"/>
+  <object id="181" x="544" y="554.606" width="62.8846" height="53.3937"/>
   <object id="182" x="512" y="608" width="64" height="32"/>
   <object id="183" x="512" y="608" width="32" height="128"/>
   <object id="184" x="704" y="608" width="32" height="128"/>
