@@ -56,7 +56,6 @@ public abstract class LivingEntity extends Entity {
         this.armor = armor;
         this.force = force;
         this.walkingTexture = walkingTexture;
-        this.movementSpeed = 2.0f;
     }
 
     /**
@@ -71,11 +70,13 @@ public abstract class LivingEntity extends Entity {
      * @param amount montant brut des dégâts à appliquer
      */
     public void takeDamage(float amount) {
-        float damageReduced = amount * (100f / (100f + armor));
         if (!isAlive) {
             return;
         }
-        hp -= (int) damageReduced;
+        float effectiveDamage = amount * (100f / (100f + armor));
+        // Assure au moins 1 dégât si un coup passe
+        int damage = Math.max(1, Math.round(effectiveDamage));
+        hp -= damage;
         if (hp <= 0) {
             hp = 0;
             isAlive = false;

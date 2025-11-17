@@ -557,10 +557,46 @@ public class Menu implements Screen {
      */
     @Override
     public void dispose() {
+        // Efface tous les boutons
         clearMenu();
-        if (stage != null) stage.dispose();
-        if (font != null) font.dispose();
-        if (buttonTexture != null) buttonTexture.dispose();
-        if (buttonTextureDown != null) buttonTextureDown.dispose();
+        
+        // Dispose du Stage
+        if (stage != null) {
+            try {
+                stage.dispose();
+                stage = null;
+            } catch (Exception e) {
+                System.err.println("Error disposing stage: " + e.getMessage());
+            }
+        }
+        
+        // Dispose de la police
+        if (font != null) {
+            try {
+                font.dispose();
+                font = null;
+            } catch (Exception e) {
+                System.err.println("Error disposing font: " + e.getMessage());
+            }
+        }
+        
+        // Dispose des textures de boutons
+        if (buttonTexture != null) {
+            try {
+                buttonTexture.dispose();
+                buttonTexture = null;
+            } catch (Exception e) {
+                System.err.println("Error disposing buttonTexture: " + e.getMessage());
+            }
+        }
+        
+        if (buttonTextureDown != null) {
+            try {
+                buttonTextureDown.dispose();
+                buttonTextureDown = null;
+            } catch (Exception e) {
+                System.err.println("Error disposing buttonTextureDown: " + e.getMessage());
+            }
+        }
     }
 }

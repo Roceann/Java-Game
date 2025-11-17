@@ -3,7 +3,6 @@ package io.github.dr4c0nix.survivorgame.entities.player;
 import io.github.dr4c0nix.survivorgame.entities.LivingEntity;
 import io.github.dr4c0nix.survivorgame.GameOptions;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -61,10 +60,11 @@ public abstract class Player extends LivingEntity {
      * @param description description textuelle du joueur
      */
     public Player(Vector2 spawnPoint, int baseHp, int baseArmor, float baseForce, String texturePath, Texture walkingTexture,
-        String description) {
+        String description, float mouvmentSpeed) {
         super(spawnPoint, 32, 32 * 1.3f, baseHp, baseArmor, baseForce, texturePath, walkingTexture);
         this.description = description;
         this.level = 1;
+        this.movementSpeed = mouvmentSpeed;
         this.experienceToNextLevel = 100;
         this.xpactual = 0;
         this.nbprojectil = 1.0f;
@@ -204,13 +204,9 @@ public abstract class Player extends LivingEntity {
      */
     public void setGameplay(Gameplay gameplay) {
         this.gameplay = gameplay;
+        // Player no longer owns path finder; gameplay centralise pathfinding
     }
 
-    /**
-     * Mise à jour par frame du Player.
-     *
-     * Appelé depuis la boucle de rendu. Pour l'instant, ne fait que gérer l'entrée.
-     */
     @Override
     public void update(float delta) {
         handleInput();
@@ -328,5 +324,9 @@ public abstract class Player extends LivingEntity {
 
     public void setDurationEffect(float durationEffect) {
         this.durationEffect = durationEffect;
+    }
+
+    public void setCUrrentHp(int amount){
+        this.hp = amount;
     }
 }

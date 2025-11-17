@@ -209,7 +209,9 @@ public class LevelUp {
                 p.setMovementSpeed(p.getMovementSpeed() + u.getValue()); 
                 break;
             case "Points de Vie Max": 
+                p.setCUrrentHp(p.getHp() + (int) u.getValue());
                 p.setMaxHp(p.getMaxHp() + (int) u.getValue()); 
+                
                 break;
             case "Armure": 
                 p.setArmor(p.getArmor() + (int) u.getValue()); 
