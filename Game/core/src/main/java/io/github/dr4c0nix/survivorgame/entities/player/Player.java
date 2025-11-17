@@ -1,5 +1,7 @@
 package io.github.dr4c0nix.survivorgame.entities.player;
 
+import java.util.ArrayList;
+import java.util.List;
 import io.github.dr4c0nix.survivorgame.entities.LivingEntity;
 import io.github.dr4c0nix.survivorgame.GameOptions;
 import com.badlogic.gdx.Gdx;
@@ -9,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Rectangle;
 import io.github.dr4c0nix.survivorgame.screens.Gameplay;
+import io.github.dr4c0nix.survivorgame.weapons.Weapon;
 
 /**
  * Classe abstraite représentant un joueur dans le jeu.
@@ -30,7 +33,7 @@ public abstract class Player extends LivingEntity {
     protected float critDamage;
     protected float durationEffect;
     protected String description;
-    // protected List<Weapon> weapon;
+    protected List<Weapon> weapons = new ArrayList<>();
     protected Gameplay gameplay;
 
     // Animation
@@ -238,8 +241,18 @@ public abstract class Player extends LivingEntity {
         }
     }
 
+    public void addWeapon(Weapon weapon) {
+    if (weapon != null) {
+        weapons.add(weapon);
+    }
+    }
+
     public int getLevel() {
         return this.level;
+    }
+
+    public List<Weapon> getWeapons() {
+        return weapons;
     }
 
     public int getExperienceToNextLevel() {
