@@ -1,6 +1,7 @@
 package io.github.dr4c0nix.survivorgame.weapons;
 import io.github.dr4c0nix.survivorgame.entities.EntityFactory;
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 
 public abstract class Weapon {
@@ -22,20 +23,20 @@ public abstract class Weapon {
     protected String description;
     protected EffectType effectType = EffectType.NONE;
 
-    protected TextureRegion ImageArme; // Pour faire apparaitre l'icone d'arme dans l e HUD j'ai add ca
+    protected TextureRegion imageArme; // Pour faire apparaitre l'icone d'arme dans l e HUD j'ai add ca
 
-    public Weapon(EntityFactory factory, TextureRegion ImageArme) {
+    public Weapon(EntityFactory factory, TextureRegion imageArme) {
         this.factory = factory;
-        this.ImageArme = ImageArme;
+        this.imageArme = imageArme;
     }
 
-    public abstract void update(float delta, Player owner);
+    public abstract void update(float delta, Player player);
 
     public void levelUp() {
         level += 1;
     }
 
     public TextureRegion getIcon() {
-        return icon;
+        return imageArme;
     }
 }

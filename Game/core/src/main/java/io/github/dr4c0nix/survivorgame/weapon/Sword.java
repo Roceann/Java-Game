@@ -15,4 +15,9 @@ public class Sword extends Weapon {
         this.critDamage = 1.0f;
         this.description = "Equipez vous d'une épée pour tabasser les triple monstres !";
     }
+
+
+    @Override
+    public void update(float delta, Player player) {}
+
 }
