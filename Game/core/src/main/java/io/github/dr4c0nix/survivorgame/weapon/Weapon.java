@@ -20,7 +20,7 @@ public abstract class Weapon {
     protected float duration;
     protected int pierce;
     protected String description;
-    protected EffectType effectType = EffectType.NONE;
+    // protected EffectType effectType = EffectType.NONE;
     protected String iconPath;
 
 
