@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Rectangle;
 import io.github.dr4c0nix.survivorgame.screens.Gameplay;
-import io.github.dr4c0nix.survivorgame.weapons.Weapon;
+import io.github.dr4c0nix.survivorgame.weapon.Weapon;
 
 /**
  * Classe abstraite représentant un joueur dans le jeu.
@@ -249,10 +249,6 @@ public abstract class Player extends LivingEntity {
 
     public int getLevel() {
         return this.level;
-    }
-
-    public List<Weapon> getWeapons() {
-        return weapons;
     }
 
     public int getExperienceToNextLevel() {
