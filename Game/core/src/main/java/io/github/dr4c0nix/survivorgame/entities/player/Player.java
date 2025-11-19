@@ -33,10 +33,9 @@ public abstract class Player extends LivingEntity {
     protected float critDamage;
     protected float durationEffect;
     protected String description;
-    protected List<Weapon> weapons = new ArrayList<>();
+    protected Weapon currentWeapon;
     protected Gameplay gameplay;
 
-    // Animation
     private TextureRegion[] staticFrames;
     private TextureRegion[] downFrames;
     private TextureRegion[] upFrames;
@@ -79,6 +78,7 @@ public abstract class Player extends LivingEntity {
         this.difficulter = 1.0f;
         this.critDamage = 1.5f;
         this.durationEffect = 1.0f;
+        this.currentWeapon = null;
         
         Texture static1 = new Texture(Gdx.files.internal("Entity/Player/static1.png"));
         Texture static2 = new Texture(Gdx.files.internal("Entity/Player/static2.png"));
@@ -218,6 +218,10 @@ public abstract class Player extends LivingEntity {
     public void update(float delta) {
         handleInput();
         animation();
+        
+        if (currentWeapon != null) {
+            currentWeapon.update(delta, this);
+        }
     }
 
     public int getXpactual() {
@@ -241,10 +245,16 @@ public abstract class Player extends LivingEntity {
         }
     }
 
-    public void addWeapon(Weapon weapon) {
-    if (weapon != null) {
-        weapons.add(weapon);
+    public void setWeapon(Weapon weapon) {
+        this.currentWeapon = weapon;
     }
+    
+    public Weapon getCurrentWeapon() {
+        return currentWeapon;
+    }
+    
+    public boolean hasWeapon() {
+        return currentWeapon != null;
     }
 
     public int getLevel() {
