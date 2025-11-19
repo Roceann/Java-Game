@@ -1,4 +1,4 @@
-package io.github.dr4c0nix.survivorgame.utils;
+package io.github.dr4c0nix.survivorgame;
 
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;

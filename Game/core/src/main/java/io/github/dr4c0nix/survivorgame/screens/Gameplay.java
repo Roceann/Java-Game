@@ -28,12 +28,12 @@ import box2dLight.RayHandler;
 import box2dLight.PointLight;
 
 import io.github.dr4c0nix.survivorgame.Main;
+import io.github.dr4c0nix.survivorgame.PathfindingMap;
 import io.github.dr4c0nix.survivorgame.Hud; 
 import io.github.dr4c0nix.survivorgame.entities.EntityFactory;
 import io.github.dr4c0nix.survivorgame.entities.OrbXp;
 import io.github.dr4c0nix.survivorgame.entities.SpawnManager;
 import io.github.dr4c0nix.survivorgame.entities.enemy.ClassicEnemy;
-import io.github.dr4c0nix.survivorgame.utils.PathfindingMap;
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
 
 public class Gameplay implements Screen {
