@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
@@ -27,9 +28,12 @@ import box2dLight.RayHandler;
 import box2dLight.PointLight;
 
 import io.github.dr4c0nix.survivorgame.Main;
+import io.github.dr4c0nix.survivorgame.Hud; 
 import io.github.dr4c0nix.survivorgame.entities.EntityFactory;
 import io.github.dr4c0nix.survivorgame.entities.OrbXp;
-
+import io.github.dr4c0nix.survivorgame.entities.SpawnManager;
+import io.github.dr4c0nix.survivorgame.entities.enemy.ClassicEnemy;
+import io.github.dr4c0nix.survivorgame.utils.PathfindingMap;
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
 
 public class Gameplay implements Screen {
@@ -38,6 +42,7 @@ public class Gameplay implements Screen {
     private StretchViewport viewport;
     private SpriteBatch batch;
     private Player player;
+    private Hud hud;
     private boolean isPaused = false;
     private BitmapFont font;
     private LevelUp levelUpOverlay;
@@ -45,8 +50,10 @@ public class Gameplay implements Screen {
     private TiledMap map;
     private OrthogonalTiledMapRenderer mapRenderer;
     private Vector2 spawnPoint;
-    // private List<Class<? extends Enemy>> enemies; 
+    
     private EntityFactory entityFactory;
+    private SpawnManager spawnManager;
+
     private ArrayList<Rectangle> collisionRectangles;
     private Rectangle triggerRect;
     private boolean wasInTrigger = false;
@@ -69,12 +76,20 @@ public class Gameplay implements Screen {
     private float targetAmbient = 0.5f;
     private float currentAmbient = 0.5f;
 
+    private PathfindingMap pathfindingMap;
+    private float elapsedTime = 0f;
+    private static final int TILE_SIZE = 32;
+
     public Gameplay() {
         this.main = (Main) Gdx.app.getApplicationListener();
         initCameras();
         initGraphics();
         initPlayer();
-        this.entityFactory = new EntityFactory();
+        
+        this.entityFactory = new EntityFactory(this);
+        
+        this.spawnManager = new SpawnManager(this, entityFactory, map);
+        this.spawnManager.unlockSpawning();
     }
 
     public boolean getIsPaused() {
@@ -95,11 +110,14 @@ public class Gameplay implements Screen {
 
     private void initGraphics() {
         this.batch = new SpriteBatch();
+        this.hud = new Hud(batch);
+
         this.font = new BitmapFont();
         this.font.setColor(Color.WHITE);
         this.font.getData().setScale(2.0f);
         this.map = new TmxMapLoader().load("Map/map.tmx");
         this.mapRenderer = new OrthogonalTiledMapRenderer(map, 1f);
+        
         MapLayer spawnLayer = map.getLayers().get("spawn");
         if (spawnLayer != null) {
             MapObjects objects = spawnLayer.getObjects();
@@ -125,6 +143,28 @@ public class Gameplay implements Screen {
                     collisionRectangles.add(new Rectangle(r));
                 }
             }
+        }
+
+        if (map.getLayers().get(0) instanceof TiledMapTileLayer) {
+            TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
+            pathfindingMap = new PathfindingMap(layer.getWidth(), layer.getHeight());
+            
+            if (collisionRectangles != null) {
+                for (Rectangle rect : collisionRectangles) {
+                    int startX = (int) (rect.x / TILE_SIZE);
+                    int startY = (int) (rect.y / TILE_SIZE);
+                    int endX = (int) ((rect.x + rect.width) / TILE_SIZE);
+                    int endY = (int) ((rect.y + rect.height) / TILE_SIZE);
+                    
+                    for (int x = startX; x <= endX; x++) {
+                        for (int y = startY; y <= endY; y++) {
+                            pathfindingMap.setWall(x, y);
+                        }
+                    }
+                }
+            }
+        } else {
+            pathfindingMap = new PathfindingMap(100, 100);
         }
 
         MapLayer triggerLayer = map.getLayers().get("trigger");
@@ -173,32 +213,31 @@ public class Gameplay implements Screen {
         }
     }
 
-    /**
-     * Vérifie si une hitbox intersecte la couche collisions (rectangle).
-     */
     public boolean isColliding(Rectangle rect) {
         if (collisionRectangles == null || collisionRectangles.isEmpty()) {
             return false;
         }
-
         for (Rectangle r : collisionRectangles) {
             if (rect.overlaps(r)) {
                 return true;
             }
         }
-
         return false;
     }
 
     private void initPlayer() {
         Texture playerTexture = new Texture(Gdx.files.internal("Entity/Player/static1.png"));
-        this.player = new Player(spawnPoint, 100, 10, 1.0f, "Entity/Player/static1.png", playerTexture, "Jhonny Player") {
+        this.player = new Player(spawnPoint, 100, 10, 1.0f, "Entity/Player/static1.png", playerTexture, "Jhonny Player", 5f) {
             @Override
             public void animation() {
                 super.animation();
             }
         };
         player.setGameplay(this);
+        
+        if (hud != null) {
+            hud.setPlayer(player);
+        }
 
         if (rayHandler != null && playerLight == null) {
             playerLight = new PointLight(rayHandler, 128, null, currentLightRadius, player.getPosition().x + player.getHitbox().width / 2f, player.getPosition().y + player.getHitbox().height / 2f);
@@ -213,13 +252,87 @@ public class Gameplay implements Screen {
 
     @Override
     public void render(float delta) {
+        if (isPaused) {
+            drawScene();
+            hud.render(delta);
+            drawOverlayIfActive(delta);
+            return;
+        }
+
+        elapsedTime += delta;
+
+        updateDifficulty(delta);
+        spawnManager.update(delta, player);
+
+        if (pathfindingMap != null && player != null) {
+            int px = (int) (player.getPosition().x / TILE_SIZE);
+            int py = (int) (player.getPosition().y / TILE_SIZE);
+            pathfindingMap.calculateFlow(px, py);
+        }
+
         clearScreen();
         updateCamera();
         viewport.apply();
         mapRenderer.setView(camera);
         mapRenderer.render();
+        
         player.update(delta);
 
+        ArrayList<ClassicEnemy> enemiesToRemove = new ArrayList<>();
+
+        for (ClassicEnemy enemy : entityFactory.getActiveEnemies()) {
+            enemy.update(delta, player);
+
+            // 1. Gestion des collisions avec le joueur (Dégâts)
+            if (player.getHitbox().overlaps(enemy.getHitbox())) {
+                player.takeDamage(enemy.getForce());
+            }
+
+            // 2. Gestion de la mort de l'ennemi (Drop XP)
+            if (!enemy.isAlive()) {
+                entityFactory.obtainOrbXp(enemy.getPosition(), enemy.getXpValue());
+                enemiesToRemove.add(enemy);
+            }
+        }
+
+        for (ClassicEnemy deadEnemy : enemiesToRemove) {
+            entityFactory.releaseEnemy(deadEnemy);
+        }
+
+        handleTriggers();
+        handleLights();
+
+        ArrayList<OrbXp> orbsToRemove = new ArrayList<>();
+        for (OrbXp orb : entityFactory.getActiveOrbs()) {
+            orb.update(delta);
+            if(player.getHitbox().overlaps(orb.getHitbox())) {
+                player.addXp(orb.getXpValue());
+                orbsToRemove.add(orb);
+            }
+        }
+        for (OrbXp orb : orbsToRemove) {
+            entityFactory.releaseOrbXp(orb);
+        }
+
+        drawScene();
+        
+        hud.render(delta);
+
+        drawOverlayIfActive(delta);
+        handleGlobalInput();
+    }
+
+    private void updateDifficulty(float delta) {
+        float timeFactor = 1.0f + (elapsedTime / 60f) * 0.1f;
+        float playerFactor = player.getDifficulter() ;
+        float totalDifficulty = timeFactor * playerFactor;
+        float baseSpawnInterval = 2.0f; 
+        float newInterval = baseSpawnInterval / totalDifficulty;
+        if (newInterval < 0.1f) newInterval = 0.1f;
+        spawnManager.setSpawnInterval(newInterval);
+    }
+
+    private void handleTriggers() {
         if (triggerRect != null) {
             Rectangle head = new Rectangle(player.getPosition().x, player.getPosition().y + player.getHitbox().height - 2f, player.getHitbox().width, 2f);
             boolean isInTrigger = head.overlaps(triggerRect);
@@ -228,6 +341,19 @@ public class Gameplay implements Screen {
                 targetZoom = 1.0f;
                 targetLightRadius = maxLightRadius;
                 collisionRectangles.add(triggerRect);
+                
+                if (pathfindingMap != null) {
+                    int startX = (int) (triggerRect.x / TILE_SIZE);
+                    int startY = (int) (triggerRect.y / TILE_SIZE);
+                    int endX = (int) ((triggerRect.x + triggerRect.width) / TILE_SIZE);
+                    int endY = (int) ((triggerRect.y + triggerRect.height) / TILE_SIZE);
+                    for (int x = startX; x <= endX; x++) {
+                        for (int y = startY; y <= endY; y++) {
+                            pathfindingMap.setWall(x, y);
+                        }
+                    }
+                }
+
                 triggerRect = null;
                 for (PointLight torch : torchLights) {
                     torch.remove();
@@ -236,7 +362,9 @@ public class Gameplay implements Screen {
                 wasInTrigger = false;
             }
         }
+    }
 
+    private void handleLights() {
         if (lightTogglerRect != null) {
             Rectangle feet = new Rectangle(player.getPosition().x, player.getPosition().y, player.getHitbox().width, 5f);
             boolean isInLightToggler = feet.overlaps(lightTogglerRect);
@@ -273,17 +401,6 @@ public class Gameplay implements Screen {
             rayHandler.setCombinedMatrix(camera);
             rayHandler.updateAndRender();
         }
-
-        for (OrbXp orb : entityFactory.getActiveOrbs()) {
-            orb.update(delta);
-            if(player.getHitbox().overlaps(orb.getHitbox())) {
-                player.addXp(orb.getXpValue());
-                entityFactory.releaseOrbXp(orb);
-            }
-        }
-        drawScene();
-        drawOverlayIfActive(delta);
-        handleGlobalInput();
     }
 
     private void clearScreen() {
@@ -300,8 +417,14 @@ public class Gameplay implements Screen {
     private void drawScene() {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        player.draw(batch);
+        
         entityFactory.drawActiveOrbs(batch);
+        
+        for (ClassicEnemy enemy : entityFactory.getActiveEnemies()) {
+            enemy.draw(batch);
+        }
+        
+        player.draw(batch);
         batch.end();
     }
 
@@ -349,10 +472,28 @@ public class Gameplay implements Screen {
         isPaused = false;
     }
 
+    public Vector2 getDirection(int x, int y) {
+        if (pathfindingMap == null) return new Vector2(0, 0);
+        int gx = x / TILE_SIZE;
+        int gy = y / TILE_SIZE;
+        return pathfindingMap.getDirection(gx, gy);
+    }
+
+    public ArrayList<ClassicEnemy> getActiveClassicEnemies() {
+        return entityFactory.getActiveEnemies();
+    }
+
+    public float getElapsedTime() {
+        return elapsedTime;
+    }
+
     @Override
     public void resize(int width, int height) {
         if (width <= 0 || height <= 0) return;
         viewport.update(width, height, true);
+        if (hud != null) {
+            hud.resize(width, height);
+        }
     }
 
     @Override
@@ -370,6 +511,9 @@ public class Gameplay implements Screen {
     @Override
     public void dispose() {
         batch.dispose();
+        if (hud != null) {
+            hud.dispose();
+        }
         if (player != null) {
             try {
                 player.dispose();

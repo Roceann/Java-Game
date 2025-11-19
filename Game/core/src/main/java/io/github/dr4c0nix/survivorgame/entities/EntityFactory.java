@@ -18,7 +18,6 @@ import java.util.Map;
  * Gère les orbes XP et les ennemis "ClassicEnemy" (et ses sous-classes).
  */
 public class EntityFactory {
-    private AssetManager assetManager;
     private Gameplay gameplay; 
 
     private Pool<OrbXp> orbXpPool;
@@ -35,24 +34,10 @@ public class EntityFactory {
 
     private static final int INITIAL_POOL_SIZE = 64;
     private static final int MAX_POOL_SIZE = 512;
-
     private static final String CLASSIC_TEXTURE = "personages/Jhonny/Jhonny-boss/Jhonny-boss.png";
-
     private Texture classicEnemyTexture; 
 
-    public EntityFactory(AssetManager assetManager) {
-        this.assetManager = assetManager;
-        initializePools();
-    }
-
     public EntityFactory(Gameplay gameplay) {
-        this.gameplay = gameplay;
-        this.assetManager = null;
-        initializePools();
-    }
-
-    public EntityFactory(AssetManager assetManager, Gameplay gameplay) {
-        this.assetManager = assetManager;
         this.gameplay = gameplay;
         initializePools();
     }
@@ -83,14 +68,17 @@ public class EntityFactory {
             }
         };
         enemyPools.put("Orc", orcPoolLocal);
+
+        // Pré-crée un prototype pour chaque pool afin d'avoir la taille d'ennemi dispo
     }
+
 
     /**
      * Obtient un ennemi du type donné et le place à la position.
      * Le type doit être ajouté manuellement dans initializePools.
      */
     public ClassicEnemy obtainEnemy(String type, Vector2 position) {
-        if (type == null) return obtainEnemy(position); // fallback
+        if (type == null) return obtainEnemy(position); 
 
         Pool<ClassicEnemy> pool = enemyPools.get(type);
 
@@ -100,7 +88,6 @@ public class EntityFactory {
         }
         instanceToType.put(enemy, type);
 
-        // Link gameplay (si applicable)
         enemy.setGameplay(this.gameplay);
         enemy.activate(new Vector2(position));
         return enemy;

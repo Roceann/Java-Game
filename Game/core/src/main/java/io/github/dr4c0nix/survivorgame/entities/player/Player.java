@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.graphics.Color; // Nécessaire pour l'effet visuel
+import com.badlogic.gdx.graphics.g2d.SpriteBatch; // Nécessaire pour draw
 import io.github.dr4c0nix.survivorgame.screens.Gameplay;
 
 /**
@@ -45,6 +47,9 @@ public abstract class Player extends LivingEntity {
     private boolean isMoving = false;
     private enum Direction {up, down, left, right}
     private static final float feetHeight = 10f;
+
+    private float immunityTimer = 0f;
+    private static final float immun_time = 0.2f;
 
     /**
      * Constructeur du Player.
@@ -204,13 +209,46 @@ public abstract class Player extends LivingEntity {
      */
     public void setGameplay(Gameplay gameplay) {
         this.gameplay = gameplay;
-        // Player no longer owns path finder; gameplay centralise pathfinding
     }
 
     @Override
     public void update(float delta) {
-        handleInput();
-        animation();
+        handleInput(); 
+        animation();  
+
+        if (immunityTimer > 0) {
+            immunityTimer -= delta;
+        }
+    }
+
+    @Override
+    public void takeDamage(float amount) {
+        if (immunityTimer > 0) {
+            return;
+        }
+
+        super.takeDamage(amount);
+
+        immunityTimer = immun_time;
+    }
+
+    @Override
+    public void draw(SpriteBatch batch) {
+        if (!isAlive) return;
+        
+        if (immunityTimer > 0) {
+            if (Math.sin(immunityTimer * 20) > 0) {
+                batch.setColor(1f, 0f, 0f, 1f); // Rouge semi-transparent
+            } else {
+                batch.setColor(1f, 1f, 1f, 1f); // Normal semi-transparent
+            }
+        } else {
+            batch.setColor(Color.WHITE);
+        }
+
+        super.draw(batch);
+        
+        batch.setColor(Color.WHITE);
     }
 
     public int getXpactual() {
