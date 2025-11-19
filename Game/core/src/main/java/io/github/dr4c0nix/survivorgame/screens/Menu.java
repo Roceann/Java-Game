@@ -539,7 +539,6 @@ public class Menu implements Screen {
     @Override
     public void hide() {
         clearMenu();   
-        dispose();
     }
 
     /**

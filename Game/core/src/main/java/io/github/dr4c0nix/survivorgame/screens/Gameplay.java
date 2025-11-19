@@ -6,7 +6,6 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.InputProcessor;
@@ -25,10 +24,22 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.World;
 import box2dLight.RayHandler;
 import box2dLight.PointLight;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import io.github.dr4c0nix.survivorgame.Main;
 import io.github.dr4c0nix.survivorgame.entities.EntityFactory;
 import io.github.dr4c0nix.survivorgame.entities.OrbXp;
+
 
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
 
@@ -45,6 +56,7 @@ public class Gameplay implements Screen {
     private TiledMap map;
     private OrthogonalTiledMapRenderer mapRenderer;
     private Vector2 spawnPoint;
+    private Texture pauseOverlayTexture;
     // private List<Class<? extends Enemy>> enemies; 
     private EntityFactory entityFactory;
     private ArrayList<Rectangle> collisionRectangles;
@@ -68,6 +80,16 @@ public class Gameplay implements Screen {
     private boolean ccomingFromR2 = false;
     private float targetAmbient = 0.5f;
     private float currentAmbient = 0.5f;
+    private boolean isPauseMenuVisible = false;
+    private GlyphLayout pauseLayout = new GlyphLayout();
+    private Stage pauseStage;
+    private TextButton.TextButtonStyle pauseButtonStyle;
+    private Texture pauseButtonTexture;
+    private Texture pauseButtonTextureDown;
+
+    private float survivalTime = 0f;
+    private int killCount = 0;
+    
 
     public Gameplay() {
         this.main = (Main) Gdx.app.getApplicationListener();
@@ -83,6 +105,52 @@ public class Gameplay implements Screen {
 
     public void setIsPaused(boolean value) {
         this.isPaused = value;
+    }
+
+    private void buildPauseUI() {
+        Table root = new Table();
+        root.setFillParent(true);
+        root.center();
+        Label.LabelStyle titleStyle = new Label.LabelStyle(font, Color.WHITE);
+        Label titleLabel = new Label("PAUSE", titleStyle);
+        titleLabel.setFontScale(2f);
+        root.add(titleLabel).padBottom(30f).row();
+        TextButton resumeBtn = new TextButton("Reprendre", pauseButtonStyle);
+        TextButton menuBtn   = new TextButton("Menu principal", pauseButtonStyle);
+        TextButton quitBtn   = new TextButton("Quitter", pauseButtonStyle);
+
+        resumeBtn.getLabel().setFontScale(1.3f);
+        menuBtn.getLabel().setFontScale(1.3f);
+        quitBtn.getLabel().setFontScale(1.3f);
+
+        resumeBtn.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    isPaused = false;
+                    isPauseMenuVisible = false;
+                    Gdx.input.setInputProcessor(null);
+                }
+            });
+
+        menuBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Main.changeScreen("Menu");
+            }
+        });
+
+        quitBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.exit();
+            }
+        });
+
+        root.add(resumeBtn).width(260f).height(60f).pad(5f).row();
+        root.add(menuBtn).width(260f).height(60f).pad(5f).row();
+        root.add(quitBtn).width(260f).height(60f).pad(5f).row();
+
+        pauseStage.addActor(root);
     }
 
     private void initCameras() {
@@ -171,6 +239,33 @@ public class Gameplay implements Screen {
                 }
             }
         }
+
+            Pixmap overlayPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+            overlayPixmap.setColor(0f, 0f, 0f, 0.6f); 
+            overlayPixmap.fill();
+            pauseOverlayTexture = new Texture(overlayPixmap);
+            overlayPixmap.dispose();
+
+            Pixmap btnPix = new Pixmap(8, 8, Pixmap.Format.RGBA8888);
+            btnPix.setColor(0.15f, 0.15f, 0.15f, 0.9f);
+            btnPix.fill();
+            pauseButtonTexture = new Texture(btnPix);
+
+            Pixmap btnDownPix = new Pixmap(8, 8, Pixmap.Format.RGBA8888);
+            btnDownPix.setColor(0.05f, 0.05f, 0.05f, 0.9f);
+            btnDownPix.fill();
+            pauseButtonTextureDown = new Texture(btnDownPix);
+
+            btnPix.dispose();
+            btnDownPix.dispose();
+            pauseButtonStyle = new TextButton.TextButtonStyle();
+            pauseButtonStyle.font = font;
+            pauseButtonStyle.fontColor = Color.WHITE;
+            pauseButtonStyle.up = new TextureRegionDrawable(new TextureRegion(pauseButtonTexture));
+            pauseButtonStyle.down = new TextureRegionDrawable(new TextureRegion(pauseButtonTextureDown));
+            pauseStage = new Stage(new StretchViewport(800, 600));
+            buildPauseUI();
+
     }
 
     /**
@@ -211,61 +306,95 @@ public class Gameplay implements Screen {
         this.viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
     }
 
+
     @Override
     public void render(float delta) {
         clearScreen();
+
+
+        if (!isPaused) {
+            survivalTime += delta;
+        }
+
         updateCamera();
         viewport.apply();
         mapRenderer.setView(camera);
         mapRenderer.render();
-        player.update(delta);
 
-        if (triggerRect != null) {
-            Rectangle head = new Rectangle(player.getPosition().x, player.getPosition().y + player.getHitbox().height - 2f, player.getHitbox().width, 2f);
-            boolean isInTrigger = head.overlaps(triggerRect);
-            if (isInTrigger) wasInTrigger = true;
-            if (wasInTrigger && !isInTrigger) {
-                targetZoom = 1.0f;
-                targetLightRadius = maxLightRadius;
-                collisionRectangles.add(triggerRect);
-                triggerRect = null;
-                for (PointLight torch : torchLights) {
-                    torch.remove();
+        if (!isPaused) {
+            player.update(delta);
+
+            if (triggerRect != null) {
+                Rectangle head = new Rectangle(
+                    player.getPosition().x,
+                    player.getPosition().y + player.getHitbox().height - 2f,
+                    player.getHitbox().width,
+                    2f
+                );
+                boolean isInTrigger = head.overlaps(triggerRect);
+                if (isInTrigger) wasInTrigger = true;
+                if (wasInTrigger && !isInTrigger) {
+                    targetZoom = 1.0f;
+                    targetLightRadius = maxLightRadius;
+                    collisionRectangles.add(triggerRect);
+                    triggerRect = null;
+                    for (PointLight torch : torchLights) {
+                        torch.remove();
+                    }
+                    torchLights.clear();
+                    wasInTrigger = false;
                 }
-                torchLights.clear();
-                wasInTrigger = false;
             }
-        }
 
-        if (lightTogglerRect != null) {
-            Rectangle feet = new Rectangle(player.getPosition().x, player.getPosition().y, player.getHitbox().width, 5f);
-            boolean isInLightToggler = feet.overlaps(lightTogglerRect);
-            if (isInLightToggler) wasInLightToggler = true;
-            if (!isInLightToggler && wasInLightToggler) {
-                if ((ccomingFromR1 && feet.overlaps(comingFromR2)) || (ccomingFromR2 && feet.overlaps(comingFromR1))) {
-                    lightsEnabled = !lightsEnabled;
-                    if (!lightsEnabled) {
-                        targetAmbient = 1.0f;
-                        targetLightRadius = 0f;
-                    } else {
-                        targetAmbient = 0.5f;
-                        targetLightRadius = maxLightRadius;
-                    }
+            if (lightTogglerRect != null) {
+                Rectangle feet = new Rectangle(
+                    player.getPosition().x,
+                    player.getPosition().y,
+                    player.getHitbox().width,
+                    5f
+                );
+                boolean isInLightToggler = feet.overlaps(lightTogglerRect);
+                if (isInLightToggler) wasInLightToggler = true;
+                if (!isInLightToggler && wasInLightToggler) {
+                    if ((ccomingFromR1 && feet.overlaps(comingFromR2)) ||
+                        (ccomingFromR2 && feet.overlaps(comingFromR1))) {
 
-                    if (ccomingFromR1) {
-                        ccomingFromR1 = false;
-                        ccomingFromR2 = true;
-                    } else {
-                        ccomingFromR1 = true;
-                        ccomingFromR2 = false;
+                        lightsEnabled = !lightsEnabled;
+                        if (!lightsEnabled) {
+                            targetAmbient = 1.0f;
+                            targetLightRadius = 0f;
+                        } else {
+                            targetAmbient = 0.5f;
+                            targetLightRadius = maxLightRadius;
+                        }
+
+                        if (ccomingFromR1) {
+                            ccomingFromR1 = false;
+                            ccomingFromR2 = true;
+                        } else {
+                            ccomingFromR1 = true;
+                            ccomingFromR2 = false;
+                        }
                     }
+                    wasInLightToggler = false;
                 }
-            wasInLightToggler = false;
+            }
+
+           
+            for (OrbXp orb : entityFactory.getActiveOrbs()) {
+                orb.update(delta);
+                if (player.getHitbox().overlaps(orb.getHitbox())) {
+                    player.addXp(orb.getXpValue());
+                    entityFactory.releaseOrbXp(orb);
+                }
             }
         }
 
         if (playerLight != null) {
-            playerLight.setPosition(player.getPosition().x + player.getHitbox().width / 2f, player.getPosition().y + player.getHitbox().height / 2f);
+            playerLight.setPosition(
+                player.getPosition().x + player.getHitbox().width / 2f,
+                player.getPosition().y + player.getHitbox().height / 2f
+            );
             currentLightRadius = MathUtils.lerp(currentLightRadius, targetLightRadius, 0.05f);
             playerLight.setDistance(currentLightRadius);
             currentAmbient = MathUtils.lerp(currentAmbient, targetAmbient, 0.05f);
@@ -274,17 +403,29 @@ public class Gameplay implements Screen {
             rayHandler.updateAndRender();
         }
 
-        for (OrbXp orb : entityFactory.getActiveOrbs()) {
-            orb.update(delta);
-            if(player.getHitbox().overlaps(orb.getHitbox())) {
-                player.addXp(orb.getXpValue());
-                entityFactory.releaseOrbXp(orb);
-            }
-        }
         drawScene();
         drawOverlayIfActive(delta);
+        if (isPauseMenuVisible) {
+            if (pauseOverlayTexture != null) {
+                float w = viewport.getWorldWidth();
+                float h = viewport.getWorldHeight();
+                float x = camera.position.x - w / 2f;
+                float y = camera.position.y - h / 2f;
+
+                batch.setProjectionMatrix(camera.combined);
+                batch.begin();
+                batch.setColor(1f, 1f, 1f, 1f);
+                batch.draw(pauseOverlayTexture, x, y, w, h);
+                batch.end();
+            }
+            if (pauseStage != null) {
+                pauseStage.act(delta);
+                pauseStage.draw();
+            }
+        }
         handleGlobalInput();
-    }
+}
+
 
     private void clearScreen() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
@@ -305,6 +446,19 @@ public class Gameplay implements Screen {
         batch.end();
     }
 
+    private void drawPauseText() {
+        if (!isPaused) return;
+        String text = "PAUSE";
+        pauseLayout.setText(font, text);
+        float x = camera.position.x - pauseLayout.width / 2f;
+        float y = camera.position.y + pauseLayout.height / 2f;
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        font.draw(batch, pauseLayout, x, y);
+        batch.end();
+    }
+
+
     private void drawOverlayIfActive(float delta) {
         if (levelUpOverlay != null && levelUpOverlay.getStage() != null) {
             levelUpOverlay.getStage().act(delta);
@@ -314,21 +468,69 @@ public class Gameplay implements Screen {
 
     private void handleGlobalInput() {
         if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
+            isPauseMenuVisible = !isPauseMenuVisible;
+            isPaused = isPauseMenuVisible;  
+
+            if (isPauseMenuVisible) {
+                if (pauseStage != null) {
+                    Gdx.input.setInputProcessor(pauseStage);
+                }
+            } else {
+                Gdx.input.setInputProcessor(null);
+            }
+            return;
+        }
+        if (isPauseMenuVisible) return;
+        if (isPaused) return;
+
+        if (Gdx.input.isKeyJustPressed(Keys.P)) {
             Main.changeScreen("Menu");
         }
         if (Gdx.input.isKeyJustPressed(Keys.L)) {
             showLevelUpScreen();
         }
-    }
+        if (Gdx.input.isKeyJustPressed(Keys.G)) {
+            testGameOver();
+        }
+}
+
+
 
     public void showLevelUpScreen() {
-        isPaused = true;
+        isPaused = true; // on fige le jeu
         previousInputProcessor = Gdx.input.getInputProcessor();
         if (levelUpOverlay == null) {
             levelUpOverlay = new LevelUp(this);
         }
         levelUpOverlay.show();
         Gdx.input.setInputProcessor(levelUpOverlay.getStage());
+    }
+
+
+    
+    private void drawPauseOverlay() {
+        if (!isPaused || pauseOverlayTexture == null) return;
+
+        float w = viewport.getWorldWidth();
+        float h = viewport.getWorldHeight();
+        float x = camera.position.x - w / 2f;
+        float y = camera.position.y - h / 2f;
+
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        batch.setColor(1f, 1f, 1f, 1f);
+        batch.draw(pauseOverlayTexture, x, y, w, h);
+        batch.end();
+    }
+
+    private void testGameOver() {
+        Main main = (Main) Gdx.app.getApplicationListener();
+
+        int kills = player.getKillCount();                    
+        int level = player.getLevel();           
+        float time = survivalTime;                       
+
+        main.setScreen(new GameOverScreen(main, kills, level, time));
     }
 
     public Player getPlayer() {
@@ -395,5 +597,21 @@ public class Gameplay implements Screen {
             torchLights.clear();
             torchLights = null;
         }
+
+        if (pauseOverlayTexture != null) {
+            pauseOverlayTexture.dispose();
+            pauseOverlayTexture = null;
+        }
+    }
+
+
+    public void onGameOver() {
+        int level = player.getLevel();
+        int kills = this.killCount;
+        float time = this.survivalTime;
+        Main main = (Main) Gdx.app.getApplicationListener();
+        main.setScreen(new GameOverScreen(main, kills, level, time));
+
+        dispose();
     }
 }

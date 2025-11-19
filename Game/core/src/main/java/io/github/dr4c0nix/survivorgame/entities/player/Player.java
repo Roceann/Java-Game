@@ -32,6 +32,7 @@ public abstract class Player extends LivingEntity {
     protected String description;
     // protected List<Weapon> weapon;
     protected Gameplay gameplay;
+    private int killCount = 0;
 
     // Animation
     private TextureRegion[] staticFrames;
@@ -238,6 +239,15 @@ public abstract class Player extends LivingEntity {
         }
     }
 
+
+    @Override
+    protected void onDeath() {
+        if (gameplay != null) {
+            gameplay.onGameOver();
+        }
+    }
+
+
     public int getLevel() {
         return this.level;
     }
@@ -284,6 +294,10 @@ public abstract class Player extends LivingEntity {
 
     public String getDescription() {
         return this.description;
+    }
+
+    public int getKillCount() {
+        return killCount;
     }
 
     public void setMaxHp(int maxHp) {

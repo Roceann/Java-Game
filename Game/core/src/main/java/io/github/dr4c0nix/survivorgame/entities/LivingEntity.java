@@ -79,8 +79,12 @@ public abstract class LivingEntity extends Entity {
         if (hp <= 0) {
             hp = 0;
             isAlive = false;
+            onDeath();
         }
     }
+
+
+    protected void onDeath() {} // Methode qui fait R par defaut, on va l'override plus tard sur player.
 
     /**
      * Déplace l'entité en ajoutant (dx, dy) à sa position.
