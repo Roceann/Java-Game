@@ -48,9 +48,6 @@ public abstract class Player extends LivingEntity {
     private enum Direction {up, down, left, right}
     private static final float feetHeight = 10f;
 
-    private float immunityTimer = 0f;
-    private static final float immun_time = 0.2f;
-
     /**
      * Constructeur du Player.
      *
@@ -216,8 +213,9 @@ public abstract class Player extends LivingEntity {
         handleInput(); 
         animation();  
 
-        if (immunityTimer > 0) {
+        if (immunityTimer > 0f) {
             immunityTimer -= delta;
+            if (immunityTimer < 0f) immunityTimer = 0f;
         }
     }
 
@@ -235,7 +233,9 @@ public abstract class Player extends LivingEntity {
             batch.setColor(Color.WHITE);
         }
 
-        super.draw(batch);
+        if (currentFrame != null) {
+            batch.draw(currentFrame, position.x, position.y, hitbox.width, hitbox.height);
+        }
         
         batch.setColor(Color.WHITE);
     }

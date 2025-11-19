@@ -37,8 +37,8 @@ public abstract class LivingEntity extends Entity {
     protected float slowChance;
     protected float slowPower;
     protected float slowDuration;
-    private float immunityTimer = 0f;
-    private static final float immun_time = 0.2f; 
+    protected float immunityTimer = 0f;
+    protected static final float immun_time = 0.2f; 
 
     /**
      * Crée une nouvelle entité vivante.
@@ -98,13 +98,17 @@ public abstract class LivingEntity extends Entity {
         
         if (immunityTimer > 0) {
             if (Math.sin(immunityTimer * 20) > 0) {
-                batch.setColor(0f, 0f, 0f, 1f); // blanc 
+                batch.setColor(1f, 1f, 1f, 1f); // blanc 
             } else {
                 batch.setColor(1f, 1f, 1f, 1f); // Normal 
             }
         } else {
             batch.setColor(Color.WHITE);
         }
+
+    super.draw(batch);
+
+    batch.setColor(Color.WHITE);
     }
 
     /**
