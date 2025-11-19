@@ -222,17 +222,6 @@ public abstract class Player extends LivingEntity {
     }
 
     @Override
-    public void takeDamage(float amount) {
-        if (immunityTimer > 0) {
-            return;
-        }
-
-        super.takeDamage(amount);
-
-        immunityTimer = immun_time;
-    }
-
-    @Override
     public void draw(SpriteBatch batch) {
         if (!isAlive) return;
         

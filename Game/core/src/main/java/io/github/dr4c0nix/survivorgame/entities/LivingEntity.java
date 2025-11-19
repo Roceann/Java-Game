@@ -38,7 +38,7 @@ public abstract class LivingEntity extends Entity {
     protected float slowPower;
     protected float slowDuration;
     private float immunityTimer = 0f;
-    private static final float immun_time = 0.2f;
+    private static final float immun_time = 0.2f; 
 
     /**
      * Crée une nouvelle entité vivante.
