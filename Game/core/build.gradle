@@ -6,11 +6,16 @@ dependencies {
   api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
   api "com.badlogicgames.gdx:gdx:$gdxVersion"
 
-   implementation "space.earlygrey:shapedrawer:$shapedrawerVersion"
+  implementation "space.earlygrey:shapedrawer:$shapedrawerVersion"
 
   if(enableGraalNative == 'true') {
     implementation "io.github.berstanio:gdx-svmhelper-annotations:$graalHelperVersion"
   }
   
+
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
 }
 
+test {
+  useJUnitPlatform()
+}
