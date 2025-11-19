@@ -1,7 +1,9 @@
 package io.github.dr4c0nix.survivorgame.entities;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /**
  * Classe abstraite représentant une entité vivante du jeu (joueur, ennemi).
@@ -35,6 +37,8 @@ public abstract class LivingEntity extends Entity {
     protected float slowChance;
     protected float slowPower;
     protected float slowDuration;
+    private float immunityTimer = 0f;
+    private static final float immun_time = 0.2f;
 
     /**
      * Crée une nouvelle entité vivante.
@@ -70,6 +74,10 @@ public abstract class LivingEntity extends Entity {
      * @param amount montant brut des dégâts à appliquer
      */
     public void takeDamage(float amount) {
+        if (immunityTimer > 0) {
+            return;
+        }
+
         if (!isAlive) {
             return;
         }
@@ -80,6 +88,22 @@ public abstract class LivingEntity extends Entity {
         if (hp <= 0) {
             hp = 0;
             isAlive = false;
+        }
+        immunityTimer = immun_time;
+    }
+
+    @Override
+    public void draw(SpriteBatch batch) {
+        if (!isAlive) return;
+        
+        if (immunityTimer > 0) {
+            if (Math.sin(immunityTimer * 20) > 0) {
+                batch.setColor(0f, 0f, 0f, 1f); // blanc 
+            } else {
+                batch.setColor(1f, 1f, 1f, 1f); // Normal 
+            }
+        } else {
+            batch.setColor(Color.WHITE);
         }
     }
 

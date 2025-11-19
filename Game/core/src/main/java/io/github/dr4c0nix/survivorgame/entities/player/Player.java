@@ -238,9 +238,9 @@ public abstract class Player extends LivingEntity {
         
         if (immunityTimer > 0) {
             if (Math.sin(immunityTimer * 20) > 0) {
-                batch.setColor(1f, 0f, 0f, 1f); // Rouge semi-transparent
+                batch.setColor(1f, 0f, 0f, 1f); // Rouge 
             } else {
-                batch.setColor(1f, 1f, 1f, 1f); // Normal semi-transparent
+                batch.setColor(1f, 1f, 1f, 1f); // Normal 
             }
         } else {
             batch.setColor(Color.WHITE);
