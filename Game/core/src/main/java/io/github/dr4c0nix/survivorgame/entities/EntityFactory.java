@@ -16,11 +16,19 @@ import java.util.ArrayList;
 public class EntityFactory {
     private AssetManager assetManager;
     private Pool<OrbXp> orbXpPool;
+    private Pool<Projectile> swordProjectilePool;
     private ArrayList<OrbXp> activeOrbs;
     private ArrayList<OrbXp> createdOrbs;
+    private ArrayList<Projectile> activeProjectiles;
+    private ArrayList<Projectile> createdProjectiles;
+    private String swordProjectileTexturePath;
+    private float swordProjectileWidth;
+    private float swordProjectileHeight;
 
     private static final int INITIAL_POOL_SIZE = 50;
     private static final int MAX_POOL_SIZE = 500;
+    private static final int INITIAL_PROJECTILE_POOL_SIZE = 32;
+    private static final int MAX_PROJECTILE_POOL_SIZE = 256;
 
     /**
      * Constructeur de la factory avec initialisation des pools
@@ -40,12 +48,31 @@ public class EntityFactory {
     private void initializePools() {
         this.activeOrbs = new ArrayList<>();
         this.createdOrbs = new ArrayList<>();
+        this.activeProjectiles = new ArrayList<>();
+        this.createdProjectiles = new ArrayList<>();
         this.orbXpPool = new Pool<OrbXp>(INITIAL_POOL_SIZE, MAX_POOL_SIZE) {
             @Override
             protected OrbXp newObject() {
                 OrbXp orb = new OrbXp(0);
                 createdOrbs.add(orb);
                 return orb;
+            }
+        };
+    }
+
+    private void ensureSwordProjectilePool(String texturePath, float width, float height) {
+        if (swordProjectilePool != null) {
+            return;
+        }
+        this.swordProjectileTexturePath = texturePath;
+        this.swordProjectileWidth = width;
+        this.swordProjectileHeight = height;
+        this.swordProjectilePool = new Pool<Projectile>(INITIAL_PROJECTILE_POOL_SIZE, MAX_PROJECTILE_POOL_SIZE) {
+            @Override
+            protected Projectile newObject() {
+                Projectile projectile = new Projectile(swordProjectileTexturePath, swordProjectileWidth, swordProjectileHeight);
+                createdProjectiles.add(projectile);
+                return projectile;
             }
         };
     }
@@ -83,6 +110,51 @@ public class EntityFactory {
         }
     }
 
+    public Projectile obtainSwordProjectile(Vector2 position, Vector2 direction, float speed, float range, float damage, float projectileSize, float projectileBaseWidth, float projectileBaseHeight, String texturePath, LivingEntity source) {
+        ensureSwordProjectilePool(texturePath, projectileBaseWidth, projectileBaseHeight);
+        Projectile projectile = swordProjectilePool.obtain();
+        projectile.init(new Vector2(position), new Vector2(direction), speed, range, damage, projectileSize, source);
+        activeProjectiles.add(projectile);
+        return projectile;
+    }
+
+    public void updateProjectiles(float delta) {
+        for (int i = activeProjectiles.size() - 1; i >= 0; i--) {
+            Projectile projectile = activeProjectiles.get(i);
+            projectile.update(delta);
+            if (!projectile.getIsAlive()) {
+                removeProjectileAt(i);
+            }
+        }
+    }
+
+    public void drawActiveProjectiles(SpriteBatch batch) {
+        for (Projectile projectile : activeProjectiles) {
+            projectile.draw(batch);
+        }
+    }
+
+    public void releaseProjectile(Projectile projectile) {
+        if (projectile == null) return;
+        int index = activeProjectiles.indexOf(projectile);
+        if (index >= 0) {
+            removeProjectileAt(index);
+        } else {
+            projectile.reset();
+            swordProjectilePool.free(projectile);
+        }
+    }
+
+    private void removeProjectileAt(int index) {
+        Projectile projectile = activeProjectiles.remove(index);
+        projectile.reset();
+        swordProjectilePool.free(projectile);
+    }
+
+    public ArrayList<Projectile> getActiveProjectiles() {
+        return activeProjectiles;
+    }
+
     /**
      * VIde le pool et dispose les ressources créées (textures des orbes)
      */
@@ -105,6 +177,26 @@ public class EntityFactory {
         createdOrbs.clear();
         orbXpPool.clear();
         activeOrbs.clear();
+
+        for (Projectile projectile : new ArrayList<>(activeProjectiles)) {
+            try {
+                releaseProjectile(projectile);
+            } catch (Exception e) {
+                Gdx.app.error("EntityFactory", "Error disposing active projectile: " + e.getMessage());
+            }
+        }
+        for (Projectile projectile : createdProjectiles) {
+            try {
+                projectile.dispose();
+            } catch (Exception e) {
+                Gdx.app.error("EntityFactory", "Error disposing created projectile: " + e.getMessage());
+            }
+        }
+        createdProjectiles.clear();
+        if (swordProjectilePool != null) {
+            swordProjectilePool.clear();
+            swordProjectilePool = null;
+        }
     }
 
     public Pool<OrbXp> getOrbXpPool() {

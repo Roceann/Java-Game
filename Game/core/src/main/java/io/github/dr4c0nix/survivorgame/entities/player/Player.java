@@ -46,6 +46,7 @@ public abstract class Player extends LivingEntity {
     private static final float walkFrameDuration = 0.3f;
     private Direction currentDirection = Direction.down;
     private boolean isMoving = false;
+    private boolean attacksEnabled = false;
     private enum Direction {up, down, left, right}
     private static final float feetHeight = 10f;
 
@@ -162,6 +163,10 @@ public abstract class Player extends LivingEntity {
             currentDirection = Direction.right;
             isMoving = true;
         }
+
+        if (!isMoving) {
+            currentDirection = Direction.down;
+        }
     }
 
     /**
@@ -219,7 +224,7 @@ public abstract class Player extends LivingEntity {
         handleInput();
         animation();
         
-        if (currentWeapon != null) {
+        if (currentWeapon != null && attacksEnabled) {
             currentWeapon.update(delta, this);
         }
     }
@@ -255,6 +260,16 @@ public abstract class Player extends LivingEntity {
     
     public boolean hasWeapon() {
         return currentWeapon != null;
+    }
+
+    public Vector2 getFacingDirection() {
+        switch (currentDirection) {
+            case up: return new Vector2(0f, 1f);
+            case down: return new Vector2(0f, -1f);
+            case left: return new Vector2(-1f, 0f);
+            case right: return new Vector2(1f, 0f);
+            default: return new Vector2(0f, -1f);
+        }
     }
 
     public int getLevel() {
@@ -347,5 +362,13 @@ public abstract class Player extends LivingEntity {
 
     public void setDurationEffect(float durationEffect) {
         this.durationEffect = durationEffect;
+    }
+
+    public void setAttacksEnabled(boolean enabled) {
+        this.attacksEnabled = enabled;
+    }
+
+    public boolean areAttacksEnabled() {
+        return attacksEnabled;
     }
 }

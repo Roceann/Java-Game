@@ -31,6 +31,7 @@ import io.github.dr4c0nix.survivorgame.entities.EntityFactory;
 import io.github.dr4c0nix.survivorgame.entities.OrbXp;
 
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
+import io.github.dr4c0nix.survivorgame.weapon.Sword;
 
 public class Gameplay implements Screen {
     Main main;
@@ -75,6 +76,7 @@ public class Gameplay implements Screen {
         initGraphics();
         initPlayer();
         this.entityFactory = new EntityFactory();
+        player.setWeapon(new Sword(entityFactory));
     }
 
     public boolean getIsPaused() {
@@ -219,6 +221,7 @@ public class Gameplay implements Screen {
         mapRenderer.setView(camera);
         mapRenderer.render();
         player.update(delta);
+        entityFactory.updateProjectiles(delta);
 
         if (triggerRect != null) {
             Rectangle head = new Rectangle(player.getPosition().x, player.getPosition().y + player.getHitbox().height - 2f, player.getHitbox().width, 2f);
@@ -234,6 +237,7 @@ public class Gameplay implements Screen {
                 }
                 torchLights.clear();
                 wasInTrigger = false;
+                player.setAttacksEnabled(true);
             }
         }
 
@@ -301,6 +305,7 @@ public class Gameplay implements Screen {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         player.draw(batch);
+        entityFactory.drawActiveProjectiles(batch);
         entityFactory.drawActiveOrbs(batch);
         batch.end();
     }
