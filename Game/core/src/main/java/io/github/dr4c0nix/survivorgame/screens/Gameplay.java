@@ -413,7 +413,7 @@ public class Gameplay implements Screen {
 
     private void updateCamera() {
         camera.zoom = MathUtils.lerp(camera.zoom, targetZoom, 0.05f);
-        camera.position.set(player.getPosition().x, player.getPosition().y, 0);
+        camera.position.set(player.getPosition().x + player.getHitbox().width * 0.5f, player.getPosition().y + player.getHitbox().height * 0.5f, 0);
         camera.update();
     }
 
