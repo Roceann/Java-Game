@@ -35,6 +35,7 @@ import io.github.dr4c0nix.survivorgame.entities.OrbXp;
 import io.github.dr4c0nix.survivorgame.entities.SpawnManager;
 import io.github.dr4c0nix.survivorgame.entities.enemy.ClassicEnemy;
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
+import io.github.dr4c0nix.survivorgame.weapon.Sword;
 
 public class Gameplay implements Screen {
     Main main;
@@ -86,10 +87,10 @@ public class Gameplay implements Screen {
         initGraphics();
         initPlayer();
         
-        this.entityFactory = new EntityFactory(this);
-        
+        this.entityFactory = new EntityFactory(this); 
         this.spawnManager = new SpawnManager(this, entityFactory, map);
         this.spawnManager.unlockSpawning();
+        player.setWeapon(new Sword(entityFactory));
     }
 
     public boolean getIsPaused() {
@@ -277,6 +278,7 @@ public class Gameplay implements Screen {
         mapRenderer.render();
         
         player.update(delta);
+        entityFactory.updateProjectiles(delta);
 
         ArrayList<ClassicEnemy> enemiesToRemove = new ArrayList<>();
 
@@ -360,6 +362,7 @@ public class Gameplay implements Screen {
                 }
                 torchLights.clear();
                 wasInTrigger = false;
+                player.setAttacksEnabled(true);
             }
         }
     }
@@ -417,7 +420,8 @@ public class Gameplay implements Screen {
     private void drawScene() {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        
+        player.draw(batch);
+        entityFactory.drawActiveProjectiles(batch);
         entityFactory.drawActiveOrbs(batch);
         
         for (ClassicEnemy enemy : entityFactory.getActiveEnemies()) {

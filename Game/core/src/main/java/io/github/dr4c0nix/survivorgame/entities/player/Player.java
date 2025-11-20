@@ -1,5 +1,7 @@
 package io.github.dr4c0nix.survivorgame.entities.player;
 
+import java.util.ArrayList;
+import java.util.List;
 import io.github.dr4c0nix.survivorgame.entities.LivingEntity;
 import io.github.dr4c0nix.survivorgame.GameOptions;
 import com.badlogic.gdx.Gdx;
@@ -10,6 +12,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.graphics.Color; // Nécessaire pour l'effet visuel
 import com.badlogic.gdx.graphics.g2d.SpriteBatch; // Nécessaire pour draw
 import io.github.dr4c0nix.survivorgame.screens.Gameplay;
+import io.github.dr4c0nix.survivorgame.weapon.Weapon;
 
 /**
  * Classe abstraite représentant un joueur dans le jeu.
@@ -31,10 +34,9 @@ public abstract class Player extends LivingEntity {
     protected float critDamage;
     protected float durationEffect;
     protected String description;
-    // protected List<Weapon> weapon;
+    protected Weapon currentWeapon;
     protected Gameplay gameplay;
 
-    // Animation
     private TextureRegion[] staticFrames;
     private TextureRegion[] downFrames;
     private TextureRegion[] upFrames;
@@ -45,6 +47,7 @@ public abstract class Player extends LivingEntity {
     private static final float walkFrameDuration = 0.3f;
     private Direction currentDirection = Direction.down;
     private boolean isMoving = false;
+    private boolean attacksEnabled = false;
     private enum Direction {up, down, left, right}
     private static final float feetHeight = 10f;
 
@@ -78,6 +81,7 @@ public abstract class Player extends LivingEntity {
         this.difficulter = 1.0f;
         this.critDamage = 1.5f;
         this.durationEffect = 1.0f;
+        this.currentWeapon = null;
         
         Texture static1 = new Texture(Gdx.files.internal("Entity/Player/static1.png"));
         Texture static2 = new Texture(Gdx.files.internal("Entity/Player/static2.png"));
@@ -161,6 +165,10 @@ public abstract class Player extends LivingEntity {
             currentDirection = Direction.right;
             isMoving = true;
         }
+
+        if (!isMoving) {
+            currentDirection = Direction.down;
+        }
     }
 
     /**
@@ -213,6 +221,10 @@ public abstract class Player extends LivingEntity {
         handleInput(); 
         animation();  
 
+        if (currentWeapon != null && attacksEnabled) {
+            currentWeapon.update(delta, this);
+        }
+        
         if (immunityTimer > 0f) {
             immunityTimer -= delta;
             if (immunityTimer < 0f) immunityTimer = 0f;
@@ -258,6 +270,28 @@ public abstract class Player extends LivingEntity {
             levelUp();
             this.xpactual -= this.experienceToNextLevel;
             this.experienceToNextLevel = (int) (this.experienceToNextLevel * 1.25);
+        }
+    }
+
+    public void setWeapon(Weapon weapon) {
+        this.currentWeapon = weapon;
+    }
+    
+    public Weapon getCurrentWeapon() {
+        return currentWeapon;
+    }
+    
+    public boolean hasWeapon() {
+        return currentWeapon != null;
+    }
+
+    public Vector2 getFacingDirection() {
+        switch (currentDirection) {
+            case up: return new Vector2(0f, 1f);
+            case down: return new Vector2(0f, -1f);
+            case left: return new Vector2(-1f, 0f);
+            case right: return new Vector2(1f, 0f);
+            default: return new Vector2(0f, -1f);
         }
     }
 
@@ -355,5 +389,13 @@ public abstract class Player extends LivingEntity {
 
     public void setCUrrentHp(int amount){
         this.hp = amount;
+    }
+
+    public void setAttacksEnabled(boolean enabled) {
+        this.attacksEnabled = enabled;
+    }
+
+    public boolean areAttacksEnabled() {
+        return attacksEnabled;
     }
 }
