@@ -19,6 +19,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +46,10 @@ public class Menu implements Screen {
     private Texture buttonTextureDown;
     private List<TextButton> currentButtons = new ArrayList<>();
     private boolean isFullscreen = false;
+    private Music menuMusic;
+    private Slider.SliderStyle sliderStyle;
+    private Texture sliderBackgroundTexture;
+    private Texture sliderKnobTexture;
 
     private TextButton waitingForKeyButton = null;
     private String waitingForKeyType = null;
@@ -56,6 +63,9 @@ public class Menu implements Screen {
     public Menu() {
         camera = new OrthographicCamera();
         viewport = new FitViewport(800, 600, camera);
+        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("Song/Penumbra-chosic.wav"));
+        menuMusic.setLooping(true);
+        updateMenuMusicVolume();
     }
 
     /**
@@ -191,6 +201,7 @@ public class Menu implements Screen {
 
         final TextButton fullscreenBtn = createButtons("Fullscreen: ", table);
         final TextButton keybindBtn = createButtons("Configure Keys", table);
+        final TextButton audioBtn = createButtons("Audio Settings", table);
         final TextButton backBtn = createButtons("Back", table);
 
         GameOptions options = GameOptions.getInstance();
@@ -217,6 +228,13 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 showKeybindMenu(table);
+            }
+        });
+
+        audioBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                showAudioMenu(table);
             }
         });
 
@@ -463,6 +481,11 @@ public class Menu implements Screen {
         table.center();
         stage.addActor(table);
         buildMenu(table);
+
+        if (menuMusic != null && !menuMusic.isPlaying()) {
+            updateMenuMusicVolume();
+            menuMusic.play();
+        }
     }
 
     /**
@@ -597,6 +620,116 @@ public class Menu implements Screen {
             } catch (Exception e) {
                 System.err.println("Error disposing buttonTextureDown: " + e.getMessage());
             }
+        }
+        if (menuMusic != null) {
+            try {
+                menuMusic.stop();
+                menuMusic.dispose();
+                menuMusic = null;
+            } catch (Exception e) {
+                System.err.println("Error disposing menuMusic: " + e.getMessage());
+            }
+        }
+        if (sliderBackgroundTexture != null) {
+            sliderBackgroundTexture.dispose();
+            sliderBackgroundTexture = null;
+        }
+        if (sliderKnobTexture != null) {
+            sliderKnobTexture.dispose();
+            sliderKnobTexture = null;
+        }
+    }
+
+    /**
+     * Sous-menu audio : slider volume, reset, back.
+     */
+    private void showAudioMenu(final Table table) {
+        clearMenu();
+        table.clear();
+        table.setFillParent(true);
+        table.center();
+        ensureStyle();
+        ensureSliderStyle();
+
+        final GameOptions options = GameOptions.getInstance();
+
+        Label titleLabel = new Label("Audio Settings", new Label.LabelStyle(font, Color.WHITE));
+        titleLabel.setFontScale(1.8f);
+        table.add(titleLabel).colspan(2).pad(20);
+        table.row();
+
+        Label sliderLabel = new Label("Music Volume", new Label.LabelStyle(font, Color.WHITE));
+        sliderLabel.setFontScale(1.4f);
+        final Slider volumeSlider = new Slider(0f, 100f, 1f, false, sliderStyle);
+        volumeSlider.setValue(options.getMusicVolume());
+        final Label volumeValue = new Label(options.getMusicVolume() + "%", new Label.LabelStyle(font, Color.WHITE));
+        volumeValue.setFontScale(1.2f);
+
+        table.add(sliderLabel).pad(10);
+        table.add(volumeSlider).width(350).padLeft(10).padRight(60).padTop(10).padBottom(10);
+        table.row();
+        table.add(volumeValue).colspan(2).padBottom(20);
+        table.row();
+
+        volumeSlider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
+                int value = (int) volumeSlider.getValue();
+                options.setMusicVolume(value);
+                volumeValue.setText(value + "%");
+                updateMenuMusicVolume();
+            }
+        });
+
+        final TextButton resetBtn = createButtonInline("Reset Volume", table);
+        final TextButton backBtn = createButtonInline("Back", table);
+
+        resetBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                options.setMusicVolume(100);
+                volumeSlider.setValue(100f);
+                volumeValue.setText("100%");
+                updateMenuMusicVolume();
+            }
+        });
+
+        backBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                showOptions(table);
+            }
+        });
+    }
+
+    private void ensureSliderStyle() {
+        if (sliderStyle != null) return;
+
+        Pixmap trackPix = new Pixmap(200, 8, Pixmap.Format.RGBA8888);
+        trackPix.setColor(0.15f, 0.35f, 0.65f, 1f);
+        trackPix.fill();
+        trackPix.setColor(0.05f, 0.12f, 0.25f, 1f);
+        trackPix.drawRectangle(0, 0, 200, 8);
+        sliderBackgroundTexture = new Texture(trackPix);
+        trackPix.dispose();
+
+        Pixmap knobPix = new Pixmap(16, 24, Pixmap.Format.RGBA8888);
+        knobPix.setColor(0.10f, 0.25f, 0.50f, 1f);
+        knobPix.fillRectangle(0, 0, 16, 24);
+        knobPix.setColor(0.03f, 0.08f, 0.18f, 1f);
+        knobPix.drawRectangle(0, 0, 16, 24);
+        sliderKnobTexture = new Texture(knobPix);
+        knobPix.dispose();
+
+        sliderStyle = new Slider.SliderStyle();
+        sliderStyle.background = new TextureRegionDrawable(new TextureRegion(sliderBackgroundTexture));
+        sliderStyle.knob = new TextureRegionDrawable(new TextureRegion(sliderKnobTexture));
+    }
+
+    private void updateMenuMusicVolume() {
+        GameOptions options = GameOptions.getInstance();
+        if (menuMusic != null) {
+            menuMusic.setVolume(options.getMusicVolume() / 100f);
         }
     }
 }

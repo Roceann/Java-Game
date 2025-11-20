@@ -22,7 +22,7 @@ public class GameOptions {
     private int keyLeft;
     private int keyRight;
     private boolean fullscreen;
-    // private float volume; ADD LATER
+    private int musicVolume;
     
     private static GameOptions instance;
     
@@ -57,6 +57,7 @@ public class GameOptions {
         keyLeft = prefs.getInteger("keyLeft", Keys.Q);
         keyRight = prefs.getInteger("keyRight", Keys.D);
         fullscreen = prefs.getBoolean("fullscreen", true);
+        musicVolume = prefs.getInteger("musicVolume", 100);
     }
     
     /**
@@ -79,6 +80,7 @@ public class GameOptions {
         prefs.putInteger("keyLeft", keyLeft);
         prefs.putInteger("keyRight", keyRight);
         prefs.putBoolean("fullscreen", fullscreen);
+        prefs.putInteger("musicVolume", musicVolume);
         prefs.flush();
     }
     
@@ -91,6 +93,7 @@ public class GameOptions {
         keyLeft = Keys.Q;
         keyRight = Keys.D;
         fullscreen = true;
+        musicVolume = 100;
         savePreferences();
     }
     
@@ -136,6 +139,15 @@ public class GameOptions {
     
     public void setFullscreen(boolean value) {
         fullscreen = value;
+        savePreferences();
+    }
+    
+    public int getMusicVolume() {
+        return musicVolume;
+    }
+    
+    public void setMusicVolume(int volume) {
+        musicVolume = Math.max(0, Math.min(100, volume));
         savePreferences();
     }
     

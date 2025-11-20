@@ -36,6 +36,8 @@ import io.github.dr4c0nix.survivorgame.entities.SpawnManager;
 import io.github.dr4c0nix.survivorgame.entities.enemy.ClassicEnemy;
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
 import io.github.dr4c0nix.survivorgame.weapon.Sword;
+import io.github.dr4c0nix.survivorgame.GameOptions;
+import com.badlogic.gdx.audio.Music;
 
 public class Gameplay implements Screen {
     Main main;
@@ -81,6 +83,9 @@ public class Gameplay implements Screen {
     private float elapsedTime = 0f;
     private static final int TILE_SIZE = 32;
 
+    private Music theme1Music;
+    private Music theme2Music;
+
     public Gameplay() {
         this.main = (Main) Gdx.app.getApplicationListener();
         initCameras();
@@ -91,6 +96,28 @@ public class Gameplay implements Screen {
         this.spawnManager = new SpawnManager(this, entityFactory, map);
         this.spawnManager.unlockSpawning();
         player.setWeapon(new Sword(entityFactory));
+
+        theme1Music = Gdx.audio.newMusic(Gdx.files.internal("Song/theme 1.wav"));
+        theme2Music = Gdx.audio.newMusic(Gdx.files.internal("Song/theme 2.wav"));
+        theme1Music.setLooping(false);
+        theme2Music.setLooping(false);
+        applyMusicVolume();
+
+        theme1Music.setOnCompletionListener(new Music.OnCompletionListener() {
+            @Override
+            public void onCompletion(Music music) {
+                applyMusicVolume();
+                theme2Music.play();
+            }
+        });
+
+        theme2Music.setOnCompletionListener(new Music.OnCompletionListener() {
+            @Override
+            public void onCompletion(Music music) {
+                applyMusicVolume();
+                theme1Music.play();
+            }
+        });
     }
 
     public boolean getIsPaused() {
@@ -249,6 +276,11 @@ public class Gameplay implements Screen {
     @Override
     public void show() {
         this.viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+
+        if (!theme1Music.isPlaying() && theme1Music != null) {
+            applyMusicVolume();
+            theme1Music.play();
+        }
     }
 
     @Override
@@ -543,5 +575,19 @@ public class Gameplay implements Screen {
             torchLights.clear();
             torchLights = null;
         }
+        if (theme1Music != null) {
+            theme1Music.stop();
+            theme1Music.dispose();
+        }
+        if (theme2Music != null) {
+            theme2Music.stop();
+            theme2Music.dispose();
+        }
+    }
+
+    private void applyMusicVolume() {
+        float volume = GameOptions.getInstance().getMusicVolume() / 100f;
+        theme1Music.setVolume(volume);
+        theme2Music.setVolume(volume);
     }
 }
