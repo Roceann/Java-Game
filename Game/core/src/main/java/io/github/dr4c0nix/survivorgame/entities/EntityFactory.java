@@ -7,7 +7,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
 import io.github.dr4c0nix.survivorgame.entities.enemy.ClassicEnemy;
-import io.github.dr4c0nix.survivorgame.entities.enemy.Orc; 
+import io.github.dr4c0nix.survivorgame.entities.enemy.Demon;
+import io.github.dr4c0nix.survivorgame.entities.enemy.Orc;
+import io.github.dr4c0nix.survivorgame.entities.enemy.Skull;
 import io.github.dr4c0nix.survivorgame.screens.Gameplay;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,6 +78,29 @@ public class EntityFactory {
             }
         };
         enemyPools.put("Orc", orcPoolLocal);
+
+        Pool<ClassicEnemy> demonPoolLocal = new Pool<ClassicEnemy>(INITIAL_POOL_SIZE, MAX_POOL_SIZE) {
+            @Override
+            protected ClassicEnemy newObject() {
+                ClassicEnemy e = new Demon(); 
+                createdEnemies.add(e);
+                registerEnemyPrototype("Demon", e);
+                return e;
+            }
+        };
+        enemyPools.put("Demon", demonPoolLocal);
+        
+
+        // Pool<ClassicEnemy> skullPoolLocal = new Pool<ClassicEnemy>(INITIAL_POOL_SIZE, MAX_POOL_SIZE) {
+        // @Override
+        // protected ClassicEnemy newObject() {
+        //     ClassicEnemy e = new Skull(); 
+        //     createdEnemies.add(e);
+        //     registerEnemyPrototype("Skull", e);
+        //     return e;
+        // }
+        //     };
+        // enemyPools.put("Skull", skullPoolLocal);
 
         // Pré-crée un prototype pour chaque pool afin d'avoir la taille d'ennemi dispo
     }

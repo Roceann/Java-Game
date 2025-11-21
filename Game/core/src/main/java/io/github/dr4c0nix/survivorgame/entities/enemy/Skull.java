@@ -5,14 +5,18 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 
 /**
- * Orc: ennemi lent, tanky, peu de dégâts.
+ * Skull : ennemi lambda
+ * - HP faibles
+ * - Armure nulle
+ * - Dégâts faibles
+ * - Vitesse moyenne
  */
-public class Orc extends ClassicEnemy {
+public class Skull extends ClassicEnemy {
 
-    private static final String TEX_FRONT = "Entity/Enemy/Orc/orcface.png";
-    private static final String TEX_BACK  = "Entity/Enemy/Orc/orcdos.png";
-    private static final String TEX_LEFT  = "Entity/Enemy/Orc/orcleft.png";
-    private static final String TEX_RIGHT = "Entity/Enemy/Orc/orcright.png";
+    private static final String TEX_FRONT = "Entity/Enemy/Skull/skullface.png";
+    private static final String TEX_BACK  = "Entity/Enemy/Skull/skulldos.png";
+    private static final String TEX_LEFT  = "Entity/Enemy/Skull/skullleft.png";
+    private static final String TEX_RIGHT = "Entity/Enemy/Skull/skullright.png";
 
     private Texture frontTexture;
     private Texture backTexture;
@@ -24,25 +28,25 @@ public class Orc extends ClassicEnemy {
 
     private final Vector2 lastPos = new Vector2();
 
-    public Orc() {
+    public Skull() {
         super(
             new Vector2(0f, 0f),
-            28, 36,
-            12,          
-            160f,        
-            0,           
-            4f,          
+            22, 28,          // small hitbox
+            10,              // xp drop
+            60f,             // HP
+            0,               // armor
+            2.0f,            // force (faible dégâts)
             TEX_FRONT,
             new Texture(Gdx.files.internal(TEX_FRONT)),
             null,
-            60f          
+            65f              // vitesse moyenne
         );
 
         this.isAlive = false;
-        this.hp = 160f;
-        this.maxHp = 160f;
+        this.hp = 60f;
+        this.maxHp = 60f;
         this.armor = 0;
-        this.force = 4f;
+        this.force = 2.0f;
 
         frontTexture = new Texture(Gdx.files.internal(TEX_FRONT));
         backTexture  = new Texture(Gdx.files.internal(TEX_BACK));
@@ -50,13 +54,13 @@ public class Orc extends ClassicEnemy {
         rightTexture = new Texture(Gdx.files.internal(TEX_RIGHT));
 
         this.walkingTexture = frontTexture;
-
         lastPos.set(position);
     }
 
     @Override
     public void update(float delta) {
         super.update(delta);
+
         Vector2 deltaPos = new Vector2(position).sub(lastPos);
 
         if (!deltaPos.isZero()) {
