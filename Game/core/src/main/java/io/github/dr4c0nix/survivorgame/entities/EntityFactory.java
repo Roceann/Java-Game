@@ -42,8 +42,9 @@ public class EntityFactory {
     private static final int MAX_POOL_SIZE = 512;
     private static final int INITIAL_PROJECTILE_POOL_SIZE = 32;
     private static final int MAX_PROJECTILE_POOL_SIZE = 256;
-    private static final String CLASSIC_TEXTURE = "personages/Jhonny/Jhonny-boss/Jhonny-boss.png";
-    private Texture classicEnemyTexture;
+    // La texture n'est plus gérée par la factory, donc on supprime l'appel à dispose ici.
+    // private static final String CLASSIC_TEXTURE = "personages/Jhonny/Jhonny-boss/Jhonny-boss.png";
+    // private Texture classicEnemyTexture;
 
     public EntityFactory(Gameplay gameplay) {
         this.gameplay = gameplay;

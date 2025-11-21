@@ -79,11 +79,10 @@ public abstract class LivingEntity extends Entity {
         if (!isAlive()) return;
         
         if (immunityTimer > 0) {
-            // Effet de clignotement simple et efficace
-            if ((int)(immunityTimer * 30) % 2 == 0) {
+            if ((int)(immunityTimer * 20) > 0 ) {
                 batch.setColor(Color.DARK_GRAY);
             } else {
-                batch.setColor(Color.WHITE);
+                batch.setColor(1, 1, 1, 1);
             }
         } else {
             batch.setColor(Color.WHITE);
@@ -91,7 +90,6 @@ public abstract class LivingEntity extends Entity {
 
         super.draw(batch);
 
-        // Réinitialiser la couleur à la fin est crucial pour ne pas affecter les autres dessins
         batch.setColor(Color.WHITE);
     }
 

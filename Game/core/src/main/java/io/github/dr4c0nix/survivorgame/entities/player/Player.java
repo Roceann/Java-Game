@@ -71,7 +71,7 @@ public abstract class Player extends LivingEntity {
         this.movementSpeed = 5f;
         this.experienceToNextLevel = 100;
         this.xpactual = 0;
-        this.regenHP = 0.01f;
+        this.regenHP = 0.01f; // 1%
         this.critChance = 50.0f;
         this.difficulter = 1.0f;
         this.critDamage = 1.5f;
