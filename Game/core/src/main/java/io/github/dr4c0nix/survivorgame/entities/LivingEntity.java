@@ -80,7 +80,7 @@ public abstract class LivingEntity extends Entity {
         
         if (immunityTimer > 0) {
             if ((int)(immunityTimer * 20) > 0 ) {
-                batch.setColor(Color.DARK_GRAY);
+                batch.setColor(Color.RED);
             } else {
                 batch.setColor(1, 1, 1, 1);
             }

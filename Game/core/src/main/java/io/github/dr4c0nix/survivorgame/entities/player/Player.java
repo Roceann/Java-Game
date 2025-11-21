@@ -268,6 +268,15 @@ public abstract class Player extends LivingEntity {
         }
     }
 
+    @Override
+    public void takeDamage(float amount) {
+        if (!isAlive) return;
+        super.takeDamage(amount);
+        if (!isAlive && gameplay != null) {
+            gameplay.onGameOver();
+        }
+    }
+
     public void setWeapon(Weapon weapon) {
         this.currentWeapon = weapon;
     }

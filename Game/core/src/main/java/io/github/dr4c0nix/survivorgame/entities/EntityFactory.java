@@ -7,7 +7,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
 import io.github.dr4c0nix.survivorgame.entities.enemy.ClassicEnemy;
-import io.github.dr4c0nix.survivorgame.entities.enemy.Orc; 
+import io.github.dr4c0nix.survivorgame.entities.enemy.Demon;
+import io.github.dr4c0nix.survivorgame.entities.enemy.Orc;
+import io.github.dr4c0nix.survivorgame.entities.enemy.Skull;
 import io.github.dr4c0nix.survivorgame.screens.Gameplay;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,14 +71,35 @@ public class EntityFactory {
                 // On passe l'instance de gameplay de la factory au constructeur de l'Orc.
                 ClassicEnemy enemy = new Orc();
                 createdEnemies.add(enemy);
+                registerEnemyPrototype("Orc", enemy);
                 return enemy;
             }
         };
         enemyPools.put("Orc", orcPoolLocal);
 
-        // --- Enregistrement de l'enemy ---
-        ClassicEnemy orcPrototype = new Orc();
-        registerEnemyPrototype("Orc", orcPrototype);
+        Pool<ClassicEnemy> demonPoolLocal = new Pool<ClassicEnemy>(INITIAL_POOL_SIZE, MAX_POOL_SIZE) {
+            @Override
+            protected ClassicEnemy newObject() {
+                ClassicEnemy enemy = new Demon(); 
+                createdEnemies.add(enemy);
+                registerEnemyPrototype("Demon", enemy);
+                return enemy;
+            }
+        };
+        enemyPools.put("Demon", demonPoolLocal);
+
+        Pool<ClassicEnemy> skullPoolLocal = new Pool<ClassicEnemy>(INITIAL_POOL_SIZE, MAX_POOL_SIZE) {
+            @Override
+            protected ClassicEnemy newObject() {
+                ClassicEnemy enemy = new Skull(); 
+                createdEnemies.add(enemy);
+                registerEnemyPrototype("Skull", enemy);
+                return enemy;
+            }
+        };
+        enemyPools.put("Skull", skullPoolLocal);
+
+        // Pré-crée un prototype pour chaque pool afin d'avoir la taille d'ennemi dispo
     }
 
 

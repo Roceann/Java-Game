@@ -5,32 +5,31 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 
 /**
- * Orc: exemple concret de ClassicEnemy avec constructeur sans-arg.
- * - lent (movementspeed faible)
- * - beaucoup de vie (hp élevé)
- * - armure modérée
- * - peu de dégâts (force faible)
+ * Orc: ennemi lent, tanky, peu de dégâts.
  */
 public class Orc extends ClassicEnemy {
 
-    private static final String texture_pincipale = "personages/Jhonny/Jhonny-boss/Jhonny-boss.png";
+    private static final String TEX_FRONT = "Entity/Enemy/Orc/orcface.png";
+    private static final String TEX_BACK  = "Entity/Enemy/Orc/orcdos.png";
+    private static final String TEX_LEFT  = "Entity/Enemy/Orc/orcleft.png";
+    private static final String TEX_RIGHT = "Entity/Enemy/Orc/orcright.png";
 
-    /**
-     * Constructeur sans argument pour la pool.
-     * L'EntityFactory appellera setGameplay(...) et activate(...) après obtention.
-     */
+    private final Vector2 lastPos = new Vector2();
+
     public Orc() {
         super(new Vector2(0f, 0f),
                 28, 36,
                 12, 160f, 0, 4f,
-                texture_pincipale,
+                TEX_FRONT,
                 null,
                 60f);
 
-        this.isAlive = false;;
+        this.isAlive = false;
         this.hp = 160f;
         this.maxHp = 160f;
         this.armor = 0;
         this.force = 4f;
+
+        lastPos.set(position);
     }
 }
