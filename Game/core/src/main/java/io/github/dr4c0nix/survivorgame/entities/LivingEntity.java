@@ -90,9 +90,9 @@ public abstract class LivingEntity extends Entity {
         
         if (immunityTimer > 0) {
             if (Math.sin(immunityTimer * 20) > 0) {
-                batch.setColor(1f, 1f, 1f, 1f); // blanc 
+                batch.setColor(Color.DARK_GRAY);
             } else {
-                batch.setColor(1f, 1f, 1f, 1f); // Normal 
+                batch.setColor(1f, 1f, 1f, 1f);
             }
         } else {
             batch.setColor(Color.WHITE);

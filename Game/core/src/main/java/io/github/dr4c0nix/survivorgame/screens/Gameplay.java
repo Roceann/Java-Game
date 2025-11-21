@@ -256,7 +256,7 @@ public class Gameplay implements Screen {
 
     private void initPlayer() {
         Texture playerTexture = new Texture(Gdx.files.internal("Entity/Player/static1.png"));
-        this.player = new Player(spawnPoint, 100f, 10, 1.0f, "Entity/Player/static1.png", playerTexture, "Jhonny Player", 5f) {
+        this.player = new Player(spawnPoint, 100f, 10, 1.0f, "Entity/Player/static1.png", playerTexture, "Le Romz", 5f) {
             @Override
             public void animation() {
                 super.animation();
@@ -308,13 +308,25 @@ public class Gameplay implements Screen {
         updateCamera();
         viewport.apply();
         mapRenderer.setView(camera);
-        mapRenderer.render();
+        
+        int[] backgroundLayers = {
+            map.getLayers().getIndex("base"),
+            map.getLayers().getIndex("props5"),
+            map.getLayers().getIndex("props2"),
+            map.getLayers().getIndex("props6")
+        };
+        mapRenderer.render(backgroundLayers);
         
         player.update(delta);
         entityFactory.updateProjectiles(delta);
 
         ArrayList<Projectile> projectilesToRemove = new ArrayList<>();
         for (Projectile proj : entityFactory.getActiveProjectiles()) {
+            if (isColliding(proj.getHitbox())) {
+                projectilesToRemove.add(proj);
+                continue;
+            }
+            
             for (ClassicEnemy enemy : entityFactory.getActiveEnemies()) {
                 if (proj.getHitbox().overlaps(enemy.getHitbox())) {
                     enemy.takeDamage(proj.getDamage());
@@ -323,6 +335,7 @@ public class Gameplay implements Screen {
                 }
             }
         }
+        
         for (Projectile p : projectilesToRemove) {
             entityFactory.releaseProjectile(p);
         }
@@ -332,12 +345,10 @@ public class Gameplay implements Screen {
         for (ClassicEnemy enemy : entityFactory.getActiveEnemies()) {
             enemy.update(delta, player);
 
-            // 1. Gestion des collisions avec le joueur (Dégâts)
             if (player.getHitbox().overlaps(enemy.getHitbox())) {
                 player.takeDamage(enemy.getForce());
             }
 
-            // 2. Gestion de la mort de l'ennemi (Drop XP)
             if (!enemy.isAlive()) {
                 entityFactory.obtainOrbXp(enemy.getPosition(), enemy.getXpValue());
                 player.incrementMobKilled();
@@ -365,6 +376,19 @@ public class Gameplay implements Screen {
         }
 
         drawScene();
+        
+        int[] foregroundLayers = {
+            map.getLayers().getIndex("props"),
+            map.getLayers().getIndex("props3"),
+            map.getLayers().getIndex("props4"),
+            map.getLayers().getIndex("torch")
+        };
+        mapRenderer.render(foregroundLayers);
+        
+        if (rayHandler != null) {
+            rayHandler.setCombinedMatrix(camera);
+            rayHandler.updateAndRender();
+        }
         
         hud.render(delta);
 
@@ -449,8 +473,6 @@ public class Gameplay implements Screen {
             playerLight.setDistance(currentLightRadius);
             currentAmbient = MathUtils.lerp(currentAmbient, targetAmbient, 0.05f);
             rayHandler.setAmbientLight(currentAmbient);
-            rayHandler.setCombinedMatrix(camera);
-            rayHandler.updateAndRender();
         }
     }
 
