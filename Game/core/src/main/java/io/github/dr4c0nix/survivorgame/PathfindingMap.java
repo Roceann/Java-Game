@@ -56,16 +56,19 @@ public class PathfindingMap {
         while ((cur = bfsQueue.poll()) != null) {
             int dist = distances[cur.x][cur.y];
             for (int[] d : NEIGH) {
-                if (d[0] != 0 && d[1] != 0) {
-                    int sx = cur.x + d[0];
-                    int sy = cur.y;
-                    int tx = cur.x;
-                    int ty = cur.y + d[1];
-                    boolean side1Blocked = !isValid(sx, sy) || terrain[sx][sy] == 1;
-                    boolean side2Blocked = !isValid(tx, ty) || terrain[tx][ty] == 1;
-                    if (side1Blocked && side2Blocked) continue;
+                int nx = cur.x + d[0], ny = cur.y + d[1];
+                if (!isValid(nx, ny)) continue;
+
+                // block diagonal corner-cutting: if moving diagonally and both adjacent orthogonals are walls, skip
+                if (Math.abs(d[0]) == 1 && Math.abs(d[1]) == 1) {
+                    int ax = cur.x + d[0], ay = cur.y;      // horizontal neighbor
+                    int bx = cur.x,       by = cur.y + d[1]; // vertical neighbor
+                    boolean aIsWall = isValid(ax, ay) && terrain[ax][ay] == 1;
+                    boolean bIsWall = isValid(bx, by) && terrain[bx][by] == 1;
+                    if (aIsWall && bIsWall) continue;
                 }
-                visit(cur.x + d[0], cur.y + d[1], dist + 1);
+
+                visit(nx, ny, dist + 1);
             }
         }
     }
