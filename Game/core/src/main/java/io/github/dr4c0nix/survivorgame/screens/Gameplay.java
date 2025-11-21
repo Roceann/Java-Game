@@ -295,6 +295,11 @@ public class Gameplay implements Screen {
 
         elapsedTime += delta;
 
+        if (elapsedTime >= 300f) { 
+            onVictory();
+        return;
+        }
+
         updateDifficulty(delta);
         spawnManager.update(delta, player);
 
@@ -547,6 +552,33 @@ public class Gameplay implements Screen {
             hud.resize(width, height);
         }
     }
+
+    public void onGameOver() {
+        isPaused = true;
+        if (theme1Music != null) theme1Music.stop();
+        if (theme2Music != null) theme2Music.stop();
+        int level = player.getLevel();            
+        int kills = player.getMobKilled();        
+        float time = elapsedTime;                 
+        Main main = (Main) Gdx.app.getApplicationListener();
+        main.setScreen(new GameOverScreen(main, kills, level, time));
+    }
+
+    public static String formatTime(float timeSeconds) {
+        int minutes = (int) (timeSeconds / 60);
+        int seconds = (int) (timeSeconds % 60);
+        return String.format("%02d:%02d", minutes, seconds);
+    }   
+
+    public void onVictory() {
+        int level = player.getLevel();
+        int kills = player.getMobKilled();
+        float time = this.elapsedTime;
+
+        Main main = (Main) Gdx.app.getApplicationListener();
+        main.setScreen(new VictoryScreen(main, kills, level, time));
+    }
+
 
     @Override
     public void pause() {
