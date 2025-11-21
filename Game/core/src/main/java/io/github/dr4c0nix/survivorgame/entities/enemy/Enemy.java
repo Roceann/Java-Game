@@ -22,6 +22,10 @@ public abstract class Enemy extends LivingEntity {
         return xpDrop.getXpValue();
     }
 
+    public OrbXp getXpDrop() {
+        return xpDrop;
+    }
+
     // Surcharge utilitaire: par défaut, délègue à update(delta)
     public void update(float delta, Player player) {
     }

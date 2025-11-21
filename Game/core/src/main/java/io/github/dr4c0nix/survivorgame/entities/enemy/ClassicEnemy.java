@@ -20,7 +20,7 @@ public abstract class ClassicEnemy extends Enemy implements Poolable {
     public ClassicEnemy(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, int xpDrop, float hp, int armor, float force, String texturePath, Texture walkingTexture, Gameplay gameplay, float movementSpeed) {
         super(spawnPoint, hitboxWidth, hitboxHeight, xpDrop, hp, armor, force, texturePath, walkingTexture);
         this.gameplay = gameplay;
-        this.movementSpeed = movementSpeed;
+        setMovementSpeed(movementSpeed);
     }
 
     /**
@@ -28,10 +28,9 @@ public abstract class ClassicEnemy extends Enemy implements Poolable {
      * Reinitialises state and places it at spawn.
      */
     public void activate(Vector2 spawnPoint) {
-        this.position.set(spawnPoint);
-        this.hitbox.setPosition(spawnPoint.x, spawnPoint.y);
-        this.isAlive = true;
-        this.hp = this.maxHp;
+        this.setPosition(spawnPoint);
+        this.setAlive(true);
+        this.setCurrentHp(this.getMaxHp());
     }
 
     public void setGameplay(Gameplay gameplay) {
@@ -40,10 +39,9 @@ public abstract class ClassicEnemy extends Enemy implements Poolable {
 
     @Override
     public void reset() {
-        this.hp = this.maxHp;
-        this.isAlive = false;
-        this.position.set(0f, 0f);
-        this.hitbox.setPosition(0f, 0f);
+        this.setCurrentHp(this.getMaxHp());
+        this.setAlive(false);
+        this.setPosition(new Vector2(0f, 0f));
     }
 
     @Override
@@ -53,10 +51,10 @@ public abstract class ClassicEnemy extends Enemy implements Poolable {
     }
 
     public void update(float delta, Player player) {
-        if (!isAlive || player == null) return;
+        if (!isAlive() || player == null) return;
 
-        float centerX = position.x + hitbox.width / 2;
-        float centerY = position.y + hitbox.height / 2;
+        float centerX = getPosition().x + getHitbox().width / 2;
+        float centerY = getPosition().y + getHitbox().height / 2;
 
         // 1. Obtenir la direction idéale (via Pathfinding ou direct vers joueur)
         Vector2 desiredDir = gameplay.getDirection((int) centerX, (int) centerY);
@@ -76,7 +74,7 @@ public abstract class ClassicEnemy extends Enemy implements Poolable {
         velocity.add(separation).nor(); // On combine direction + évitement et on normalise
 
         // 3. Appliquer le mouvement avec glissement sur les murs
-        float moveDist = movementSpeed * delta;
+        float moveDist = getMovementSpeed() * delta;
         moveAndSlide(velocity.x * moveDist, velocity.y * moveDist, moveDist);
         tickImmunity(delta);
     }
@@ -88,15 +86,15 @@ public abstract class ClassicEnemy extends Enemy implements Poolable {
     private void calculateSeparationForce(Vector2 outSeparation) {
         outSeparation.set(0, 0);
         int count = 0;
-        float separationRadius = hitbox.width;
+        float separationRadius = getHitbox().width;
 
         for (ClassicEnemy other : gameplay.getActiveClassicEnemies()) {
             if (other == this || !other.isAlive()) continue;
 
-            float dst2 = position.dst2(other.position);
+            float dst2 = getPosition().dst2(other.getPosition());
             if (dst2 < separationRadius * separationRadius) {
                 // Vecteur qui fuit l'autre ennemi
-                tmpVector.set(position).sub(other.position).nor();
+                tmpVector.set(getPosition()).sub(other.getPosition()).nor();
                 // Plus on est proche, plus la force est grande
                 tmpVector.scl(1f / (float)Math.sqrt(dst2)); 
                 outSeparation.add(tmpVector);
@@ -116,22 +114,22 @@ public abstract class ClassicEnemy extends Enemy implements Poolable {
     private void moveAndSlide(float dx, float dy, float moveDist) {
         // Essai mouvement X
         if (dx != 0) {
-            position.x += dx;
-            hitbox.x = position.x;
-            if (gameplay.isColliding(hitbox)) {
-                position.x -= dx;
-                hitbox.x = position.x;
+            getPosition().x += dx;
+            getHitbox().x = getPosition().x;
+            if (gameplay.isColliding(getHitbox())) {
+                getPosition().x -= dx;
+                getHitbox().x = getPosition().x;
                 dx = 0f;
             }
         }
 
         // Essai mouvement Y
         if (dy != 0) {
-            position.y += dy;
-            hitbox.y = position.y;
-            if (gameplay.isColliding(hitbox)) {
-                position.y -= dy; // Annuler si collision
-                hitbox.y = position.y;
+            getPosition().y += dy;
+            getHitbox().y = getPosition().y;
+            if (gameplay.isColliding(getHitbox())) {
+                getPosition().y -= dy; // Annuler si collision
+                getHitbox().y = getPosition().y;
                 dy = 0f;
             }
         }
@@ -140,22 +138,22 @@ public abstract class ClassicEnemy extends Enemy implements Poolable {
             float fullY = Math.signum(dy) * moveDist;
             float extra = fullY - dy; 
             if (Math.abs(extra) > 0.0001f) {
-                position.y += extra;
-                hitbox.y = position.y;
-                if (gameplay.isColliding(hitbox)) {
-                    position.y -= extra;
-                    hitbox.y = position.y;
+                getPosition().y += extra;
+                getHitbox().y = getPosition().y;
+                if (gameplay.isColliding(getHitbox())) {
+                    getPosition().y -= extra;
+                    getHitbox().y = getPosition().y;
                 }
             }
         } else if (dy == 0f && dx != 0f) {
             float fullX = Math.signum(dx) * moveDist;
             float extra = fullX - dx;
             if (Math.abs(extra) > 0.0001f) {
-                position.x += extra;
-                hitbox.x = position.x;
-                if (gameplay.isColliding(hitbox)) {
-                    position.x -= extra;
-                    hitbox.x = position.x;
+                getPosition().x += extra;
+                getHitbox().x = getPosition().x;
+                if (gameplay.isColliding(getHitbox())) {
+                    getPosition().x -= extra;
+                    getHitbox().x = getPosition().x;
                 }
             }
         }

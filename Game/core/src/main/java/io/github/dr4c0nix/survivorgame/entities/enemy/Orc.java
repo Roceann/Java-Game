@@ -24,15 +24,17 @@ public class Orc extends ClassicEnemy {
                 28, 36,
                 12, 160f, 0, 4f,
                 texture_pincipale,
-                new Texture(Gdx.files.internal(texture_pincipale)),
+                (Gdx.files != null) ? new Texture(Gdx.files.internal(texture_pincipale)) : null,
                 null,
                 60f);
 
-        this.isAlive = false;;
-        this.hp = 160f;
-        this.maxHp = 160f;
-        this.armor = 0;
-        this.force = 4f;
-        this.walkingTexture = new Texture(Gdx.files.internal(texture_pincipale)); 
+        setAlive(false);
+        setMaxHp(160f);
+        setCurrentHp(160f);
+        setArmor(0);
+        setForce(4f);
+        if (Gdx.files != null) {
+            setWalkingTexture(new Texture(Gdx.files.internal(texture_pincipale)));
+        }
     }
 }

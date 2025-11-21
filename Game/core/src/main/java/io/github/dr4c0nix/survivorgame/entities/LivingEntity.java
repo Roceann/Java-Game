@@ -26,8 +26,6 @@ public abstract class LivingEntity extends Entity {
     protected float maxHp;
     protected int armor;
     protected float force = 1.0f;
-    protected boolean isAlive = true;
-
     // protected float tickDmgChance;
     // protected float tickDmgDamage;
     // protected float tickDmgDuration;
@@ -73,34 +71,37 @@ public abstract class LivingEntity extends Entity {
      * @param amount montant brut des dégâts à appliquer
      */
     public void takeDamage(float amount) {
-        if (immunityTimer > 0 || !isAlive) return;
+        if (immunityTimer > 0 || !isAlive()) return;
         float effectiveDamage = amount * (100f / (100f + armor));
         float damage = Math.max(1f, effectiveDamage);
         hp -= damage;
         if (hp <= 0f) {
             hp = 0f;
-            isAlive = false;
+            setAlive(false);
         }
         immunityTimer = immun_time;
     }
 
     @Override
     public void draw(SpriteBatch batch) {
-        if (!isAlive) return;
+        // La vérification est déjà faite dans super.draw(), mais la garder ici est une bonne pratique
+        if (!isAlive()) return;
         
         if (immunityTimer > 0) {
-            if (Math.sin(immunityTimer * 20) > 0) {
-                batch.setColor(1f, 1f, 1f, 1f); // blanc 
+
+            if ((int)(immunityTimer * 30) % 2 == 0) {
+                batch.setColor(Color.DARK_GRAY); // Effet de clignotement
             } else {
-                batch.setColor(1f, 1f, 1f, 1f); // Normal 
+                batch.setColor(Color.WHITE); // Normal
             }
         } else {
             batch.setColor(Color.WHITE);
         }
 
-    super.draw(batch);
+        super.draw(batch);
 
-    batch.setColor(Color.WHITE);
+        // Réinitialiser la couleur à la fin est crucial pour ne pas affecter les autres dessins
+        batch.setColor(Color.WHITE);
     }
 
     /**
@@ -116,7 +117,7 @@ public abstract class LivingEntity extends Entity {
      * @param dy déplacement en Y (peut être négatif)
      */
     protected void moveBy(float dx, float dy) {
-        if (!isAlive) return;
+        if (!isAlive()) return;
         position.add(dx * movementSpeed, dy * movementSpeed);
         hitbox.setPosition(position.x, position.y);
     }
@@ -137,11 +138,6 @@ public abstract class LivingEntity extends Entity {
         return armor;
     }
 
-    /** Indique si l'entité est en vie. */
-    public boolean isAlive() {
-        return isAlive;
-    }
-
     /** Retourne la force de l'entité. */
     public float getForce() {
         return force;
@@ -151,8 +147,28 @@ public abstract class LivingEntity extends Entity {
         this.maxHp = maxHp;
     }
 
-    public void setCUrrentHp(float amount){
+    public void setCurrentHp(float amount){
         this.hp = amount;
+    }
+
+    public void setArmor(int armor) {
+        this.armor = armor;
+    }
+
+    public void setForce(float force) {
+        this.force = force;
+    }
+
+    public Texture getWalkingTexture() {
+        return walkingTexture;
+    }
+
+    public void setWalkingTexture(Texture walkingTexture) {
+        this.walkingTexture = walkingTexture;
+    }
+
+    public float getImmunityTimer() {
+        return immunityTimer;
     }
 
     protected void tickImmunity(float delta) {
