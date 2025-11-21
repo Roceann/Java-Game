@@ -44,6 +44,10 @@ public abstract class Player extends LivingEntity {
     private Direction currentDirection = Direction.down;
     private boolean isMoving = false;
     private boolean attacksEnabled = false;
+    // Regen HP every X seconds
+    private float regenTimer = 0f;
+    private static final float REGEN_INTERVAL = 10f; // seconds
+    private static final float REGEN_AMOUNT = 5f; // hp per interval
     private enum Direction {up, down, left, right}
     private static final float feetHeight = 10f;
 
@@ -67,7 +71,7 @@ public abstract class Player extends LivingEntity {
         this.movementSpeed = mouvmentSpeed;
         this.experienceToNextLevel = 100;
         this.xpactual = 0;
-        this.regenHP = 0.0f;
+        this.regenHP = 0.01f;
         this.critChance = 50.0f;
         this.difficulter = 1.0f;
         this.critDamage = 1.5f;
@@ -216,6 +220,9 @@ public abstract class Player extends LivingEntity {
             currentWeapon.update(delta, this);
         }
         
+        // HP regen tick
+        tickRegen(delta);
+        
         tickImmunity(delta);
     }
 
@@ -353,5 +360,18 @@ public abstract class Player extends LivingEntity {
 
     public int getMobKilled() {
         return this.mobKilled;
+    }
+    
+    /**
+     * Tick la régénération périodique : toutes les REGEN_INTERVAL secondes,
+     * restaure REGEN_AMOUNT HP (clampé à maxHp).
+     */
+    private void tickRegen(float delta) {
+        if (!isAlive) return;
+        regenTimer += delta;
+        if (regenTimer >= REGEN_INTERVAL) {
+            regenTimer -= REGEN_INTERVAL;
+            this.hp = Math.min(this.maxHp, this.hp + REGEN_AMOUNT);
+        }
     }
 }

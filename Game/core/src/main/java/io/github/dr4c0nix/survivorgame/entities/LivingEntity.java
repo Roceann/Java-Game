@@ -144,10 +144,12 @@ public abstract class LivingEntity extends Entity {
 
     public void setMaxHp(float maxHp) {
         this.maxHp = maxHp;
+        this.hp = Math.min(this.hp, this.maxHp);
     }
 
     public void setCUrrentHp(float amount){
         this.hp = amount;
+        this.hp = Math.min(this.hp, this.maxHp);
     }
 
     protected void tickImmunity(float delta) {
