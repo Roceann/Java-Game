@@ -17,17 +17,7 @@ public abstract class ClassicEnemy extends Enemy implements Poolable {
     private final Vector2 velocity = new Vector2();
     private final Vector2 separation = new Vector2();
 
-    public ClassicEnemy(Vector2 spawnPoint,
-                        float hitboxWidth,
-                        float hitboxHeight,
-                        int xpDrop,
-                        int hp,
-                        int armor,
-                        float force,
-                        String texturePath,
-                        Texture walkingTexture,
-                        Gameplay gameplay,
-                        float movementSpeed) {
+    public ClassicEnemy(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, int xpDrop, float hp, int armor, float force, String texturePath, Texture walkingTexture, Gameplay gameplay, float movementSpeed) {
         super(spawnPoint, hitboxWidth, hitboxHeight, xpDrop, hp, armor, force, texturePath, walkingTexture);
         this.gameplay = gameplay;
         this.movementSpeed = movementSpeed;
@@ -88,6 +78,7 @@ public abstract class ClassicEnemy extends Enemy implements Poolable {
         // 3. Appliquer le mouvement avec glissement sur les murs
         float moveDist = movementSpeed * delta;
         moveAndSlide(velocity.x * moveDist, velocity.y * moveDist, moveDist);
+        tickImmunity(delta);
     }
 
     /**

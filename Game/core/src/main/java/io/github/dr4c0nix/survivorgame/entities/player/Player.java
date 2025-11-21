@@ -36,6 +36,7 @@ public abstract class Player extends LivingEntity {
     protected String description;
     protected Weapon currentWeapon;
     protected Gameplay gameplay;
+    protected int mobKilled;
 
     private TextureRegion[] staticFrames;
     private TextureRegion[] downFrames;
@@ -64,8 +65,7 @@ public abstract class Player extends LivingEntity {
      * @param walkingTexture texture de marche / animation
      * @param description description textuelle du joueur
      */
-    public Player(Vector2 spawnPoint, int baseHp, int baseArmor, float baseForce, String texturePath, Texture walkingTexture,
-        String description, float mouvmentSpeed) {
+    public Player(Vector2 spawnPoint, float baseHp, int baseArmor, float baseForce, String texturePath, Texture walkingTexture, String description, float mouvmentSpeed) {
         super(spawnPoint, 32, 32 * 1.3f, baseHp, baseArmor, baseForce, texturePath, walkingTexture);
         this.description = description;
         this.level = 1;
@@ -82,6 +82,7 @@ public abstract class Player extends LivingEntity {
         this.critDamage = 1.5f;
         this.durationEffect = 1.0f;
         this.currentWeapon = null;
+        this.mobKilled = 0;
         
         Texture static1 = new Texture(Gdx.files.internal("Entity/Player/static1.png"));
         Texture static2 = new Texture(Gdx.files.internal("Entity/Player/static2.png"));
@@ -225,10 +226,7 @@ public abstract class Player extends LivingEntity {
             currentWeapon.update(delta, this);
         }
         
-        if (immunityTimer > 0f) {
-            immunityTimer -= delta;
-            if (immunityTimer < 0f) immunityTimer = 0f;
-        }
+        tickImmunity(delta);
     }
 
     @Override
@@ -343,7 +341,7 @@ public abstract class Player extends LivingEntity {
         return this.description;
     }
 
-    public void setMaxHp(int maxHp) {
+    public void setMaxHp(float maxHp) {
         this.maxHp = maxHp;
     }
 
@@ -387,7 +385,7 @@ public abstract class Player extends LivingEntity {
         this.durationEffect = durationEffect;
     }
 
-    public void setCUrrentHp(int amount){
+    public void setCUrrentHp(float amount){
         this.hp = amount;
     }
 
@@ -397,5 +395,13 @@ public abstract class Player extends LivingEntity {
 
     public boolean areAttacksEnabled() {
         return attacksEnabled;
+    }
+
+    public void incrementMobKilled() {
+        this.mobKilled++;
+    }
+
+    public int getMobKilled() {
+        return this.mobKilled;
     }
 }

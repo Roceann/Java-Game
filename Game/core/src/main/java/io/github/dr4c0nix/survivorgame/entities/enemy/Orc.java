@@ -22,16 +22,16 @@ public class Orc extends ClassicEnemy {
     public Orc() {
         super(new Vector2(0f, 0f),
                 28, 36,
-                12, 160, 8, 4f,
+                12, 160f, 0, 4f,
                 texture_pincipale,
                 new Texture(Gdx.files.internal(texture_pincipale)),
                 null,
                 60f);
 
         this.isAlive = false;;
-        this.hp = 160;
-        this.maxHp = 160;
-        this.armor = 8;
+        this.hp = 160f;
+        this.maxHp = 160f;
+        this.armor = 0;
         this.force = 4f;
         this.walkingTexture = new Texture(Gdx.files.internal(texture_pincipale)); 
     }

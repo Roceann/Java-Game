@@ -105,7 +105,7 @@ public class LevelUp {
     private List<UpgradeOption> allPossibleUpgrades() {
         List<UpgradeOption> all = new ArrayList<>();
         all.add(new UpgradeOption("Vitesse", 0.1f, 0.5f, UpgradeOption.StatType.FLOAT));
-        all.add(new UpgradeOption("Points de Vie Max", 5, 20, UpgradeOption.StatType.INT));
+        all.add(new UpgradeOption("Points de Vie Max", 5, 20, UpgradeOption.StatType.FLOAT));
         all.add(new UpgradeOption("Armure", 1, 5, UpgradeOption.StatType.INT));
         all.add(new UpgradeOption("Force", 0.05f, 0.25f, UpgradeOption.StatType.FLOAT));
         all.add(new UpgradeOption("Projectiles", 1, 1, UpgradeOption.StatType.INT));
@@ -209,8 +209,8 @@ public class LevelUp {
                 p.setMovementSpeed(p.getMovementSpeed() + u.getValue()); 
                 break;
             case "Points de Vie Max": 
-                p.setCUrrentHp(p.getHp() + (int) u.getValue());
-                p.setMaxHp(p.getMaxHp() + (int) u.getValue()); 
+                p.setCUrrentHp(p.getHp() + u.getValue());
+                p.setMaxHp(p.getMaxHp() + u.getValue()); 
                 
                 break;
             case "Armure": 

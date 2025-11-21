@@ -38,6 +38,7 @@ import io.github.dr4c0nix.survivorgame.entities.player.Player;
 import io.github.dr4c0nix.survivorgame.weapon.Sword;
 import io.github.dr4c0nix.survivorgame.GameOptions;
 import com.badlogic.gdx.audio.Music;
+import io.github.dr4c0nix.survivorgame.entities.Projectile;
 
 public class Gameplay implements Screen {
     Main main;
@@ -255,7 +256,7 @@ public class Gameplay implements Screen {
 
     private void initPlayer() {
         Texture playerTexture = new Texture(Gdx.files.internal("Entity/Player/static1.png"));
-        this.player = new Player(spawnPoint, 100, 10, 1.0f, "Entity/Player/static1.png", playerTexture, "Jhonny Player", 5f) {
+        this.player = new Player(spawnPoint, 100f, 10, 1.0f, "Entity/Player/static1.png", playerTexture, "Jhonny Player", 5f) {
             @Override
             public void animation() {
                 super.animation();
@@ -312,6 +313,20 @@ public class Gameplay implements Screen {
         player.update(delta);
         entityFactory.updateProjectiles(delta);
 
+        ArrayList<Projectile> projectilesToRemove = new ArrayList<>();
+        for (Projectile proj : entityFactory.getActiveProjectiles()) {
+            for (ClassicEnemy enemy : entityFactory.getActiveEnemies()) {
+                if (proj.getHitbox().overlaps(enemy.getHitbox())) {
+                    enemy.takeDamage(proj.getDamage());
+                    projectilesToRemove.add(proj);
+                    break;
+                }
+            }
+        }
+        for (Projectile p : projectilesToRemove) {
+            entityFactory.releaseProjectile(p);
+        }
+
         ArrayList<ClassicEnemy> enemiesToRemove = new ArrayList<>();
 
         for (ClassicEnemy enemy : entityFactory.getActiveEnemies()) {
@@ -325,6 +340,7 @@ public class Gameplay implements Screen {
             // 2. Gestion de la mort de l'ennemi (Drop XP)
             if (!enemy.isAlive()) {
                 entityFactory.obtainOrbXp(enemy.getPosition(), enemy.getXpValue());
+                player.incrementMobKilled();
                 enemiesToRemove.add(enemy);
             }
         }

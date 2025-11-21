@@ -176,7 +176,7 @@ public class EntityFactory {
         }
     }
 
-    public Projectile obtainSwordProjectile(Vector2 position, Vector2 direction, float speed, float range, float damage, float projectileSize, float projectileBaseWidth, float projectileBaseHeight, String texturePath, LivingEntity source) {
+    public Projectile obtainSwordProjectile(Vector2 position, Vector2 direction, float speed, float range, int damage, float projectileSize, float projectileBaseWidth, float projectileBaseHeight, String texturePath, LivingEntity source) {
         ensureSwordProjectilePool(texturePath, projectileBaseWidth, projectileBaseHeight);
         Projectile projectile = swordProjectilePool.obtain();
         projectile.init(new Vector2(position), new Vector2(direction), speed, range, damage, projectileSize, source);

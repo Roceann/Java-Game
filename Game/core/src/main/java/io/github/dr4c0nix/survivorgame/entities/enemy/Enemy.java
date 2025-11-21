@@ -13,7 +13,7 @@ public abstract class Enemy extends LivingEntity {
     protected OrbXp xpDrop;
 
     public Enemy(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, int xpDrop,
-        int hp, int armor, float force, String texturePath, Texture walkingTexture) {
+        float hp, int armor, float force, String texturePath, Texture walkingTexture) {
         super(spawnPoint, hitboxWidth, hitboxHeight, hp, armor, force, texturePath, walkingTexture);
         this.xpDrop = new OrbXp(xpDrop);
     }

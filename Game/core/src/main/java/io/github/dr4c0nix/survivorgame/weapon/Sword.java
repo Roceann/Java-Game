@@ -8,14 +8,13 @@ public class Sword extends Weapon {
 
     public Sword(EntityFactory factory) {
         super(factory,
-            1.0f,
+            100,
             0.5f,
             150,
             0.10f,
             100f,
             1,
             2f,
-            1,
             32f,
             8f,
             "Weapon/Sword/sword-effect.png",
@@ -41,7 +40,7 @@ public class Sword extends Weapon {
         float offsetY = facing.y * (player.getHitbox().height * 0.5f);
         Vector2 spawnCenter = playerCenter.cpy().add(offsetX, offsetY);
 
-        entityFactory.obtainSwordProjectile(spawnCenter, facing, projectileSpeed, range, damage * player.getForce(), projectileSize, projectileBaseWidth, projectileBaseHeight, projectileTexturePath, player);
+        entityFactory.obtainSwordProjectile(spawnCenter, facing, projectileSpeed, range, (int)(damage * player.getForce()), projectileSize, projectileBaseWidth, projectileBaseHeight, projectileTexturePath, player);
         resetCooldown();
     }
 }

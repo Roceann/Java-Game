@@ -7,14 +7,13 @@ public class Bow extends Weapon {
 
     public Bow(EntityFactory factory) {
         super(factory,
-            1.5f,
+            1,
             0.8f,
             10,
             0.15f,
             3.5f,
             1,
             1.0f,
-            1,
             24f,
             6f,
             "Weapon/Bow/arrow.png",

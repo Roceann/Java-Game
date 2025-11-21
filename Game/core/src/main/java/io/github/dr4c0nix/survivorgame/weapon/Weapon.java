@@ -10,7 +10,7 @@ public abstract class Weapon {
     protected EntityFactory entityFactory;
 
     protected int level;
-    protected float damage;
+    protected int damage;
     protected float shotDelay;
     protected float cooldown;
     protected int range; // portée du projectile (l'arme n'a pas de portée propre car elle tire des projectiles)
@@ -18,14 +18,13 @@ public abstract class Weapon {
     protected float projectileSpeed; // vitesse du projectile
     protected int projectileCount; // nombre de projectiles tirés par attaque
     protected float projectileSize; // scale factor pour la taille du projectile (1 -> 32x8)
-    protected int pierce; // nombre d'ennemis que le projectile peut traverser
     protected float projectileBaseWidth;
     protected float projectileBaseHeight;
     protected String projectileTexturePath;
     protected String description;
     protected String iconPath;
 
-    public Weapon(EntityFactory factory, float damage, float shotDelay, int range, float critChance, float projectileSpeed, int projectileCount, float projectileSize, int pierce, float projectileBaseWidth, float projectileBaseHeight, String projectileTexturePath, String description, String iconPath) {
+    public Weapon(EntityFactory factory, int damage, float shotDelay, int range, float critChance, float projectileSpeed, int projectileCount, float projectileSize, float projectileBaseWidth, float projectileBaseHeight, String projectileTexturePath, String description, String iconPath) {
         this.level = 1;
         this.entityFactory = factory;
         this.damage = damage;
@@ -36,7 +35,6 @@ public abstract class Weapon {
         this.projectileSpeed = projectileSpeed;
         this.projectileCount = projectileCount;
         this.projectileSize = projectileSize;
-        this.pierce = pierce;
         this.projectileBaseWidth = projectileBaseWidth;
         this.projectileBaseHeight = projectileBaseHeight;
         this.projectileTexturePath = projectileTexturePath;
@@ -70,14 +68,13 @@ public abstract class Weapon {
     }
 
     public int getLevel() { return level; }
-    public float getDamage() { return damage; }
+    public int getDamage() { return damage; }
     public float getShotDelay() { return shotDelay; }
     public int getRange() { return range; }
     public float getCritChance() { return critChance; }
     public int getProjectileCount() { return projectileCount; }
     public float getProjectileSpeed() { return projectileSpeed; }
     public float getProjectileSize() { return projectileSize; }
-    public int getPierce() { return pierce; }
     public float getProjectileBaseWidth() { return projectileBaseWidth; }
     public float getProjectileBaseHeight() { return projectileBaseHeight; }
     public String getProjectileTexturePath() { return projectileTexturePath; }

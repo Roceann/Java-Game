@@ -14,7 +14,7 @@ import io.github.dr4c0nix.survivorgame.entities.enemy.Enemy;
  * @version 1.0
  */
 public class Projectile extends Entity implements Poolable {
-    protected float damage;
+    protected int damage;
     protected Enemy target;
     protected float maxRange;
     protected LivingEntity source;
@@ -34,7 +34,7 @@ public class Projectile extends Entity implements Poolable {
         this.isAlive = false;
     }
 
-    public void init(Vector2 spawnCenter, Vector2 direction, float speed, float maxRange, float damage, float projectileSize, LivingEntity source) {
+    public void init(Vector2 spawnCenter, Vector2 direction, float speed, float maxRange, int damage, float projectileSize, LivingEntity source) {
         this.direction.set(direction).nor();
         if (this.direction.isZero(0.0001f)) {
             this.direction.set(0f, -1f);
@@ -77,7 +77,7 @@ public class Projectile extends Entity implements Poolable {
      */
     @Override
     public void reset() {
-        damage = 0f;
+        damage = 0;
         target = null;
         maxRange = 0f;
         source = null;
@@ -92,7 +92,7 @@ public class Projectile extends Entity implements Poolable {
         rotationAngle = 0f;
     }
 
-    public float getDamage() {
+    public int getDamage() {
         return damage;
     }
 

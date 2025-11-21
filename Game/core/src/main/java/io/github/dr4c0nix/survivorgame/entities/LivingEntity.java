@@ -22,8 +22,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
  * @version 1.0
  */
 public abstract class LivingEntity extends Entity {
-    protected int hp;
-    protected int maxHp;
+    protected float hp;
+    protected float maxHp;
     protected int armor;
     protected float force = 1.0f;
     protected boolean isAlive = true;
@@ -52,8 +52,7 @@ public abstract class LivingEntity extends Entity {
      * @param texturePath    chemin vers la texture principale (fichier)
      * @param walkingTexture texture utilisée pour l'animation de marche
      */
-    public LivingEntity(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, int hp,
-        int armor, float force, String texturePath, Texture walkingTexture) {
+    public LivingEntity(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, float hp, int armor, float force, String texturePath, Texture walkingTexture) {
         super(spawnPoint, hitboxWidth, hitboxHeight, texturePath);
         this.hp = hp;
         this.maxHp = hp;
@@ -74,19 +73,12 @@ public abstract class LivingEntity extends Entity {
      * @param amount montant brut des dégâts à appliquer
      */
     public void takeDamage(float amount) {
-        if (immunityTimer > 0) {
-            return;
-        }
-
-        if (!isAlive) {
-            return;
-        }
+        if (immunityTimer > 0 || !isAlive) return;
         float effectiveDamage = amount * (100f / (100f + armor));
-        // Assure au moins 1 dégât si un coup passe
-        int damage = Math.max(1, Math.round(effectiveDamage));
+        float damage = Math.max(1f, effectiveDamage);
         hp -= damage;
-        if (hp <= 0) {
-            hp = 0;
+        if (hp <= 0f) {
+            hp = 0f;
             isAlive = false;
         }
         immunityTimer = immun_time;
@@ -131,12 +123,12 @@ public abstract class LivingEntity extends Entity {
 
 
     /** Retourne les points de vie actuels. */
-    public int getHp() {
+    public float getHp() {
         return hp;
     }
 
     /** Retourne les points de vie maximum. */
-    public int getMaxHp() {
+    public float getMaxHp() {
         return maxHp;
     }
 
@@ -153,5 +145,21 @@ public abstract class LivingEntity extends Entity {
     /** Retourne la force de l'entité. */
     public float getForce() {
         return force;
+    }
+
+    public void setMaxHp(float maxHp) {
+        this.maxHp = maxHp;
+    }
+
+    public void setCUrrentHp(float amount){
+        this.hp = amount;
+    }
+
+    protected void tickImmunity(float delta) {
+        if (immunityTimer <= 0f) return;
+        immunityTimer -= delta;
+        if (immunityTimer < 0f) {
+            immunityTimer = 0f;
+        }
     }
 }

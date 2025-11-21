@@ -22,8 +22,8 @@ public class Hud implements Screen {
     private OrthographicCamera camera;
     private Player player;
 
-    private int hpCur = 0;
-    private int hpMax = 1;
+    private float hpCur = 0f;
+    private float hpMax = 1f;
 
     public Hud(SpriteBatch sharedBatch) {
         this.batch = sharedBatch;
@@ -39,7 +39,7 @@ public class Hud implements Screen {
         this.player = player;
     }
 
-    public void updateHealth(int currentHp, int maxHp) {
+    public void updateHealth(float currentHp, float maxHp) {
         this.hpCur = currentHp;
         this.hpMax = maxHp;
     }
@@ -62,9 +62,9 @@ public class Hud implements Screen {
         int level = 1;
 
         if (player != null) {
-            hpMax = Math.max(player.getMaxHp(), 1);
+            hpMax = Math.max(player.getMaxHp(), 1f);
             hpCur = player.getHp();
-            hpPercent = (float) hpCur / hpMax;
+            hpPercent = hpCur / hpMax;
             xpPercent = (float) player.getXpactual() / Math.max(player.getExperienceToNextLevel(), 1);
             name = player.getDescription();
             level = player.getLevel();
@@ -115,7 +115,7 @@ public class Hud implements Screen {
 
         font.draw(batch, name + "  (Lvl " + level + ")", barsLeftX, topTextY);
 
-        String hpText = "HP: " + hpCur + " / " + hpMax;
+        String hpText = "HP: " + hpCur + " / " + (int)hpMax;
         GlyphLayout hpLayout = new GlyphLayout(font, hpText);
         float hpTextX = hp_X + (hp_W - hpLayout.width) * 0.5f;
         float hpTextY = hp_Y + (hp_H + font.getCapHeight() * font.getScaleY()) * 0.5f;
