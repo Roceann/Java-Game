@@ -22,7 +22,7 @@ public class LivingEntityTest {
 
     // Classe interne concrète pour permettre l'instanciation de LivingEntity.
     private static class TestableLivingEntity extends LivingEntity {
-        public TestableLivingEntity(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, float hp, int armor, float force) {
+        public TestableLivingEntity(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, float hp, int armor, float force, Texture walkingTexture) {
             // On passe un chemin de texture nul pour éviter la création de texture réelle.
             super(spawnPoint, hitboxWidth, hitboxHeight, hp, armor, force, null);
         }
@@ -49,7 +49,7 @@ public class LivingEntityTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         Vector2 spawn = new Vector2(100, 100);
-        testEntity = new TestableLivingEntity(spawn, 32, 32, 100, 100, 1.0f);
+        testEntity = new TestableLivingEntity(spawn, 32, 32, 100, 100, 1.0f, mockTexture);
         // Assigner une frame pour que super.draw() puisse être appelé sans NullPointerException
         testEntity.setCurrentFrame(new com.badlogic.gdx.graphics.g2d.TextureRegion(mockTexture));
     }
@@ -65,6 +65,7 @@ public class LivingEntityTest {
         assertEquals("L'armure est incorrecte", 100, testEntity.getArmor());
         assertEquals("La force est incorrecte", 1.0f, testEntity.getForce(), 0.01);
         assertTrue("L'entité doit être vivante par défaut", testEntity.isAlive());
+        assertEquals("La texture de marche est incorrecte", mockTexture, testEntity.getWalkingTexture());
     }
 
     /**

@@ -27,10 +27,10 @@ public class Orc extends ClassicEnemy {
                 null,
                 60f);
 
-        setAlive(false);
-        setMaxHp(160f);
-        setCurrentHp(160f);
-        setArmor(0);
-        setForce(4f);
+        this.isAlive = false;;
+        this.hp = 160f;
+        this.maxHp = 160f;
+        this.armor = 0;
+        this.force = 4f;
     }
 }

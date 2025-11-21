@@ -55,7 +55,9 @@ public class WeaponTest {
         assertEquals("Les dégâts ne correspondent pas", 100, sword.getDamage());
         assertEquals("Le délai de tir ne correspond pas", 0.5f, sword.getShotDelay(), 0.001f);
         assertEquals("La portée ne correspond pas", 150, sword.getRange());
+        assertEquals("La chance de critique ne correspond pas", 0.10f, sword.getCritChance(), 0.001f);
         assertEquals("La vitesse du projectile ne correspond pas", 100f, sword.getProjectileSpeed(), 0.001f);
+        assertEquals("Le nombre de projectiles ne correspond pas", 1, sword.getProjectileCount());
         assertEquals("La taille du projectile ne correspond pas", 2f, sword.getProjectileSize(), 0.001f);
         assertEquals("Le chemin de l'icône est incorrect", "Weapon/Sword/sword.png", sword.getIconPath());
         assertEquals("La description est incorrecte", "Equipez vous d'une épée pour tabasser les triple monstres !", sword.getDescription());

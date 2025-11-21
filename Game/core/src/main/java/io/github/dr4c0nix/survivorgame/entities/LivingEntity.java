@@ -3,6 +3,7 @@ package io.github.dr4c0nix.survivorgame.entities;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.Texture;
 
 /**
  * Classe abstraite représentant une entité vivante du jeu (joueur, ennemi).
@@ -25,15 +26,10 @@ public abstract class LivingEntity extends Entity {
     protected float maxHp;
     protected int armor;
     protected float force = 1.0f;
+    protected float slowChance;
+    protected float slowPower;
+    protected float slowDuration;
     protected float immunityTimer = 0f;
-
-    // protected float tickDmgChance;
-    // protected float tickDmgDamage;
-    // protected float tickDmgDuration;
-    // protected TickDmgType tickDmgType
-    // protected float slowChance;
-    // protected float slowPower;
-    // protected float slowDuration;
     private static final float IMMUNITY_TIME = 0.2f;
 
     /**
