@@ -25,22 +25,34 @@ public class Sword extends Weapon {
     @Override
     public void update(float delta, Player player) {
         cooldownTick(delta);
-        if (!canShoot()) {
-            return;
+        if (canShoot()) {
+            Vector2 playerCenter = new Vector2();
+            player.getHitbox().getCenter(playerCenter);
+
+            Vector2 facing = player.getFacingDirection();
+            if (facing.isZero()) {
+                facing = new Vector2(0, -1);
+            }
+
+            float offsetX = facing.x * (player.getHitbox().width * 0.5f);
+            float offsetY = facing.y * (player.getHitbox().height * 0.5f);
+            Vector2 spawnCenter = playerCenter.cpy().add(offsetX, offsetY);
+
+            entityFactory.obtainSwordProjectile(
+                spawnCenter,
+                facing.cpy().nor(),
+                getProjectileSpeed(),
+                (float) getRange(),
+                (int) (getDamage() * player.getForce()),
+                getProjectileSize(),
+                getProjectileBaseWidth(),
+                getProjectileBaseHeight(),
+                getProjectileTexturePath(),
+                player
+            );
+
+            resetCooldown();
         }
-
-        Vector2 facing = player.getFacingDirection();
-        if (facing.isZero(0.0001f)) {
-            facing.set(0f, -1f);
-        }
-
-        Vector2 playerCenter = new Vector2(player.getHitbox().x + player.getHitbox().width * 0.5f, player.getHitbox().y + player.getHitbox().height * 0.5f);
-
-        float offsetX = facing.x * (player.getHitbox().width * 0.5f);
-        float offsetY = facing.y * (player.getHitbox().height * 0.5f);
-        Vector2 spawnCenter = playerCenter.cpy().add(offsetX, offsetY);
-
-        entityFactory.obtainSwordProjectile(spawnCenter, facing, projectileSpeed, range, (int)(damage * player.getForce()), projectileSize, projectileBaseWidth, projectileBaseHeight, projectileTexturePath, player);
-        resetCooldown();
     }
+
 }
