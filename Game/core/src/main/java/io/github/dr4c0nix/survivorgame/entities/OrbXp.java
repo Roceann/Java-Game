@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.Pool.Poolable;
  * @version 1.1
  */
 public class OrbXp extends Entity implements Poolable {
-    protected int xpValue;
+    private int xpValue;
     private static final float ORB_SIZE = 16f;
 
     //ADD LATER AFTER MVP
@@ -28,7 +28,7 @@ public class OrbXp extends Entity implements Poolable {
     public OrbXp(int xpValue) {
         super(new Vector2(0, 0), ORB_SIZE, ORB_SIZE, "xporb.png");
         this.xpValue = xpValue;
-        this.isAlive = false;
+        this.setAlive(false);
     }
 
     /*
@@ -54,7 +54,7 @@ public class OrbXp extends Entity implements Poolable {
      * Vérifie si l'orbe est active (vivante).
      */
     public void setAlive(boolean v) {
-        this.isAlive = v;
+        super.setAlive(v);
     }
 
     @Override
@@ -65,9 +65,9 @@ public class OrbXp extends Entity implements Poolable {
      */
     @Override
     public void reset() {
-        xpValue = 0;
-        isAlive = false;
-        position.set(0, 0);
+        setXpValue(0);
+        setAlive(false);
+        setPosition(new Vector2(0, 0));
         // target = null;
         // isSeeking = false;
     }

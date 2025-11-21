@@ -19,19 +19,19 @@ public class Projectile extends Entity implements Poolable {
     protected float maxRange;
     protected LivingEntity source;
 
-    private final Vector2 velocity = new Vector2();
-    private final Vector2 direction = new Vector2();
-    private float distanceTraveled;
-    private float speed;
-    private final float baseWidth;
-    private final float baseHeight;
-    private float rotationAngle;
+    protected final Vector2 velocity = new Vector2();
+    protected final Vector2 direction = new Vector2();
+    protected float distanceTraveled;
+    protected float speed;
+    protected final float baseWidth;
+    protected final float baseHeight;
+    protected float rotationAngle;
 
     public Projectile(String texturePath, float width, float height) {
         super(new Vector2(0, 0), width, height, texturePath);
         this.baseWidth = width;
         this.baseHeight = height;
-        this.isAlive = false;
+        this.setAlive(false);
     }
 
     public void init(Vector2 spawnCenter, Vector2 direction, float speed, float maxRange, int damage, float projectileSize, LivingEntity source) {
@@ -50,10 +50,11 @@ public class Projectile extends Entity implements Poolable {
         float scaledHeight = baseHeight * projectileSize;
         float halfWidth = scaledWidth * 0.5f;
         float halfHeight = scaledHeight * 0.5f;
-        this.position.set(spawnCenter.x - halfWidth, spawnCenter.y - halfHeight);
-        this.hitbox.setSize(scaledWidth, scaledHeight);
-        this.hitbox.setPosition(position.x, position.y);
-        this.isAlive = true;
+        
+        Vector2 newPos = new Vector2(spawnCenter.x - halfWidth, spawnCenter.y - halfHeight);
+        this.setPosition(newPos);
+        this.getHitbox().setSize(scaledWidth, scaledHeight);
+        this.setAlive(true);
     }
 
     /*
@@ -62,13 +63,13 @@ public class Projectile extends Entity implements Poolable {
      */
     @Override
     public void update(float delta) {
-        if (!isAlive) return;
+        if (!isAlive()) return;
         float frameDistance = speed * delta;
-        position.mulAdd(velocity, delta);
-        hitbox.setPosition(position.x, position.y);
+        getPosition().mulAdd(velocity, delta);
+        getHitbox().setPosition(getPosition().x, getPosition().y);
         distanceTraveled += frameDistance;
         if (distanceTraveled >= maxRange) {
-            isAlive = false;
+            setAlive(false);
         }
     }
 
@@ -77,32 +78,97 @@ public class Projectile extends Entity implements Poolable {
      */
     @Override
     public void reset() {
-        damage = 0;
-        target = null;
-        maxRange = 0f;
-        source = null;
-        speed = 0f;
-        distanceTraveled = 0f;
+        setDamage(0);
+        setTarget(null);
+        setMaxRange(0f);
+        setSource(null);
+        setSpeed(0f);
+        setDistanceTraveled(0f);
         velocity.setZero();
         direction.setZero();
-        isAlive = false;
-        position.set(0, 0);
-        hitbox.setPosition(0, 0);
-        hitbox.setSize(baseWidth, baseHeight);
-        rotationAngle = 0f;
+        setAlive(false);
+        setPosition(new Vector2(0, 0));
+        getHitbox().setSize(baseWidth, baseHeight);
+        setRotationAngle(0f);
     }
 
     public int getDamage() {
         return damage;
     }
 
+    @Override
+    public void draw(SpriteBatch batch) {
+        if (!isAlive()) return;
+        batch.draw(getCurrentFrame(), getPosition().x, getPosition().y, getHitbox().width * 0.5f, getHitbox().height * 0.5f, getHitbox().width, getHitbox().height, 1f, 1f, rotationAngle);
+    }
+
+    // --- Getters for testing and external access ---
+
+    public void setDamage(int damage) {
+        this.damage = damage;
+    }
+
+    public Enemy getTarget() {
+        return target;
+    }
+
+    public void setTarget(Enemy target) {
+        this.target = target;
+    }
+
+    public float getMaxRange() {
+        return maxRange;
+    }
+
+    public void setMaxRange(float maxRange) {
+        this.maxRange = maxRange;
+    }
+
     public LivingEntity getSource() {
         return source;
     }
 
-    @Override
-    public void draw(SpriteBatch batch) {
-        if (!isAlive) return;
-        batch.draw(currentFrame, position.x, position.y, hitbox.width * 0.5f, hitbox.height * 0.5f, hitbox.width, hitbox.height, 1f, 1f, rotationAngle);
+    public void setSource(LivingEntity source) {
+        this.source = source;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+
+    public Vector2 getDirection() {
+        return direction;
+    }
+
+    public Vector2 getVelocity() {
+        return velocity;
+    }
+
+    public float getDistanceTraveled() {
+        return distanceTraveled;
+    }
+
+    public void setDistanceTraveled(float distanceTraveled) {
+        this.distanceTraveled = distanceTraveled;
+    }
+
+    public float getBaseWidth() {
+        return baseWidth;
+    }
+
+    public float getBaseHeight() {
+        return baseHeight;
+    }
+
+    public float getRotationAngle() {
+        return rotationAngle;
+    }
+
+    public void setRotationAngle(float rotationAngle) {
+        this.rotationAngle = rotationAngle;
     }
 }

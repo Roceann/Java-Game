@@ -1,5 +1,7 @@
 package io.github.dr4c0nix.survivorgame.entities.enemy;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -25,10 +27,10 @@ public class Orc extends ClassicEnemy {
                 null,
                 60f);
 
-        this.isAlive = false;;
-        this.hp = 160f;
-        this.maxHp = 160f;
-        this.armor = 0;
-        this.force = 4f;
+        setAlive(false);
+        setMaxHp(160f);
+        setCurrentHp(160f);
+        setArmor(0);
+        setForce(4f);
     }
 }

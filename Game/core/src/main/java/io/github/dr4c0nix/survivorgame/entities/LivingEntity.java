@@ -25,9 +25,7 @@ public abstract class LivingEntity extends Entity {
     protected float maxHp;
     protected int armor;
     protected float force = 1.0f;
-    protected boolean isAlive = true;
     protected float immunityTimer = 0f;
-    protected static final float immun_time = 0.2f; 
 
     // protected float tickDmgChance;
     // protected float tickDmgDamage;
@@ -36,6 +34,7 @@ public abstract class LivingEntity extends Entity {
     // protected float slowChance;
     // protected float slowPower;
     // protected float slowDuration;
+    private static final float IMMUNITY_TIME = 0.2f;
 
     /**
      * Crée une nouvelle entité vivante.
@@ -68,34 +67,36 @@ public abstract class LivingEntity extends Entity {
      * @param amount montant brut des dégâts à appliquer
      */
     public void takeDamage(float amount) {
-        if (immunityTimer > 0 || !isAlive) return;
+        if (immunityTimer > 0 || !isAlive()) return;
         float effectiveDamage = amount * (100f / (100f + armor));
         float damage = Math.max(1f, effectiveDamage);
         hp -= damage;
         if (hp <= 0f) {
             hp = 0f;
-            isAlive = false;
+            setAlive(false);
         }
-        immunityTimer = immun_time;
+        immunityTimer = IMMUNITY_TIME;
     }
 
     @Override
     public void draw(SpriteBatch batch) {
-        if (!isAlive) return;
+        if (!isAlive()) return;
         
         if (immunityTimer > 0) {
-            if (Math.sin(immunityTimer * 20) > 0) {
+            // Effet de clignotement simple et efficace
+            if ((int)(immunityTimer * 30) % 2 == 0) {
                 batch.setColor(Color.DARK_GRAY);
             } else {
-                batch.setColor(1f, 1f, 1f, 1f);
+                batch.setColor(Color.WHITE);
             }
         } else {
             batch.setColor(Color.WHITE);
         }
 
-    super.draw(batch);
+        super.draw(batch);
 
-    batch.setColor(Color.WHITE);
+        // Réinitialiser la couleur à la fin est crucial pour ne pas affecter les autres dessins
+        batch.setColor(Color.WHITE);
     }
 
     /**
@@ -111,7 +112,7 @@ public abstract class LivingEntity extends Entity {
      * @param dy déplacement en Y (peut être négatif)
      */
     protected void moveBy(float dx, float dy) {
-        if (!isAlive) return;
+        if (!isAlive()) return;
         position.add(dx * movementSpeed, dy * movementSpeed);
         hitbox.setPosition(position.x, position.y);
     }
@@ -132,11 +133,6 @@ public abstract class LivingEntity extends Entity {
         return armor;
     }
 
-    /** Indique si l'entité est en vie. */
-    public boolean isAlive() {
-        return isAlive;
-    }
-
     /** Retourne la force de l'entité. */
     public float getForce() {
         return force;
@@ -147,9 +143,22 @@ public abstract class LivingEntity extends Entity {
         this.hp = Math.min(this.hp, this.maxHp);
     }
 
-    public void setCUrrentHp(float amount){
+    public void setCurrentHp(float amount){
         this.hp = amount;
         this.hp = Math.min(this.hp, this.maxHp);
+    }
+
+
+    public void setArmor(int armor) {
+        this.armor = armor;
+    }
+
+    public void setForce(float force) {
+        this.force = force;
+    }
+
+    public float getImmunityTimer() {
+        return immunityTimer;
     }
 
     protected void tickImmunity(float delta) {

@@ -43,7 +43,7 @@ public class EntityFactory {
     private static final int INITIAL_PROJECTILE_POOL_SIZE = 32;
     private static final int MAX_PROJECTILE_POOL_SIZE = 256;
     private static final String CLASSIC_TEXTURE = "personages/Jhonny/Jhonny-boss/Jhonny-boss.png";
-    private Texture classicEnemyTexture; 
+    private Texture classicEnemyTexture;
 
     public EntityFactory(Gameplay gameplay) {
         this.gameplay = gameplay;
@@ -51,10 +51,6 @@ public class EntityFactory {
     }
 
     private void initializePools() {
-        if (classicEnemyTexture == null) {
-            classicEnemyTexture = new Texture(Gdx.files.internal(CLASSIC_TEXTURE));
-        }
-
         // Pool Orbs
         this.orbXpPool = new Pool<OrbXp>(INITIAL_POOL_SIZE, MAX_POOL_SIZE) {
             @Override
@@ -65,19 +61,21 @@ public class EntityFactory {
             }
         };
 
-        // --- Ajouter manuellement une pool pas enfant de classic enemy (ex avec orc factice) ---
+        // --- Pool pour les Orcs ---
         Pool<ClassicEnemy> orcPoolLocal = new Pool<ClassicEnemy>(INITIAL_POOL_SIZE, MAX_POOL_SIZE) {
             @Override
             protected ClassicEnemy newObject() {
-                ClassicEnemy e = new Orc(); 
-                createdEnemies.add(e);
-                registerEnemyPrototype("Orc", e);
-                return e;
+                // On passe l'instance de gameplay de la factory au constructeur de l'Orc.
+                ClassicEnemy enemy = new Orc();
+                createdEnemies.add(enemy);
+                return enemy;
             }
         };
         enemyPools.put("Orc", orcPoolLocal);
 
-        // Pré-crée un prototype pour chaque pool afin d'avoir la taille d'ennemi dispo
+        // --- Enregistrement de l'enemy ---
+        ClassicEnemy orcPrototype = new Orc();
+        registerEnemyPrototype("Orc", orcPrototype);
     }
 
 
@@ -89,15 +87,22 @@ public class EntityFactory {
         if (type == null) return obtainEnemy(position); 
 
         Pool<ClassicEnemy> pool = enemyPools.get(type);
+        if (pool == null) {
+            if (Gdx.app != null) Gdx.app.error("EntityFactory", "Aucun pool trouvé pour le type d'ennemi : " + type);
+            return null;
+        }
 
         ClassicEnemy enemy = pool.obtain();
+        
         if (!activeEnemies.contains(enemy)) {
             activeEnemies.add(enemy);
         }
         instanceToType.put(enemy, type);
 
+        // Assigner le gameplay (redondant si déjà fait dans le constructeur, mais sans danger)
+        // et activer l'ennemi.
         enemy.setGameplay(this.gameplay);
-        enemy.activate(new Vector2(position));
+        enemy.activate(position);
         return enemy;
     }
 
@@ -135,14 +140,16 @@ public class EntityFactory {
         activeEnemies.remove(enemy);
         String type = instanceToType.remove(enemy);
         if (type == null) {
+            // Fallback si le type n'a pas été trouvé
             for (Pool<ClassicEnemy> p : enemyPools.values()) {
                 try { 
                     p.free(enemy); 
-                    break; 
+                    return; // Sortir dès que l'objet est libéré
                 } catch (Exception e) {
-                    Gdx.app.log("EntityFactory", "Enemy type not found in pool during release. error message : " + e.getMessage());
+                    // Ignorer et essayer le pool suivant
                 }
             }
+            if (Gdx.app != null) Gdx.app.log("EntityFactory", "Enemy could not be freed into any pool.");
             return;
         }
         Pool<ClassicEnemy> pool = enemyPools.get(type);
@@ -170,7 +177,7 @@ public class EntityFactory {
     public void drawActiveOrbs(SpriteBatch batch) {
         for (int i = 0; i < activeOrbs.size(); i++) {
             OrbXp orb = activeOrbs.get(i);
-            if (orb.getIsAlive()) {
+            if (orb.isAlive()) {
                 orb.draw(batch);
             } 
         }
@@ -188,7 +195,7 @@ public class EntityFactory {
         for (int i = activeProjectiles.size() - 1; i >= 0; i--) {
             Projectile projectile = activeProjectiles.get(i);
             projectile.update(delta);
-            if (!projectile.getIsAlive()) {
+            if (!projectile.isAlive()) {
                 removeProjectileAt(i);
             }
         }
@@ -264,9 +271,10 @@ public class EntityFactory {
             swordProjectilePool = null;
         }
 
-        if (classicEnemyTexture != null) {
-            classicEnemyTexture.dispose();
-        }
+        // La texture n'est plus gérée par la factory, donc on supprime l'appel à dispose ici.
+        // if (classicEnemyTexture != null) {
+        //     classicEnemyTexture.dispose();
+        // }
 
         for (Pool<ClassicEnemy> pool : enemyPools.values()) {
             pool.clear();
