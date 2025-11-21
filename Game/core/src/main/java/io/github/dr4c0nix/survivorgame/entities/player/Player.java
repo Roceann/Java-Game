@@ -64,11 +64,11 @@ public abstract class Player extends LivingEntity {
      * @param walkingTexture texture de marche / animation
      * @param description description textuelle du joueur
      */
-    public Player(Vector2 spawnPoint, float baseHp, int baseArmor, float baseForce, String texturePath, String description, float mouvmentSpeed) {
-        super(spawnPoint, 32, 32 * 1.3f, baseHp, baseArmor, baseForce, texturePath);
-        this.description = description;
+    public Player(Vector2 spawnPoint) {
+        super(spawnPoint, 32, 32 * 1.3f, 100f, 10, 1.0f, "Entity/Player/static1.png");
+        this.description = "Le Romz";
         this.level = 1;
-        this.movementSpeed = mouvmentSpeed;
+        this.movementSpeed = 5f;
         this.experienceToNextLevel = 100;
         this.xpactual = 0;
         this.regenHP = 0.01f;

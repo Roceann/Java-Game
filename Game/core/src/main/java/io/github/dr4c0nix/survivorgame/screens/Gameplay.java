@@ -254,7 +254,7 @@ public class Gameplay implements Screen {
     }
 
     private void initPlayer() {
-        this.player = new Player(spawnPoint, 100f, 10, 1.0f, "Entity/Player/static1.png", "Le Romz", 5f) {
+        this.player = new Player(spawnPoint) {
             @Override
             public void animation() {
                 super.animation();
