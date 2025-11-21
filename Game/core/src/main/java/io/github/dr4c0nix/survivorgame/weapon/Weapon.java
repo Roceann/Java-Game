@@ -14,9 +14,7 @@ public abstract class Weapon {
     protected float shotDelay;
     protected float cooldown;
     protected int range; // portée du projectile (l'arme n'a pas de portée propre car elle tire des projectiles)
-    protected float critChance;
     protected float projectileSpeed; // vitesse du projectile
-    protected int projectileCount; // nombre de projectiles tirés par attaque
     protected float projectileSize; // scale factor pour la taille du projectile (1 -> 32x8)
     protected float projectileBaseWidth;
     protected float projectileBaseHeight;
@@ -24,16 +22,14 @@ public abstract class Weapon {
     protected String description;
     protected String iconPath;
 
-    public Weapon(EntityFactory factory, int damage, float shotDelay, int range, float critChance, float projectileSpeed, int projectileCount, float projectileSize, float projectileBaseWidth, float projectileBaseHeight, String projectileTexturePath, String description, String iconPath) {
+    public Weapon(EntityFactory factory, int damage, float shotDelay, int range, float projectileSpeed, float projectileSize, float projectileBaseWidth, float projectileBaseHeight, String projectileTexturePath, String description, String iconPath) {
         this.level = 1;
         this.entityFactory = factory;
         this.damage = damage;
         this.shotDelay = shotDelay;
         this.cooldown = 0f;
         this.range = range;
-        this.critChance = critChance;
         this.projectileSpeed = projectileSpeed;
-        this.projectileCount = projectileCount;
         this.projectileSize = projectileSize;
         this.projectileBaseWidth = projectileBaseWidth;
         this.projectileBaseHeight = projectileBaseHeight;
@@ -71,8 +67,6 @@ public abstract class Weapon {
     public int getDamage() { return damage; }
     public float getShotDelay() { return shotDelay; }
     public int getRange() { return range; }
-    public float getCritChance() { return critChance; }
-    public int getProjectileCount() { return projectileCount; }
     public float getProjectileSpeed() { return projectileSpeed; }
     public float getProjectileSize() { return projectileSize; }
     public float getProjectileBaseWidth() { return projectileBaseWidth; }
