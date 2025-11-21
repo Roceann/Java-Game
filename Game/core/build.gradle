@@ -12,10 +12,16 @@ dependencies {
     implementation "io.github.berstanio:gdx-svmhelper-annotations:$graalHelperVersion"
   }
   
-
-  testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
+  testImplementation 'junit:junit:4.13.2'
 }
 
-test {
-  useJUnitPlatform()
+apply plugin: 'jacoco'
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        html.required = true
+    }
 }
+
+test.finalizedBy(jacocoTestReport)
