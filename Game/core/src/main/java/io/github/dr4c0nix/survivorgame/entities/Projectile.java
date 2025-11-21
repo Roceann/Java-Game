@@ -96,6 +96,10 @@ public class Projectile extends Entity implements Poolable {
         return damage;
     }
 
+    public LivingEntity getSource() {
+        return source;
+    }
+
     @Override
     public void draw(SpriteBatch batch) {
         if (!isAlive) return;

@@ -329,7 +329,16 @@ public class Gameplay implements Screen {
             
             for (ClassicEnemy enemy : entityFactory.getActiveEnemies()) {
                 if (proj.getHitbox().overlaps(enemy.getHitbox())) {
-                    enemy.takeDamage(proj.getDamage());
+                    float baseDamage = proj.getDamage();
+                    float finalDamage = baseDamage;
+                    io.github.dr4c0nix.survivorgame.entities.LivingEntity src = proj.getSource();
+                    if (src instanceof Player) {
+                        Player p = (Player) src;
+                        if (MathUtils.random(0f, 100f) <= p.getCritChance()) {
+                            finalDamage = baseDamage * p.getCritDamage();
+                        }
+                    }
+                    enemy.takeDamage(finalDamage);
                     projectilesToRemove.add(proj);
                     break;
                 }
