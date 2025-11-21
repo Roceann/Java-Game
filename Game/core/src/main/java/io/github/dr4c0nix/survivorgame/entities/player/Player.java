@@ -24,15 +24,10 @@ public abstract class Player extends LivingEntity {
     protected int xpactual;
     protected int level;
     protected int experienceToNextLevel;
-    protected float nbprojectil;
-    protected float chance;
     protected float regenHP;
-    protected float lifeSteal;
     protected float critChance;
-    protected int pickUpRange;
-    protected float difficulter;
     protected float critDamage;
-    protected float durationEffect;
+    protected float difficulter;
     protected String description;
     protected Weapon currentWeapon;
     protected Gameplay gameplay;
@@ -65,22 +60,17 @@ public abstract class Player extends LivingEntity {
      * @param walkingTexture texture de marche / animation
      * @param description description textuelle du joueur
      */
-    public Player(Vector2 spawnPoint, float baseHp, int baseArmor, float baseForce, String texturePath, Texture walkingTexture, String description, float mouvmentSpeed) {
-        super(spawnPoint, 32, 32 * 1.3f, baseHp, baseArmor, baseForce, texturePath, walkingTexture);
+    public Player(Vector2 spawnPoint, float baseHp, int baseArmor, float baseForce, String texturePath, String description, float mouvmentSpeed) {
+        super(spawnPoint, 32, 32 * 1.3f, baseHp, baseArmor, baseForce, texturePath);
         this.description = description;
         this.level = 1;
         this.movementSpeed = mouvmentSpeed;
         this.experienceToNextLevel = 100;
         this.xpactual = 0;
-        this.nbprojectil = 1.0f;
-        this.chance = 0.0f;
         this.regenHP = 0.0f;
-        this.lifeSteal = 0.0f;
-        this.critChance = 0.0f;
-        this.pickUpRange = 15;
+        this.critChance = 50.0f;
         this.difficulter = 1.0f;
         this.critDamage = 1.5f;
-        this.durationEffect = 1.0f;
         this.currentWeapon = null;
         this.mobKilled = 0;
         
@@ -301,28 +291,12 @@ public abstract class Player extends LivingEntity {
         return this.experienceToNextLevel;
     }
 
-    public float getNbprojectil() {
-        return this.nbprojectil;
-    }
-
-    public float getChance() {
-        return this.chance;
-    }
-
     public float getRegenHP() {
         return this.regenHP;
     }
 
-    public float getLifeSteal() {
-        return this.lifeSteal;
-    }
-
     public float getCritChance() {
         return this.critChance;
-    }
-
-    public int getPickUpRange() {
-        return this.pickUpRange;
     }
 
     public float getDifficulter() {
@@ -331,10 +305,6 @@ public abstract class Player extends LivingEntity {
 
     public float getCritDamage() {
         return this.critDamage;
-    }
-
-    public float getDurationEffect() {
-        return this.durationEffect;
     }
 
     public String getDescription() {
@@ -353,36 +323,16 @@ public abstract class Player extends LivingEntity {
         this.force = force;
     }
 
-    public void setNbProjectil(float nbprojectil) {
-        this.nbprojectil = nbprojectil;
-    }
-
-    public void setChance(float chance) {
-        this.chance = chance;
-    }
-
     public void setRegenHP(float regenHP) {
         this.regenHP = regenHP;
-    }
-
-    public void setLifeSteal(float lifeSteal) {
-        this.lifeSteal = lifeSteal;
     }
 
     public void setCritChance(float critChance) {
         this.critChance = critChance;
     }
 
-    public void setPickUpRange(int pickUpRange) {
-        this.pickUpRange = pickUpRange;
-    }
-
     public void setCritDamage(float critDamage) {
         this.critDamage = critDamage;
-    }
-
-    public void setDurationEffect(float durationEffect) {
-        this.durationEffect = durationEffect;
     }
 
     public void setCUrrentHp(float amount){

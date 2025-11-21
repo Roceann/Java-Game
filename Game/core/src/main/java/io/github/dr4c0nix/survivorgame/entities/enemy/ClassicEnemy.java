@@ -1,6 +1,5 @@
 package io.github.dr4c0nix.survivorgame.entities.enemy;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
@@ -17,8 +16,8 @@ public abstract class ClassicEnemy extends Enemy implements Poolable {
     private final Vector2 velocity = new Vector2();
     private final Vector2 separation = new Vector2();
 
-    public ClassicEnemy(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, int xpDrop, float hp, int armor, float force, String texturePath, Texture walkingTexture, Gameplay gameplay, float movementSpeed) {
-        super(spawnPoint, hitboxWidth, hitboxHeight, xpDrop, hp, armor, force, texturePath, walkingTexture);
+    public ClassicEnemy(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, int xpDrop, float hp, int armor, float force, String texturePath, Gameplay gameplay, float movementSpeed) {
+        super(spawnPoint, hitboxWidth, hitboxHeight, xpDrop, hp, armor, force, texturePath);
         this.gameplay = gameplay;
         this.movementSpeed = movementSpeed;
     }

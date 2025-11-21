@@ -219,30 +219,17 @@ public class LevelUp {
             case "Force": 
                 p.setForce(p.getForce() + u.getValue()); 
                 break;
-            case "Nombre de Projectiles": 
-                p.setNbProjectil(p.getNbprojectil() + (int) u.getValue()); 
-                break;
-            case "Chance": 
-                p.setChance(p.getChance() + u.getValue()); 
-                break;
             case "Régénération HP": 
                 p.setRegenHP(p.getRegenHP() + u.getValue()); 
-                break;
-            case "Vol de Vie": 
-                p.setLifeSteal(p.getLifeSteal() + u.getValue()); 
                 break;
             case "Chance de Crit": 
                 p.setCritChance(p.getCritChance() + u.getValue()); 
                 break;
-            case "Portée de Ramassage": 
-                p.setPickUpRange(p.getPickUpRange() + (int) u.getValue()); 
-                break;
+
             case "Dégâts Critiques": 
                 p.setCritDamage(p.getCritDamage() + u.getValue()); 
                 break;
-            case "Durée des Effets": 
-                p.setDurationEffect(p.getDurationEffect() + u.getValue()); 
-                break;
+
             default: break;
         }
         gameplay.setIsPaused(false);

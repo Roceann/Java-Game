@@ -7,14 +7,11 @@ import io.github.dr4c0nix.survivorgame.entities.LivingEntity;
 import io.github.dr4c0nix.survivorgame.entities.OrbXp;
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
 
-import com.badlogic.gdx.graphics.Texture;
-
 public abstract class Enemy extends LivingEntity {
     protected OrbXp xpDrop;
 
-    public Enemy(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, int xpDrop,
-        float hp, int armor, float force, String texturePath, Texture walkingTexture) {
-        super(spawnPoint, hitboxWidth, hitboxHeight, hp, armor, force, texturePath, walkingTexture);
+    public Enemy(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, int xpDrop, float hp, int armor, float force, String texturePath) {
+        super(spawnPoint, hitboxWidth, hitboxHeight, hp, armor, force, texturePath);
         this.xpDrop = new OrbXp(xpDrop);
     }
 

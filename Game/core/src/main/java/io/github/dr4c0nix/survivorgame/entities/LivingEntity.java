@@ -2,7 +2,6 @@ package io.github.dr4c0nix.survivorgame.entities;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /**
@@ -27,18 +26,16 @@ public abstract class LivingEntity extends Entity {
     protected int armor;
     protected float force = 1.0f;
     protected boolean isAlive = true;
+    protected float immunityTimer = 0f;
+    protected static final float immun_time = 0.2f; 
 
     // protected float tickDmgChance;
     // protected float tickDmgDamage;
     // protected float tickDmgDuration;
     // protected TickDmgType tickDmgType
-
-    protected Texture walkingTexture;
-    protected float slowChance;
-    protected float slowPower;
-    protected float slowDuration;
-    protected float immunityTimer = 0f;
-    protected static final float immun_time = 0.2f; 
+    // protected float slowChance;
+    // protected float slowPower;
+    // protected float slowDuration;
 
     /**
      * Crée une nouvelle entité vivante.
@@ -50,15 +47,13 @@ public abstract class LivingEntity extends Entity {
      * @param armor          valeur d'armure qui réduit les dégâts
      * @param force          force appliquée par l'entité (impact)
      * @param texturePath    chemin vers la texture principale (fichier)
-     * @param walkingTexture texture utilisée pour l'animation de marche
      */
-    public LivingEntity(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, float hp, int armor, float force, String texturePath, Texture walkingTexture) {
+    public LivingEntity(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, float hp, int armor, float force, String texturePath) {
         super(spawnPoint, hitboxWidth, hitboxHeight, texturePath);
         this.hp = hp;
         this.maxHp = hp;
         this.armor = armor;
         this.force = force;
-        this.walkingTexture = walkingTexture;
     }
 
     /**

@@ -1,8 +1,6 @@
 package io.github.dr4c0nix.survivorgame.entities.enemy;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.Gdx;
 
 /**
  * Orc: exemple concret de ClassicEnemy avec constructeur sans-arg.
@@ -24,7 +22,6 @@ public class Orc extends ClassicEnemy {
                 28, 36,
                 12, 160f, 0, 4f,
                 texture_pincipale,
-                new Texture(Gdx.files.internal(texture_pincipale)),
                 null,
                 60f);
 
@@ -33,6 +30,5 @@ public class Orc extends ClassicEnemy {
         this.maxHp = 160f;
         this.armor = 0;
         this.force = 4f;
-        this.walkingTexture = new Texture(Gdx.files.internal(texture_pincipale)); 
     }
 }

@@ -6,7 +6,6 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.InputProcessor;
@@ -255,8 +254,7 @@ public class Gameplay implements Screen {
     }
 
     private void initPlayer() {
-        Texture playerTexture = new Texture(Gdx.files.internal("Entity/Player/static1.png"));
-        this.player = new Player(spawnPoint, 100f, 10, 1.0f, "Entity/Player/static1.png", playerTexture, "Le Romz", 5f) {
+        this.player = new Player(spawnPoint, 100f, 10, 1.0f, "Entity/Player/static1.png", "Le Romz", 5f) {
             @Override
             public void animation() {
                 super.animation();
