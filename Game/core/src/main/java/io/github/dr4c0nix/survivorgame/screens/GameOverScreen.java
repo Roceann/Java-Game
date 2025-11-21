@@ -3,9 +3,11 @@ package io.github.dr4c0nix.survivorgame.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -27,21 +29,26 @@ public class GameOverScreen implements Screen {
     private final float timeSurvived;
 
     private Stage stage;
+    private SpriteBatch batch;
     private BitmapFont font;
     private BitmapFont titleFont;
     private Texture overlayTex;
     private Texture panelTex;
+    private Texture gameOverBg;
 
     public GameOverScreen(Main main, int kills, int level, float timeSurvived) {
         this.main = main;
         this.kills = kills;
         this.level = level;
         this.timeSurvived = timeSurvived;
+
+        gameOverBg = new Texture(Gdx.files.internal("background/gameoverbg.png"));
     }
 
     @Override
     public void show() {
         stage = new Stage(new ScreenViewport());
+        batch = new SpriteBatch();
         Gdx.input.setInputProcessor(stage);
 
         createFonts();
@@ -59,14 +66,12 @@ public class GameOverScreen implements Screen {
     }
 
     private void createTextures() {
-        // Black transparent overlay
         Pixmap p1 = new Pixmap(4, 4, Pixmap.Format.RGBA8888);
         p1.setColor(0f, 0f, 0f, 0.7f);
         p1.fill();
         overlayTex = new Texture(p1);
         p1.dispose();
 
-        // Panel background
         Pixmap p2 = new Pixmap(4, 4, Pixmap.Format.RGBA8888);
         p2.setColor(0.15f, 0.15f, 0.15f, 0.9f);
         p2.fill();
@@ -77,7 +82,6 @@ public class GameOverScreen implements Screen {
     private void buildUI() {
         Table root = new Table();
         root.setFillParent(true);
-
         root.setBackground(new TextureRegionDrawable(new TextureRegion(overlayTex)));
 
         Table panel = new Table();
@@ -90,8 +94,8 @@ public class GameOverScreen implements Screen {
         String timeString = Gameplay.formatTime(timeSurvived);
 
         Label stats = new Label(
-                "Kills : " + kills + "\nNiveau : " + level + "\nTemps survécu : " + timeString,
-                new Label.LabelStyle(font, Color.WHITE)
+            "Kills : " + kills + "\nNiveau : " + level + "\nTemps survécu : " + timeString,
+            new Label.LabelStyle(font, Color.WHITE)
         );
         stats.setAlignment(Align.center);
 
@@ -132,25 +136,37 @@ public class GameOverScreen implements Screen {
         panel.add(quitBtn).width(250).height(60).pad(5).row();
 
         root.add(panel);
-
         stage.addActor(root);
     }
 
     @Override
     public void render(float delta) {
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        batch.begin();
+        batch.draw(gameOverBg, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.end();
+
         stage.act(delta);
         stage.draw();
     }
 
-    @Override public void resize(int w, int h) { stage.getViewport().update(w, h, true); }
+    @Override public void resize(int w, int h) {
+        stage.getViewport().update(w, h, true);
+    }
+
     @Override public void pause() {}
     @Override public void resume() {}
     @Override public void hide() {}
-    @Override public void dispose() {
-        if (stage != null) stage.dispose();
-        if (overlayTex != null) overlayTex.dispose();
-        if (panelTex != null) panelTex.dispose();
-        if (font != null) font.dispose();
-        if (titleFont != null) titleFont.dispose();
+
+    @Override
+    public void dispose() {
+        stage.dispose();
+        batch.dispose();
+        overlayTex.dispose();
+        panelTex.dispose();
+        font.dispose();
+        titleFont.dispose();
+        gameOverBg.dispose();
     }
 }

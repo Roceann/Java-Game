@@ -494,8 +494,10 @@ public class Gameplay implements Screen {
 
     private void handleGlobalInput() {
         if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
-            Main.changeScreen("Menu");
-        }
+        main.setScreen(new PauseScreen(main, this));
+        return;
+    }
+
         if (Gdx.input.isKeyJustPressed(Keys.L)) {
             showLevelUpScreen();
         }
