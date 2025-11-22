@@ -110,6 +110,7 @@ public class PauseScreen implements Screen {
 
         menuBtn.addListener(new ClickListener() {
             @Override public void clicked(InputEvent e, float x, float y) {
+                gameplay.stopMusics();
                 gameplay.setIsPaused(false);
                 Main.changeScreen("Menu");
             }

@@ -672,4 +672,9 @@ public class Gameplay implements Screen {
         theme1Music.setVolume(volume);
         theme2Music.setVolume(volume);
     }
+
+    public void stopMusics() {
+        if (theme1Music != null) theme1Music.stop();
+        if (theme2Music != null) theme2Music.stop();
+    }
 }
