@@ -362,7 +362,10 @@ public class Gameplay implements Screen {
             }
 
             if (!enemy.isAlive()) {
-                entityFactory.obtainOrbXp(enemy.getPosition(), enemy.getXpValue());
+                float halfOrb = OrbXp.getOrbSize() * 0.5f;
+                float orbX = enemy.getPosition().x + enemy.getHitbox().width * 0.5f - halfOrb;
+                float orbY = enemy.getPosition().y + enemy.getHitbox().height * 0.5f - halfOrb;
+                entityFactory.obtainOrbXp(new Vector2(orbX, orbY), enemy.getXpValue());
                 player.incrementMobKilled();
                 enemiesToRemove.add(enemy);
             }

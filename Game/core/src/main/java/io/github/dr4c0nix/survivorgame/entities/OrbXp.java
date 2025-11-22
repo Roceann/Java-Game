@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.Pool.Poolable;
  */
 public class OrbXp extends Entity implements Poolable {
     private int xpValue;
-    private static final float ORB_SIZE = 16f;
+    private static final float ORB_SIZE = 12f;
 
     //ADD LATER AFTER MVP
     // protected Player target;
@@ -48,6 +48,13 @@ public class OrbXp extends Entity implements Poolable {
      */
     public int getXpValue() {
         return this.xpValue;
+    }
+
+    /*
+     * Obtient la taille de l'orbe.
+     */
+    public static float getOrbSize() {
+        return ORB_SIZE;
     }
 
     /*
