@@ -75,9 +75,9 @@ public class PauseScreen implements Screen {
         btnStyle.font = font;
         btnStyle.fontColor = Color.WHITE;
         btnStyle.up = new TextureRegionDrawable(new TextureRegion(panelTex));
-        TextButton resumeBtn = new TextButton("Reprendre", btnStyle);
-        TextButton menuBtn   = new TextButton("Menu principal", btnStyle);
-        TextButton quitBtn   = new TextButton("Quitter", btnStyle);
+        TextButton resumeBtn = new TextButton("Resume", btnStyle);
+        TextButton menuBtn   = new TextButton("Main Menu", btnStyle);
+        TextButton quitBtn   = new TextButton("Quit", btnStyle);
 
         leftPanel.add(resumeBtn).row();
         leftPanel.add(menuBtn).row();
@@ -90,12 +90,15 @@ public class PauseScreen implements Screen {
         rightPanel.pad(12f);
         Label.LabelStyle titleStyle = new Label.LabelStyle(font, Color.GOLD);
         Label.LabelStyle textStyle  = new Label.LabelStyle(font, Color.WHITE);
-        Label statsTitle = new Label("STATISTIQUES", titleStyle);
+        Label timeLabel = new Label("Time: " + Gameplay.formatTime(gameplay.getElapsedTime()), textStyle);
+        timeLabel.setAlignment(Align.center);
+        Label statsTitle = new Label("STATISTICS", titleStyle);
         statsTitle.setAlignment(Align.center);
         final Label statsLabel = new Label("", textStyle);
         statsLabel.setAlignment(Align.topLeft);
         updateStatsText(statsLabel);
 
+        rightPanel.add(timeLabel).padBottom(10f).row();
         rightPanel.add(statsTitle).padBottom(10f).row();
         rightPanel.add(statsLabel).width(260f).left().top();
         root.add(leftPanel).top().left().pad(20f);
@@ -131,22 +134,23 @@ public class PauseScreen implements Screen {
         if (p == null) return;
 
         StringBuilder sb = new StringBuilder();
-        sb.append("XP : ").append(p.getXpactual()).append(" / ").append(p.getExperienceToNextLevel()).append("\n");
-        sb.append("HP : ").append((int) p.getHp()).append(" / ").append((int) p.getMaxHp()).append("\n");
-        sb.append("Armure : ").append(p.getArmor()).append("\n");
-        sb.append("Chance critique : ").append(String.format("%.1f%%", p.getCritChance())).append("\n");
-        sb.append("Dégâts critiques : x").append(String.format("%.2f", p.getCritDamage())).append("\n");
-        sb.append("Régénération HP : ").append(String.format("%.2f", p.getRegenHP())).append("\n\n");
+        sb.append("XP: ").append(p.getXpactual()).append(" / ").append(p.getExperienceToNextLevel()).append("\n");
+        sb.append("HP: ").append((int) p.getHp()).append(" / ").append((int) p.getMaxHp()).append("\n");
+        sb.append("Armor: ").append(p.getArmor()).append("\n");
+        sb.append("Crit Chance: ").append(String.format("%.1f%%", p.getCritChance())).append("\n");
+        sb.append("Crit Damage: x").append(String.format("%.2f", p.getCritDamage())).append("\n");
+        sb.append("HP Regen: ").append(String.format("%.1f hp/10sec", p.getRegenHP())).append("\n\n");
+        sb.append("Mobs Killed: ").append(p.getMobKilled()).append("\n\n");
 
         Weapon weapon = p.getCurrentWeapon();
         if (weapon == null) {
-            sb.append("Arme équipée : aucune");
+            sb.append("Equipped Weapon: none");
         } else {
-            sb.append("Arme équipée : ").append(weapon.getClass().getSimpleName()).append("\n");
-            sb.append("Niveau arme : ").append(weapon.getWeaponLevel()).append("\n");
-            sb.append("Dégâts : ").append(weapon.getEffectiveDamage()).append("\n");
-            sb.append("Cadence : ").append(String.format("%.2f secondes", weapon.getEffectiveShotDelay())).append("\n");
-            sb.append("Taille projectile : ").append(String.format("%.2f", weapon.getEffectiveProjectileSize()));
+            sb.append("Equipped Weapon: ").append(weapon.getClass().getSimpleName()).append("\n");
+            sb.append("Weapon Level: ").append(weapon.getWeaponLevel()).append("\n");
+            sb.append("Damage: ").append(weapon.getEffectiveDamage()).append("\n");
+            sb.append("Rate: ").append(String.format("%.2f seconds", weapon.getEffectiveShotDelay())).append("\n");
+            sb.append("Projectile Size: ").append(String.format("%.2f", weapon.getEffectiveProjectileSize()));
         }
 
         statsLabel.setText(sb.toString());
