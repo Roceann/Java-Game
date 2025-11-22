@@ -23,6 +23,7 @@ public class EntityFactory {
     private Gameplay gameplay; 
 
     private Pool<OrbXp> orbXpPool;
+    private static final float ORB_DEFAULT_SIZE = 12f;
     private final ArrayList<OrbXp> activeOrbs = new ArrayList<>();
     private final ArrayList<OrbXp> createdOrbs = new ArrayList<>();
 
@@ -58,7 +59,7 @@ public class EntityFactory {
         this.orbXpPool = new Pool<OrbXp>(INITIAL_POOL_SIZE, MAX_POOL_SIZE) {
             @Override
             protected OrbXp newObject() {
-                OrbXp orb = new OrbXp(0);
+                OrbXp orb = new OrbXp(0, ORB_DEFAULT_SIZE);
                 createdOrbs.add(orb);
                 return orb;
             }
@@ -181,12 +182,13 @@ public class EntityFactory {
     }
 
     // Orbes XP
-    public OrbXp obtainOrbXp(Vector2 position, int xpValue) {
+    public OrbXp obtainOrbXp(Vector2 position, int xpValue, float orbSize) {
         OrbXp orb = orbXpPool.obtain();
         if (!activeOrbs.contains(orb)) {
             activeOrbs.add(orb);
         }
         orb.setXpValue(xpValue);
+        orb.setSize(orbSize);
         orb.setAlive(true);
         orb.setPosition(new Vector2(position)); // place l’orbe
         return orb;

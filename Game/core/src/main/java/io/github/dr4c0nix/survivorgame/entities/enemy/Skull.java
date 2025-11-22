@@ -45,4 +45,9 @@ public class Skull extends ClassicEnemy {
             this.hitbox.setSize(this.texture.getWidth(), this.texture.getHeight());
         }
     }
+
+    @Override
+    public float getXpOrbSize() {
+        return 10.5f;
+    }
 }

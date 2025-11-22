@@ -85,6 +85,7 @@ public class Gameplay implements Screen {
 
     private Music theme1Music;
     private Music theme2Music;
+    private float maxTime;
 
     public Gameplay() {
         this.main = (Main) Gdx.app.getApplicationListener();
@@ -96,6 +97,9 @@ public class Gameplay implements Screen {
         this.spawnManager = new SpawnManager(this, entityFactory, map);
         this.spawnManager.unlockSpawning();
         player.setWeapon(new Sword(entityFactory));
+
+        GameOptions options = GameOptions.getInstance();
+        maxTime = options.getGameDuration() * 60f;
 
         theme1Music = Gdx.audio.newMusic(Gdx.files.internal("Song/theme 1.wav"));
         theme2Music = Gdx.audio.newMusic(Gdx.files.internal("Song/theme 2.wav"));
@@ -293,7 +297,7 @@ public class Gameplay implements Screen {
 
         elapsedTime += delta;
 
-        if (elapsedTime >= 300f) { 
+        if (elapsedTime >= maxTime) { 
             onVictory();
         return;
         }
@@ -362,10 +366,10 @@ public class Gameplay implements Screen {
             }
 
             if (!enemy.isAlive()) {
-                float halfOrb = OrbXp.getOrbSize() * 0.5f;
+                float halfOrb = enemy.getXpOrbSize() * 0.5f;
                 float orbX = enemy.getPosition().x + enemy.getHitbox().width * 0.5f - halfOrb;
                 float orbY = enemy.getPosition().y + enemy.getHitbox().height * 0.5f - halfOrb;
-                entityFactory.obtainOrbXp(new Vector2(orbX, orbY), enemy.getXpValue());
+                entityFactory.obtainOrbXp(new Vector2(orbX, orbY), enemy.getXpValue(), enemy.getXpOrbSize());
                 player.incrementMobKilled();
                 enemiesToRemove.add(enemy);
             }
@@ -605,10 +609,11 @@ public class Gameplay implements Screen {
     }   
 
     public void onVictory() {
+        if (theme1Music != null) theme1Music.stop();
+        if (theme2Music != null) theme2Music.stop();
         int level = player.getLevel();
         int kills = player.getMobKilled();
         float time = this.elapsedTime;
-
         Main main = (Main) Gdx.app.getApplicationListener();
         main.setScreen(new VictoryScreen(main, kills, level, time));
     }

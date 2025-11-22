@@ -14,7 +14,8 @@ import com.badlogic.gdx.utils.Pool.Poolable;
  */
 public class OrbXp extends Entity implements Poolable {
     private int xpValue;
-    private static final float ORB_SIZE = 12f;
+    private float orbSize;
+    private static final float DEFAULT_ORB_SIZE = 12f;
 
     //ADD LATER AFTER MVP
     // protected Player target;
@@ -26,8 +27,13 @@ public class OrbXp extends Entity implements Poolable {
      * @param xpValue la valeur d'expérience que l'orbe confère lorsqu'elle est ramassée
      */
     public OrbXp(int xpValue) {
-        super(new Vector2(0, 0), ORB_SIZE, ORB_SIZE, "xporb.png");
+        this(xpValue, DEFAULT_ORB_SIZE);
+    }
+
+    public OrbXp(int xpValue, float size) {
+        super(new Vector2(0, 0), size, size, "xporb.png");
         this.xpValue = xpValue;
+        this.orbSize = size;
         this.setAlive(false);
     }
 
@@ -53,8 +59,19 @@ public class OrbXp extends Entity implements Poolable {
     /*
      * Obtient la taille de l'orbe.
      */
-    public static float getOrbSize() {
-        return ORB_SIZE;
+    public float getOrbSize() {
+        return this.orbSize;
+    }
+
+    public static float getDefaultOrbSize() {
+        return DEFAULT_ORB_SIZE;
+    }
+
+    public void setSize(float size) {
+        this.orbSize = size;
+        if (getHitbox() != null) {
+            getHitbox().setSize(size, size);
+        }
     }
 
     /*

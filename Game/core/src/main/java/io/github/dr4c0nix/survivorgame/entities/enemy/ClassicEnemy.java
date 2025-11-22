@@ -16,6 +16,12 @@ public abstract class ClassicEnemy extends Enemy implements Poolable {
     }
 
     /**
+     * Taille de l'orbe d'XP pour cet ennemi (en pixels).
+     * Les sous-classes doivent fournir la valeur appropriée.
+     */
+    public abstract float getXpOrbSize();
+
+    /**
      * Activate enemy (used by the factory/pool).
      * Reinitialises state and places it at spawn.
      */

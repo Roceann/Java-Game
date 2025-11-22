@@ -44,4 +44,9 @@ public class Demon extends ClassicEnemy {
             this.hitbox.setSize(this.texture.getWidth(), this.texture.getHeight());
         }
     }
+
+    @Override
+    public float getXpOrbSize() {
+        return 7.0f;
+    }
 }

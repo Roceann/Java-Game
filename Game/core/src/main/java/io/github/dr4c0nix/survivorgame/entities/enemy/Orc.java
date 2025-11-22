@@ -36,4 +36,9 @@ public class Orc extends ClassicEnemy {
             this.hitbox.setSize(this.texture.getWidth(), this.texture.getHeight());
         }
     }
+
+    @Override
+    public float getXpOrbSize() {
+        return 8.5f;
+    }
 }
