@@ -20,6 +20,9 @@ jobs:
           java-version: '8'
           distribution: 'temurin'
 
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y libglfw3 libopenal1
+
       - name: Grant execute permission for gradlew
         run: chmod +x Game/gradlew
 
