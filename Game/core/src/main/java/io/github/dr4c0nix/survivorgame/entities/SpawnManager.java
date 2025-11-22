@@ -175,14 +175,14 @@ public class SpawnManager {
         float elapsedTime = gameplay.getElapsedTime();
         float difficultyFactor = player.getDifficulter();
         
-        float baseSpawn = 3.5f;
+        float baseSpawn = 2f;
         
 
         float timeFactor = (float)Math.sqrt(elapsedTime / 60f); 
         
         float rawValue = baseSpawn + (timeFactor * difficultyFactor);
         
-        return MathUtils.clamp((int)Math.floor(rawValue), 3, 15);
+        return MathUtils.clamp((int)Math.floor(rawValue), 1, 15);
     }
 
     private boolean isPlayerInsideAreas(ArrayList<Rectangle> areas, Player player) {
