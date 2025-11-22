@@ -34,7 +34,7 @@ public class OrbXpTest {
     public void testConstructor_InitializesProperties() {
         assertEquals("La valeur d'XP initiale est incorrecte", 100, orb.getXpValue());
         assertFalse("L'orbe doit être inactive après sa construction", orb.isAlive());
-        assertEquals("La taille de la hitbox est incorrecte", OrbXp.getOrbSize(), orb.getHitbox().width, 0.01);
+        assertEquals("La taille de la hitbox est incorrecte", orb.getOrbSize(), orb.getHitbox().width, 0.01);
     }
 
     /**

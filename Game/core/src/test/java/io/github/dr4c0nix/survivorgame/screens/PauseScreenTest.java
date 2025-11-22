@@ -70,21 +70,23 @@ public class PauseScreenTest {
         when(mockPlayer.getCritChance()).thenReturn(0.1f);
         when(mockPlayer.getCritDamage()).thenReturn(2.0f);
         when(mockPlayer.getRegenHP()).thenReturn(1.0f);
-
-        Method method = PauseScreen.class.getDeclaredMethod("updateStatsText", Label.class);
-        method.setAccessible(true);
-
-        doCallRealMethod().when(pauseScreen).updateStatsText(any(Label.class));
+        when(mockPlayer.getMobKilled()).thenReturn(0);
+        when(mockPlayer.getCurrentWeapon()).thenReturn(null);
 
         PauseScreen realPauseScreen = new PauseScreen(mockMain, mockGameplay);
-        method.invoke(realPauseScreen, mockLabel);
+        realPauseScreen.updateStatsText(mockLabel);
 
         verify(mockLabel).setText(argThat(argument -> {
             String text = argument.toString();
-            return text.contains("Niveau : 5") &&
-                   text.contains("XP : 100 / 500") &&
-                   text.contains("HP : 50 / 100") &&
-                   text.contains("Force : 1.5");
+            String normalized = text.replace(',', '.');
+            return normalized.contains("XP: 100 / 500") &&
+                   normalized.contains("HP: 50 / 100") &&
+                   normalized.contains("Armor: 10") &&
+                   normalized.contains("Crit Chance: 0.1%") &&
+                   normalized.contains("Crit Damage: x2.00") &&
+                   normalized.contains("HP Regen: 1.0 hp/10sec") &&
+                   normalized.contains("Mobs Killed: 0") &&
+                   normalized.contains("Equipped Weapon: none");
         }));
     }
 

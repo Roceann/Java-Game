@@ -185,14 +185,11 @@ public class LevelUpTest {
      */
     @Test
     public void testApplyUpgrade_Force() throws Exception {
-        UpgradeOption option = new UpgradeOption("Force", 0.2f, 0.2f, UpgradeOption.StatType.FLOAT);
+        UpgradeOption option = new UpgradeOption("Difficulté", 0.2f, 0.2f, UpgradeOption.StatType.FLOAT);
         setOptionValue(option, 0.2f);
-
-        when(mockPlayer.getForce()).thenReturn(1.0f);
-
+        when(mockPlayer.getDifficulter()).thenReturn(1.0f);
         invokeApplyUpgrade(option);
-
-        verify(mockPlayer).setForce(1.2f);
+        verify(mockPlayer).setDifficulter(1.2f);
     }
 
     /**
@@ -219,13 +216,10 @@ public class LevelUpTest {
      */
     @Test
     public void testApplyUpgrade_CritChance() throws Exception {
-        UpgradeOption option = new UpgradeOption("Chance de Crit", 5f, 5f, UpgradeOption.StatType.FLOAT);
+        UpgradeOption option = new UpgradeOption("Chance Critique", 5f, 5f, UpgradeOption.StatType.FLOAT);
         setOptionValue(option, 5f);
-
         when(mockPlayer.getCritChance()).thenReturn(10f);
-
         invokeApplyUpgrade(option);
-
         verify(mockPlayer).setCritChance(15f);
     }
 

@@ -72,8 +72,8 @@ public class EntityFactoryTest {
     public void testObtainAndReleaseOrbXp() {
         assertEquals("La liste des orbes actives doit être vide au début", 0, entityFactory.getActiveOrbs().size());
 
-        OrbXp orb = entityFactory.obtainOrbXp(new Vector2(50, 50), 20);
-
+        OrbXp orb = entityFactory.obtainOrbXp(new Vector2(50, 50), 20, OrbXp.getDefaultOrbSize());
+    
         assertNotNull("L'orbe obtenue ne doit pas être nulle", orb);
         assertTrue("L'orbe doit être dans la liste des actives", entityFactory.getActiveOrbs().contains(orb));
         assertEquals("Il doit y avoir 1 orbe active", 1, entityFactory.getActiveOrbs().size());

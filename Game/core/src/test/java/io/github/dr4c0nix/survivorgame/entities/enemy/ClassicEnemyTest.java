@@ -26,6 +26,11 @@ public class ClassicEnemyTest {
         public TestableClassicEnemy(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, int xpDrop, float hp, int armor, float force, String texturePath, Gameplay gameplay, float movementSpeed) {
             super(spawnPoint, hitboxWidth, hitboxHeight, xpDrop, hp, armor, force, texturePath, gameplay, movementSpeed);
         }
+
+        @Override
+        public float getXpOrbSize() {
+            return 12f; 
+        }
     }
 
     /**
