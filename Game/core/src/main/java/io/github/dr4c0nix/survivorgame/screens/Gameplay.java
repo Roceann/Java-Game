@@ -355,7 +355,7 @@ public class Gameplay implements Screen {
         ArrayList<ClassicEnemy> enemiesToRemove = new ArrayList<>();
 
         for (ClassicEnemy enemy : entityFactory.getActiveEnemies()) {
-            enemy.update(delta, player);
+            enemy.update(delta);
 
             if (player.getHitbox().overlaps(enemy.getHitbox())) {
                 player.takeDamage(enemy.getForce());
