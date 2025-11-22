@@ -54,7 +54,7 @@ public class PlayerTest {
     private TestPlayer player;
 
     /**
-     * Classe concrète de test pour Player (qui est abstraite).
+     * Classe de test pour Player (qui est abstraite).
      */
     private static class TestPlayer extends Player {
         public TestPlayer(Vector2 spawnPoint) {
@@ -76,7 +76,6 @@ public class PlayerTest {
         when(mockFiles.internal(anyString())).thenReturn(mockFileHandle);
         when(mockFileHandle.exists()).thenReturn(true);
 
-        // --- CORRECTION NPE GameOptions ---
         // GameOptions.getInstance() appelle Gdx.app.getPreferences()
         when(mockApp.getPreferences(anyString())).thenReturn(mockPrefs);
         
@@ -108,20 +107,14 @@ public class PlayerTest {
             instance.setAccessible(true);
             instance.set(null, null);
         } catch (NoSuchFieldException e) {
-            // Ignorer si le champ n'existe pas (cas improbable si la classe est correcte)
         }
     }
 
-    // ========== CONSTRUCTOR & INITIALIZATION TESTS ==========
-
     @Test
-    public void testConstructor_InitializesPlayerSpecificValues() {
-        // Vérifie les valeurs par défaut
+    public void testConstructor() {
         assertEquals("Niveau initial incorrect", 1, player.getLevel());
         assertEquals("XP initial incorrect", 0, player.getXpactual());
     }
-
-    // ========== XP & LEVEL UP TESTS ==========
 
     @Test
     public void testAddXp_IncreasesXpCorrectly() {
@@ -145,8 +138,6 @@ public class PlayerTest {
         assertEquals(5, player.getXpactual());
     }
 
-    // ========== WEAPON MANAGEMENT TESTS ==========
-
     @Test
     public void testSetWeapon_AssignsWeaponCorrectly() {
         player.setWeapon(mockWeapon);
@@ -154,15 +145,12 @@ public class PlayerTest {
         assertTrue(player.hasWeapon());
     }
 
-    // ========== DAMAGE & GAMEOVER TESTS ==========
-
     @Test
     public void testTakeDamage_CallsGameOverWhenHpZero() {
         player.setGameplay(mockGameplay);
         player.setMaxHp(100f);
-        player.setCUrrentHp(10f);
+        player.setCurrentHp(10f);
 
-        // Tuer le joueur
         player.takeDamage(1000f);
         
         // Vérifier que la méthode onGameOver du gameplay est appelée
@@ -173,29 +161,23 @@ public class PlayerTest {
     public void testTakeDamage_DoesNotCallGameOverWhenAlive() {
         player.setGameplay(mockGameplay);
         player.setMaxHp(100f);
-        player.setCUrrentHp(100f);
+        player.setCurrentHp(100f);
         
         // Infliger peu de dégâts
-        player.takeDamage(10f);
+        player.takeDamage(1f);
         
         verify(mockGameplay, never()).onGameOver();
     }
 
-    // ========== REGENERATION TESTS ==========
-
     @Test
     public void testRegen_IncreasesHpOverTime() throws Exception {
         player.setMaxHp(100f);
-        player.setCUrrentHp(50f);
+        player.setCurrentHp(50f);
         
         // Simuler le passage du temps > REGEN_INTERVAL (10s)
-        // update appelle tickRegen
         player.update(10.1f);
         
-        // Accès au champ hp via réflexion car il est protected dans LivingEntity
-        Field hpField = io.github.dr4c0nix.survivorgame.entities.LivingEntity.class.getDeclaredField("hp");
-        hpField.setAccessible(true);
-        float hp = (float) hpField.get(player);
+        float hp = player.getHp();
         
         assertEquals("HP devrait augmenter de 5 après l'intervalle de regen", 55f, hp, 0.001f);
     }
@@ -203,18 +185,14 @@ public class PlayerTest {
     @Test
     public void testRegen_DoesNotExceedMaxHp() throws Exception {
         player.setMaxHp(100f);
-        player.setCUrrentHp(98f);
+        player.setCurrentHp(98f);
         
         player.update(10.1f);
         
-        Field hpField = io.github.dr4c0nix.survivorgame.entities.LivingEntity.class.getDeclaredField("hp");
-        hpField.setAccessible(true);
-        float hp = (float) hpField.get(player);
+        float hp = player.getHp();
         
         assertEquals("HP devrait être plafonné au MaxHP", 100f, hp, 0.001f);
     }
-
-    // ========== MOVEMENT INPUT TESTS ==========
 
     @Test
     public void testHandleInput_MovesUp() {
@@ -264,8 +242,6 @@ public class PlayerTest {
         assertTrue("Position X devrait diminuer", player.getPosition().x < initialPos.x);
     }
 
-    // ========== COLLISION TESTS ==========
-
     @Test
     public void testHandleInput_DoesNotMove_WhenColliding() {
         // On simule une collision
@@ -279,33 +255,26 @@ public class PlayerTest {
         
         player.update(0.1f);
 
-        assertEquals("Le joueur ne devrait pas bouger en cas de collision", 
-                initialPos.x, player.getPosition().x, 0.001f);
+        assertEquals("Le joueur ne devrait pas bouger en cas de collision", initialPos.x, player.getPosition().x, 0.001f);
     }
-
-    // ========== DIRECTION TESTS ==========
 
     @Test
     public void testFacingDirection_UpdatesOnMovement() {
-        // Test Droite
         when(mockInput.isKeyPressed(anyInt())).thenReturn(false);
         when(mockInput.isKeyPressed(GameOptions.getInstance().getKeyRight())).thenReturn(true);
         player.update(0.1f);
         assertEquals(new Vector2(1, 0), player.getFacingDirection());
 
-        // Test Haut
         when(mockInput.isKeyPressed(GameOptions.getInstance().getKeyRight())).thenReturn(false);
         when(mockInput.isKeyPressed(GameOptions.getInstance().getKeyUp())).thenReturn(true);
         player.update(0.1f);
         assertEquals(new Vector2(0, 1), player.getFacingDirection());
         
-        // Test Gauche
         when(mockInput.isKeyPressed(GameOptions.getInstance().getKeyUp())).thenReturn(false);
         when(mockInput.isKeyPressed(GameOptions.getInstance().getKeyLeft())).thenReturn(true);
         player.update(0.1f);
         assertEquals(new Vector2(-1, 0), player.getFacingDirection());
         
-        // Test Bas
         when(mockInput.isKeyPressed(GameOptions.getInstance().getKeyLeft())).thenReturn(false);
         when(mockInput.isKeyPressed(GameOptions.getInstance().getKeyDown())).thenReturn(true);
         player.update(0.1f);
@@ -314,13 +283,9 @@ public class PlayerTest {
 
     @Test
     public void testFacingDirection_DefaultIsDown() {
-        // Si on ne bouge pas, par défaut ou après arrêt, c'est souvent down ou la dernière direction
-        // Dans votre code : if (!isMoving) currentDirection = Direction.down;
         player.update(0.1f); 
         assertEquals(new Vector2(0, -1), player.getFacingDirection());
     }
-
-    // ========== ATTACK & WEAPON LOGIC TESTS ==========
 
     @Test
     public void testUpdate_UpdatesWeapon_WhenEnabled() {
@@ -329,7 +294,6 @@ public class PlayerTest {
         
         player.update(0.1f);
         
-        // Vérifie que la méthode update de l'arme est appelée
         verify(mockWeapon, times(1)).update(anyFloat(), eq(player));
     }
 
@@ -340,7 +304,6 @@ public class PlayerTest {
         
         player.update(0.1f);
         
-        // Vérifie que l'arme n'est PAS mise à jour
         verify(mockWeapon, never()).update(anyFloat(), any());
     }
     
@@ -353,8 +316,6 @@ public class PlayerTest {
         assertFalse(player.areAttacksEnabled());
     }
 
-    // ========== STATS & UI INTERACTION TESTS ==========
-
     @Test
     public void testMobKilled_IncrementsCorrectly() {
         assertEquals(0, player.getMobKilled());
@@ -364,11 +325,9 @@ public class PlayerTest {
 
     @Test
     public void testLevelUp_CallsGameplayShowScreen() {
-        // On force un level up
         int xpNeeded = player.getExperienceToNextLevel();
         player.addXp(xpNeeded);
         
-        // Vérifie que l'écran de level up est demandé
         verify(mockGameplay, times(1)).showLevelUpScreen();
     }
     

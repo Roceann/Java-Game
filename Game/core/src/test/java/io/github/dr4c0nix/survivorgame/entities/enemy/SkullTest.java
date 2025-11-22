@@ -48,7 +48,7 @@ public class SkullTest {
         when(mockTexture.getWidth()).thenReturn(50);
         when(mockTexture.getHeight()).thenReturn(60);
 
-        // Crée une classe anonyme pour injecter la texture mockée et simuler le redimensionnement.
+        // Crée une classe pour injecter la texture mockée et simuler le redimensionnement.
         Skull skull = new Skull() {{
             this.texture = mockTexture;
             if (this.texture != null) {

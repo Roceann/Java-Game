@@ -34,7 +34,7 @@ public class ProjectileTest {
      */
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         // Empêche le constructeur de créer une vraie texture
         Gdx.files = null;
         projectile = new Projectile("test.png", 10, 20);
@@ -69,15 +69,12 @@ public class ProjectileTest {
         assertEquals("Les dégâts sont incorrects", 50, projectile.getDamage());
         assertEquals("La source est incorrecte", mockSource, projectile.getSource());
         
-        // Vérifie que la direction est normalisée
         assertEquals("La direction n'est pas normalisée", 1, projectile.getDirection().len(), 0.001);
         
-        // Vérifie que la vélocité est correcte (direction * vitesse)
         Vector2 normalizedDirection = direction.cpy().nor();
         assertEquals("La vélocité X est incorrecte", normalizedDirection.x * 200, projectile.getVelocity().x, 0.01);
         assertEquals("La vélocité Y est incorrecte", normalizedDirection.y * 200, projectile.getVelocity().y, 0.01);
 
-        // Vérifie le calcul de la position de départ (centrée)
         float expectedWidth = 10 * 1.5f;
         float expectedHeight = 20 * 1.5f;
         assertEquals("La position X est mal centrée", 100 - expectedWidth / 2, projectile.getPosition().x, 0.01);
@@ -109,7 +106,7 @@ public class ProjectileTest {
     public void testUpdate_WhenRangeExceeded_BecomesInactive() {
         projectile.init(new Vector2(0, 0), new Vector2(1, 0), 100, 200, 10, 1f, mockSource);
         
-        projectile.update(2.1f); // Distance parcourue = 100 * 2.1 = 210, ce qui est > 200
+        projectile.update(2.1f); 
 
         assertFalse("Le projectile doit devenir inactif après avoir dépassé sa portée", projectile.isAlive());
     }
@@ -142,7 +139,6 @@ public class ProjectileTest {
         
         projectile.draw(mockSpriteBatch);
 
-        // L'angle de direction (0, 1) est 90°. L'angle de rotation est (90 + 90) % 360 = 180°.
         verify(mockSpriteBatch, times(1)).draw(
             any(TextureRegion.class),
             eq(projectile.getPosition().x),

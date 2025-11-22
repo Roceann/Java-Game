@@ -359,7 +359,7 @@ public abstract class Player extends LivingEntity {
         this.critDamage = critDamage;
     }
 
-    public void setCUrrentHp(float amount){
+    public void setCurrentHp(float amount){
         this.hp = amount;
     }
 

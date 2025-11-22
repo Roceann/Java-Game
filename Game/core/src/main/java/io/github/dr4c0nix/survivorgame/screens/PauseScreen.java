@@ -125,7 +125,8 @@ public class PauseScreen implements Screen {
         stage.addActor(root);
     }
 
-    private void updateStatsText(Label statsLabel) {
+    // Mise en public pour les tests
+    public void updateStatsText(Label statsLabel) {
         Player p = gameplay.getPlayer();
         if (p == null) return;
 

@@ -170,12 +170,9 @@ public class Menu implements Screen {
 
     /**
      * Efface tous les boutons du menu.
-     * 
-     * Cette méthode supprime tous les écouteurs d'événements des boutons
-     * actuels, les retire de la scène, puis vide la liste.
-     * Cela permet de libérer les ressources et les références.
      */
-    private void clearMenu() {
+    // mise en public pour les tests
+    public void clearMenu() {
         for (TextButton b : currentButtons) {
             if (b != null) {
                 b.clearListeners();
@@ -726,7 +723,8 @@ public class Menu implements Screen {
         sliderStyle.knob = new TextureRegionDrawable(new TextureRegion(sliderKnobTexture));
     }
 
-    private void updateMenuMusicVolume() {
+    // MIse en public pour les tests
+    public void updateMenuMusicVolume() {
         GameOptions options = GameOptions.getInstance();
         if (menuMusic != null) {
             menuMusic.setVolume(options.getMusicVolume() / 100f);

@@ -28,7 +28,7 @@ public class WeaponTest {
     @Mock
     private Player mockPlayer;
 
-    private Sword sword; // Utilisation d'une classe concrète pour tester la classe abstraite
+    private Sword sword;
 
     /**
      * Prépare l'environnement de test avant chaque exécution de test.
@@ -94,16 +94,13 @@ public class WeaponTest {
         Field cooldownField = Weapon.class.getDeclaredField("cooldown");
         cooldownField.setAccessible(true);
 
-        // Test de la décrémentation normale
         cooldownField.set(sword, 1.0f);
         sword.cooldownTick(0.2f);
         assertEquals("Le cooldown devrait être décrémenté", 0.8f, (float) cooldownField.get(sword), 0.001f);
 
-        // Test pour s'assurer que le cooldown ne devient pas négatif
-        sword.cooldownTick(1.0f); // Le cooldown devrait passer à -0.2, puis être ramené à 0
+        sword.cooldownTick(1.0f); 
         assertEquals("Le cooldown ne doit pas être négatif", 0f, (float) cooldownField.get(sword), 0.001f);
 
-        // Test quand le cooldown est déjà à zéro
         sword.cooldownTick(0.5f);
         assertEquals("Le cooldown à 0 doit rester à 0", 0f, (float) cooldownField.get(sword), 0.001f);
     }
@@ -117,7 +114,7 @@ public class WeaponTest {
         Field cooldownField = Weapon.class.getDeclaredField("cooldown");
         cooldownField.setAccessible(true);
 
-        cooldownField.set(sword, 0f); // S'assurer que le cooldown est à 0
+        cooldownField.set(sword, 0f); 
         sword.resetCooldown();
 
         float expectedCooldown = sword.getShotDelay();
@@ -133,15 +130,12 @@ public class WeaponTest {
         Field cooldownField = Weapon.class.getDeclaredField("cooldown");
         cooldownField.setAccessible(true);
 
-        // Quand le cooldown est à 0, on peut tirer
         cooldownField.set(sword, 0f);
         assertTrue("Doit pouvoir tirer quand le cooldown est à 0", sword.canShoot());
 
-        // Quand le cooldown est positif, on ne peut pas tirer
         cooldownField.set(sword, 0.1f);
         assertFalse("Ne doit pas pouvoir tirer quand le cooldown est positif", sword.canShoot());
 
-        // Cas limite : quand le cooldown est négatif, on doit pouvoir tirer
         cooldownField.set(sword, -0.1f);
         assertTrue("Doit pouvoir tirer quand le cooldown est négatif", sword.canShoot());
     }

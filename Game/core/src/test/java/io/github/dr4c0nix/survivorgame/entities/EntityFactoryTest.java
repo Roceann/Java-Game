@@ -1,8 +1,6 @@
 package io.github.dr4c0nix.survivorgame.entities;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import io.github.dr4c0nix.survivorgame.entities.enemy.ClassicEnemy;
 import io.github.dr4c0nix.survivorgame.screens.Gameplay;
@@ -17,7 +15,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Classe de test pour EntityFactory.
- * Les tests vérifient la logique de création, de pooling (gestion des objets)
+ * Les tests vérifient la logique de création, gestion des pools d'objets
  * et de libération des différentes entités (ennemis, orbes, projectiles).
  */
 public class EntityFactoryTest {
@@ -33,10 +31,7 @@ public class EntityFactoryTest {
      */
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        // Définir Gdx.files à null AVANT d'instancier la factory.
-        // Cela empêche les constructeurs des entités (OrbXp, Orc, etc.)
-        // d'essayer de créer de vraies textures.
+        MockitoAnnotations.openMocks(this);
         Gdx.files = null;
         
         entityFactory = new EntityFactory(mockGameplay);
@@ -56,7 +51,6 @@ public class EntityFactoryTest {
     public void testObtainAndReleaseEnemy() {
         assertEquals("La liste des ennemis actifs doit être vide au début", 0, entityFactory.getActiveEnemies().size());
         
-        // Obtenir un ennemi
         ClassicEnemy enemy = entityFactory.obtainEnemy("Orc", new Vector2(100, 100));
 
         assertNotNull("L'ennemi obtenu ne doit pas être nul", enemy);
@@ -65,7 +59,6 @@ public class EntityFactoryTest {
         assertTrue("L'ennemi doit être actif", enemy.isAlive());
         assertEquals("La position de l'ennemi est incorrecte", 100, enemy.getPosition().x, 0.01);
 
-        // Libérer l'ennemi
         entityFactory.releaseEnemy(enemy);
         assertFalse("L'ennemi ne doit plus être dans la liste des actifs", entityFactory.getActiveEnemies().contains(enemy));
         assertEquals("La liste des ennemis actifs doit être vide après libération", 0, entityFactory.getActiveEnemies().size());
@@ -79,7 +72,6 @@ public class EntityFactoryTest {
     public void testObtainAndReleaseOrbXp() {
         assertEquals("La liste des orbes actives doit être vide au début", 0, entityFactory.getActiveOrbs().size());
 
-        // Obtenir une orbe
         OrbXp orb = entityFactory.obtainOrbXp(new Vector2(50, 50), 20);
 
         assertNotNull("L'orbe obtenue ne doit pas être nulle", orb);
@@ -88,7 +80,6 @@ public class EntityFactoryTest {
         assertTrue("L'orbe doit être active", orb.isAlive());
         assertEquals("La valeur d'XP de l'orbe est incorrecte", 20, orb.getXpValue());
 
-        // Libérer l'orbe
         entityFactory.releaseOrbXp(orb);
         assertFalse("L'orbe ne doit plus être dans la liste des actives", entityFactory.getActiveOrbs().contains(orb));
         assertEquals("La liste des orbes actives doit être vide après libération", 0, entityFactory.getActiveOrbs().size());
@@ -103,7 +94,6 @@ public class EntityFactoryTest {
         assertEquals("La liste des projectiles actifs doit être vide au début", 0, entityFactory.getActiveProjectiles().size());
         LivingEntity mockSource = mock(LivingEntity.class);
 
-        // Obtenir un projectile
         Projectile p = entityFactory.obtainSwordProjectile(new Vector2(0,0), new Vector2(1,0), 100, 200, 10, 1f, 16, 16, "proj.png", mockSource);
 
         assertNotNull("Le projectile obtenu ne doit pas être nul", p);
@@ -111,7 +101,6 @@ public class EntityFactoryTest {
         assertEquals("Il doit y avoir 1 projectile actif", 1, entityFactory.getActiveProjectiles().size());
         assertTrue("Le projectile doit être actif", p.isAlive());
 
-        // Libérer le projectile
         entityFactory.releaseProjectile(p);
         assertFalse("Le projectile ne doit plus être dans la liste des actifs", entityFactory.getActiveProjectiles().contains(p));
         assertEquals("La liste des projectiles actifs doit être vide après libération", 0, entityFactory.getActiveProjectiles().size());
@@ -123,12 +112,12 @@ public class EntityFactoryTest {
     @Test
     public void testUpdateProjectiles_RemovesInactiveProjectiles() {
         LivingEntity mockSource = mock(LivingEntity.class);
-        Projectile p = entityFactory.obtainSwordProjectile(new Vector2(0,0), new Vector2(1,0), 100, 50, 10, 1f, 16, 16, "proj.png", mockSource);
+        entityFactory.obtainSwordProjectile(new Vector2(0,0), new Vector2(1,0), 100, 50, 10, 1f, 16, 16, "proj.png", mockSource);
         
         assertEquals("Il doit y avoir 1 projectile actif", 1, entityFactory.getActiveProjectiles().size());
 
         // Mettre à jour jusqu'à ce que le projectile dépasse sa portée
-        entityFactory.updateProjectiles(0.6f); // distance = 100 * 0.6 = 60, ce qui est > 50
+        entityFactory.updateProjectiles(0.6f);
 
         assertEquals("Le projectile inactif aurait dû être retiré", 0, entityFactory.getActiveProjectiles().size());
     }

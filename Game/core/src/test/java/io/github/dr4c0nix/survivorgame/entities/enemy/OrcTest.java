@@ -48,7 +48,7 @@ public class OrcTest {
         when(mockTexture.getWidth()).thenReturn(50);
         when(mockTexture.getHeight()).thenReturn(60);
 
-        // Crée une classe anonyme pour injecter la texture mockée et simuler le redimensionnement.
+        // Crée une classe pour injecter la texture mockée et simuler le redimensionnement.
         Orc orc = new Orc() {{
             this.texture = mockTexture;
             if (this.texture != null) {

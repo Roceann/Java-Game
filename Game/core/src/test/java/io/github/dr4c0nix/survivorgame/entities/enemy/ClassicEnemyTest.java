@@ -9,7 +9,7 @@ import org.mockito.Mockito;
 import static org.junit.Assert.*;
 
 /**
- * Classe de test pour la classe abstraite ClassicEnemy.
+ * Classe de test pour ClassicEnemy.
  * Utilise une classe interne 'TestableClassicEnemy' pour tester les fonctionnalités
  * de cette classe de base.
  */
