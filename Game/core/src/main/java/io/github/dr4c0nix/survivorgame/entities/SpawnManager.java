@@ -172,7 +172,7 @@ public class SpawnManager {
         float elapsedTime = gameplay.getElapsedTime();
         float difficultyFactor = player.getDifficulter();
         
-        float baseSpawn = 2f;
+        float baseSpawn = 1f;
         
 
         float timeFactor = (float)Math.sqrt(elapsedTime / 60f); 
