@@ -47,7 +47,6 @@ public abstract class Player extends LivingEntity {
     // Regen HP every X seconds
     private float regenTimer = 0f;
     private static final float REGEN_INTERVAL = 10f; // seconds
-    private static final float REGEN_AMOUNT = 5f; // hp per interval
     private enum Direction {up, down, left, right}
     private static final float feetHeight = 10f;
 
@@ -71,7 +70,7 @@ public abstract class Player extends LivingEntity {
         this.movementSpeed = 5f;
         this.experienceToNextLevel = 100;
         this.xpactual = 0;
-        this.regenHP = 0.01f; // 1%
+        this.regenHP = 5f; // 5hp toutes les 10 secondes
         this.critChance = 50.0f;
         this.difficulter = 1.0f;
         this.critDamage = 1.5f;
@@ -388,7 +387,7 @@ public abstract class Player extends LivingEntity {
         regenTimer += delta;
         if (regenTimer >= REGEN_INTERVAL) {
             regenTimer -= REGEN_INTERVAL;
-            this.hp = Math.min(this.maxHp, this.hp + REGEN_AMOUNT);
+            this.hp = Math.min(this.maxHp, this.hp + regenHP);
         }
     }
 }
