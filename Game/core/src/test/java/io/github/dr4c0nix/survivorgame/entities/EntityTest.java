@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
  */
 public class EntityTest {
 
-    // Classe interne concrète pour permettre l'instanciation de Entity pour les tests.
+    // Classe interne  pour permettre l'instanciation de Entity pour les tests.
     private static class TestableEntity extends Entity {
         public TestableEntity(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight) {
             // On passe un chemin de texture nul pour éviter la création de Texture dans le constructeur
@@ -29,9 +29,7 @@ public class EntityTest {
         }
 
         @Override
-        public void update(float delta) {
-            // Non utilisé dans ces tests
-        }
+        public void update(float delta) {}
     }
 
     @Mock
@@ -46,8 +44,7 @@ public class EntityTest {
      */
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        // Simuler Gdx.files à null pour que le constructeur de l'entité ne crée pas de texture.
+        MockitoAnnotations.openMocks(this);
         Gdx.files = null;
 
         Vector2 spawn = new Vector2(100, 200);
@@ -55,7 +52,6 @@ public class EntityTest {
         float height = 64;
         testEntity = new TestableEntity(spawn, width, height);
 
-        // Assigner manuellement les mocks de texture après la construction
         testEntity.setTexture(mockTexture);
         testEntity.setCurrentFrame(new TextureRegion(mockTexture));
     }
@@ -65,7 +61,6 @@ public class EntityTest {
      */
     @After
     public void tearDown() {
-        // Nettoyer les mocks statiques si nécessaire
         Gdx.files = null;
     }
 

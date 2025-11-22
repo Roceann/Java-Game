@@ -41,8 +41,7 @@ public class PathfindingTest {
         assertFalse("(0,3) doit être invalide", carte.isValid(0, 3));
 
         // Les coordonnées invalides retournent une distance infinie
-        assertEquals("Distance invalide doit être INFINIE", 
-                     DISTANCE_INFINIE, carte.getDistance(-5, 0));
+        assertEquals("Distance invalide doit être INFINIE", DISTANCE_INFINIE, carte.getDistance(-5, 0));
     }
 
     /**

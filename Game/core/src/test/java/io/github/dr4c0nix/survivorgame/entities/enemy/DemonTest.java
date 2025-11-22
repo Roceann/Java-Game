@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 /**
- * Classe de test pour l'ennemi concret Demon.
+ * Classe de test pour l'ennemi Demon.
  */
 public class DemonTest {
 
@@ -19,7 +19,7 @@ public class DemonTest {
      * Teste si le constructeur de Demon initialise correctement toutes les statistiques.
      */
     @Test
-    public void testConstructorInitializesCorrectStats() {
+    public void testConstructorInitializesStats() {
         Demon demon = new Demon();
 
         // Vérifie les valeurs définies dans le constructeur de Demon.
@@ -42,13 +42,13 @@ public class DemonTest {
      * Un mock de Texture est utilisé pour éviter de dépendre d'un contexte graphique.
      */
     @Test
-    public void testConstructorResizesHitboxWhenTextureIsPresent() {
+    public void testConstructorResizesHitbox() {
         // Crée un mock de la texture avec des dimensions définies.
         Texture mockTexture = Mockito.mock(Texture.class);
         when(mockTexture.getWidth()).thenReturn(50);
         when(mockTexture.getHeight()).thenReturn(60);
 
-        // Crée une classe anonyme pour injecter la texture mockée et simuler le redimensionnement.
+        // Crée une classe pour injecter la texture mockée et simuler le redimensionnement.
         Demon demon = new Demon() {{
             this.texture = mockTexture;
             if (this.texture != null) {

@@ -415,7 +415,8 @@ public class Gameplay implements Screen {
         handleGlobalInput();
     }
 
-    private void updateDifficulty(float delta) {
+    // public pour permettre le test unitaire
+    public void updateDifficulty(float delta) {
         float timeFactor = 1.0f + (elapsedTime / 60f) * 0.1f;
         float playerFactor = player.getDifficulter() ;
         float totalDifficulty = timeFactor * playerFactor;

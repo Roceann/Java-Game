@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
  */
 public class LivingEntityTest {
 
-    // Classe interne concrète pour permettre l'instanciation de LivingEntity.
+    // Classe interne pour permettre l'instanciation de LivingEntity.
     private static class TestableLivingEntity extends LivingEntity {
         public TestableLivingEntity(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, float hp, int armor, float force) {
             // On passe un chemin de texture nul pour éviter la création de texture réelle.
@@ -47,10 +47,9 @@ public class LivingEntityTest {
      */
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         Vector2 spawn = new Vector2(100, 100);
         testEntity = new TestableLivingEntity(spawn, 32, 32, 100, 100, 1.0f);
-        // Assigner une frame pour que super.draw() puisse être appelé sans NullPointerException
         testEntity.setCurrentFrame(new com.badlogic.gdx.graphics.g2d.TextureRegion(mockTexture));
     }
 
@@ -105,7 +104,7 @@ public class LivingEntityTest {
     @Test
     public void testTakeDamage_WhenNotAlive_ShouldNotTakeDamage() {
         testEntity.setAlive(false);
-        testEntity.setCurrentHp(50); // Simule une mort manuelle avec des HP restants
+        testEntity.setCurrentHp(50);
         testEntity.takeDamage(20);
         assertEquals("Une entité morte ne doit pas perdre de HP", 50, testEntity.getHp(), 0.01);
     }
@@ -115,10 +114,10 @@ public class LivingEntityTest {
      */
     @Test
     public void testTakeDamage_DuringImmunity_ShouldNotTakeDamage() {
-        testEntity.takeDamage(10); // Subit des dégâts, active l'immunité
+        testEntity.takeDamage(10);
         assertEquals("Les HP doivent être réduits par la première attaque", 95, testEntity.getHp(), 0.01);
         
-        testEntity.takeDamage(10); // Tente de subir des dégâts à nouveau
+        testEntity.takeDamage(10); 
         assertEquals("Les HP ne doivent pas changer pendant l'immunité", 95, testEntity.getHp(), 0.01);
     }
 
@@ -127,14 +126,14 @@ public class LivingEntityTest {
      */
     @Test
     public void testTickImmunity_DecrementsTimer() {
-        testEntity.takeDamage(10); // Active l'immunité à 0.2f
+        testEntity.takeDamage(10); 
         assertTrue("Le timer d'immunité doit être positif après avoir subi des dégâts", testEntity.getImmunityTimer() > 0);
 
-        testEntity.update(0.1f); // Décrémente le timer
+        testEntity.update(0.1f); 
         assertTrue("Le timer doit encore être positif", testEntity.getImmunityTimer() > 0);
         assertEquals("Le timer est mal décrémenté", 0.1f, testEntity.getImmunityTimer(), 0.01);
 
-        testEntity.update(0.1f); // Le timer arrive à 0
+        testEntity.update(0.1f);
         assertEquals("Le timer doit être à 0", 0, testEntity.getImmunityTimer(), 0.01);
     }
 
@@ -144,7 +143,6 @@ public class LivingEntityTest {
     @Test
     public void testMoveBy_ShouldUpdatePosition() {
         testEntity.setMovementSpeed(100);
-        // Déplacement de (1, 0.5) unités * vitesse * delta (ici delta=1 pour simplifier)
         testEntity.moveBy(0.1f, 0.05f); 
         
         assertEquals("La position X est incorrecte", 110, testEntity.getPosition().x, 0.01);
@@ -161,9 +159,7 @@ public class LivingEntityTest {
     public void testDraw_WhenNotAlive_ShouldReturnEarly() {
         testEntity.setAlive(false);
         testEntity.draw(mockSpriteBatch);
-        // Vérifie qu'aucune méthode de dessin ou de changement de couleur n'est appelée.
         verify(mockSpriteBatch, never()).setColor(any(Color.class));
-        // super.draw() ne doit pas être appelé, donc batch.draw() non plus.
         verify(mockSpriteBatch, never()).draw(any(com.badlogic.gdx.graphics.g2d.TextureRegion.class), anyFloat(), anyFloat(), anyFloat(), anyFloat());
     }
 }

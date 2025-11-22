@@ -12,7 +12,6 @@ import io.github.dr4c0nix.survivorgame.entities.player.Player;
 import io.github.dr4c0nix.survivorgame.screens.Gameplay;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -24,6 +23,18 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+/**
+ * Tests unitaires pour la classe {@link SpawnManager}.
+ * <p>
+ * Cette classe vérifie simplement que :
+ * <ul>
+ *     <li>Les ennemis n'apparaissent pas quand c'est interdit (verrouillé).</li>
+ *     <li>Les ennemis respectent le temps d'attente entre deux apparitions.</li>
+ *     <li>Les ennemis apparaissent bien dans la même salle que le joueur.</li>
+ *     <li>Les ennemis n'apparaissent pas dans un mur ou un obstacle.</li>
+ * </ul>
+ * </p>
+ */
 public class SpawnManagerTest {
 
     @Mock
@@ -43,17 +54,22 @@ public class SpawnManagerTest {
 
     private SpawnManager spawnManager;
 
+    /**
+     * Prépare l'environnement avant chaque test.
+     * <p>
+     * Crée une fausse carte avec des salles ("room1", "room2") et initialise
+     * les faux objets (joueur, ennemis) nécessaires pour tester le gestionnaire d'apparition.
+     * </p>
+     */
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
-        // Mocks pour la carte TiledMap
         MapLayers mockLayers = new MapLayers();
         MapLayer mockSpawnLayer = new MapLayer();
         mockSpawnLayer.setName("mobspawn");
         MapObjects mockObjects = mockSpawnLayer.getObjects();
 
-        // Création de fausses zones de spawn
         RectangleMapObject room1Obj = new RectangleMapObject(10, 10, 100, 100);
         room1Obj.setName("room1");
         mockObjects.add(room1Obj);
@@ -65,26 +81,29 @@ public class SpawnManagerTest {
         mockLayers.add(mockSpawnLayer);
         when(mockMap.getLayers()).thenReturn(mockLayers);
 
-        // Mocks pour le joueur et l'ennemi
         when(mockPlayer.getHitbox()).thenReturn(new Rectangle(0, 0, 32, 32));
         when(mockPlayer.getDifficulter()).thenReturn(1f);
         when(mockEnemy.getHitbox()).thenReturn(new Rectangle(0, 0, 20, 20));
 
-        // Mocks pour la factory
         when(mockEntityFactory.getAvailableEnemyTypes()).thenReturn(new ArrayList<>(Collections.singletonList("Orc")));
         when(mockEntityFactory.getEnemyHitboxSize("Orc")).thenReturn(new Vector2(20, 20));
         when(mockEntityFactory.obtainEnemy(anyString(), any(Vector2.class))).thenReturn(mockEnemy);
 
-        // Initialisation du SpawnManager
         spawnManager = new SpawnManager(mockGameplay, mockEntityFactory, mockMap);
     }
 
+    /**
+     * Vérifie qu'aucun ennemi n'apparaît si le système est verrouillé.
+     */
     @Test
     public void testUpdate_DoesNotSpawnWhenLocked() {
         spawnManager.update(5f, mockPlayer);
         verify(mockEntityFactory, never()).obtainEnemy(anyString(), any(Vector2.class));
     }
 
+    /**
+     * Vérifie qu'aucun ennemi n'apparaît tant que le délai d'attente n'est pas fini.
+     */
     @Test
     public void testUpdate_DoesNotSpawnBeforeInterval() {
         spawnManager.unlockSpawning();
@@ -93,6 +112,9 @@ public class SpawnManagerTest {
         verify(mockEntityFactory, never()).obtainEnemy(anyString(), any(Vector2.class));
     }
 
+    /**
+     * Vérifie qu'un ennemi apparaît bien quand le délai est écoulé et que la place est libre.
+     */
     @Test
     public void testUpdate_SpawnsAfterInterval() {
         // Le joueur est dans la "room1"
@@ -107,6 +129,9 @@ public class SpawnManagerTest {
         verify(mockEntityFactory, atLeastOnce()).obtainEnemy(eq("Orc"), any(Vector2.class));
     }
 
+    /**
+     * Vérifie qu'un ennemi n'est pas placé s'il y a une collision (obstacle) à cet endroit.
+     */
     @Test
     public void testAttemptSpawn_DoesNotSpawnIfColliding() {
         // Le joueur est dans la "room1"
@@ -123,6 +148,9 @@ public class SpawnManagerTest {
         verify(mockEntityFactory, atMost(10)).releaseEnemy(any(ClassicEnemy.class));
     }
 
+    /**
+     * Vérifie simplement que la méthode pour déverrouiller l'apparition fonctionne.
+     */
     @Test
     public void testSpawningUnlocked() {
         assertFalse(spawnManager.isSpawningUnlocked());

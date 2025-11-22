@@ -77,38 +77,43 @@ public abstract class Player extends LivingEntity {
         this.currentWeapon = null;
         this.mobKilled = 0;
         
-        Texture static1 = new Texture(Gdx.files.internal("Entity/Player/static1.png"));
-        Texture static2 = new Texture(Gdx.files.internal("Entity/Player/static2.png"));
-        Texture dwalk1 = new Texture(Gdx.files.internal("Entity/Player/dwalk1.png"));
-        Texture dwalk2 = new Texture(Gdx.files.internal("Entity/Player/dwalk2.png"));
-        Texture uwalk1 = new Texture(Gdx.files.internal("Entity/Player/uwalk1.png"));
-        Texture uwalk2 = new Texture(Gdx.files.internal("Entity/Player/uwalk2.png"));
-        Texture rwalk1 = new Texture(Gdx.files.internal("Entity/Player/rwalk1.png"));
-        Texture rwalk2 = new Texture(Gdx.files.internal("Entity/Player/rwalk2.png"));
-        Texture lwalk1 = new Texture(Gdx.files.internal("Entity/Player/lwalk1.png"));
-        Texture lwalk2 = new Texture(Gdx.files.internal("Entity/Player/lwalk2.png"));
-        staticFrames = new TextureRegion[] {
-            new TextureRegion(static1),
-            new TextureRegion(static2)
-        };
-        downFrames = new TextureRegion[] {
-            new TextureRegion(dwalk1),
-            new TextureRegion(dwalk2)
-        };
-        upFrames = new TextureRegion[] {
-            new TextureRegion(uwalk1),
-            new TextureRegion(uwalk2)
-        };
-        rightFrames = new TextureRegion[] {
-            new TextureRegion(rwalk1),
-            new TextureRegion(rwalk2)
-        };
-        leftFrames = new TextureRegion[] {
-            new TextureRegion(lwalk1),
-            new TextureRegion(lwalk2)
-        };
+        // On vérifie si le contexte graphique existe avant de charger les textures.
+        // Cela empêche le crash dans les tests unitaires.
+        if (Gdx.graphics != null) {
+            Texture static1 = new Texture(Gdx.files.internal("Entity/Player/static1.png"));
+            Texture static2 = new Texture(Gdx.files.internal("Entity/Player/static2.png"));
+            Texture dwalk1 = new Texture(Gdx.files.internal("Entity/Player/dwalk1.png"));
+            Texture dwalk2 = new Texture(Gdx.files.internal("Entity/Player/dwalk2.png"));
+            Texture uwalk1 = new Texture(Gdx.files.internal("Entity/Player/uwalk1.png"));
+            Texture uwalk2 = new Texture(Gdx.files.internal("Entity/Player/uwalk2.png"));
+            Texture rwalk1 = new Texture(Gdx.files.internal("Entity/Player/rwalk1.png"));
+            Texture rwalk2 = new Texture(Gdx.files.internal("Entity/Player/rwalk2.png"));
+            Texture lwalk1 = new Texture(Gdx.files.internal("Entity/Player/lwalk1.png"));
+            Texture lwalk2 = new Texture(Gdx.files.internal("Entity/Player/lwalk2.png"));
+            
+            staticFrames = new TextureRegion[] {
+                new TextureRegion(static1),
+                new TextureRegion(static2)
+            };
+            downFrames = new TextureRegion[] {
+                new TextureRegion(dwalk1),
+                new TextureRegion(dwalk2)
+            };
+            upFrames = new TextureRegion[] {
+                new TextureRegion(uwalk1),
+                new TextureRegion(uwalk2)
+            };
+            rightFrames = new TextureRegion[] {
+                new TextureRegion(rwalk1),
+                new TextureRegion(rwalk2)
+            };
+            leftFrames = new TextureRegion[] {
+                new TextureRegion(lwalk1),
+                new TextureRegion(lwalk2)
+            };
 
-        currentFrame = staticFrames[0];
+            currentFrame = staticFrames[0];
+        }
     }
 
     /**
@@ -169,6 +174,9 @@ public abstract class Player extends LivingEntity {
      * permet de gérer l'animation de déplacement
      */
     public void animation() {
+        // Protection pour ne pas animer si les textures ne sont pas chargées (mode test)
+        if (staticFrames == null) return;
+
         animationTimer += Gdx.graphics.getDeltaTime();
 
         if (!isMoving) {
@@ -358,7 +366,7 @@ public abstract class Player extends LivingEntity {
         this.critDamage = critDamage;
     }
 
-    public void setCUrrentHp(float amount){
+    public void setCurrentHp(float amount){
         this.hp = amount;
     }
 

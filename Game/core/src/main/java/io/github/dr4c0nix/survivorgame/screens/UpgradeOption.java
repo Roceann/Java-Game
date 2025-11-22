@@ -1,6 +1,7 @@
 package io.github.dr4c0nix.survivorgame.screens;
 
 import java.util.Random;
+import java.util.Locale; // Import nécessaire pour Locale.US
 
 /**
  * Représente une option d'amélioration proposée au niveau supérieur.
@@ -54,12 +55,14 @@ public class UpgradeOption {
      *
      * - INT -> format "%d"
      * - FLOAT -> format "%.2f"
+     * 
+     * Utilise Locale.US pour garantir l'utilisation du point comme séparateur décimal.
      */
     public String getFormattedValue() {
         if (type == StatType.INT) {
-            return String.format("%d", (int) this.value);
+            return String.format(Locale.US, "%d", (int) this.value);
         } else {
-            return String.format("%.2f", value);
+            return String.format(Locale.US, "%.2f", value);
         }
     }
 

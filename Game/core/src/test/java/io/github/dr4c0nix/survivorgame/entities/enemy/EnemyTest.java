@@ -16,8 +16,8 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 /**
- * Classe de test pour la classe abstraite Enemy.
- * Utilise une classe interne 'TestableEnemy' pour permettre l'instanciation et
+ * Classe de test pour la classe Enemy.
+ * Utilise une classe interne TestableEnemy pour permettre l'instanciation et
  * le test des comportements de la classe de base.
  */
 public class EnemyTest {
@@ -28,7 +28,7 @@ public class EnemyTest {
     private Player mockPlayer;
 
     /**
-     * Classe interne concrète pour tester la classe abstraite Enemy.
+     * Classe interne pour tester la classe abstraite Enemy.
      */
     private static class TestableEnemy extends Enemy {
         public TestableEnemy(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, int xpDrop, float hp, int armor, float force, String texturePath) {
@@ -76,7 +76,7 @@ public class EnemyTest {
      * Vérifie que la méthode update() ne modifie pas la position de l'ennemi s'il n'est pas en vie.
      */
     @Test
-    public void testUpdateDoesNothingWhenNotAlive() {
+    public void testUpdateWhenNotAlive() {
         enemy.setAlive(false);
         Vector2 initialPos = new Vector2(enemy.getPosition());
         enemy.update(0.1f);
@@ -87,7 +87,7 @@ public class EnemyTest {
      * Vérifie que la méthode update() ne fait rien si l'objet Gameplay est nul.
      */
     @Test
-    public void testUpdateDoesNothingWhenGameplayIsNull() {
+    public void testUpdateWhenGameplayIsNull() {
         enemy.setGameplay(null);
         Vector2 initialPos = new Vector2(enemy.getPosition());
         enemy.update(0.1f);
@@ -98,7 +98,7 @@ public class EnemyTest {
      * Vérifie que la méthode update() ne fait rien si le joueur est nul.
      */
     @Test
-    public void testUpdateDoesNothingWhenPlayerIsNull() {
+    public void testUpdateWhenPlayerIsNull() {
         when(mockGameplay.getPlayer()).thenReturn(null);
         Vector2 initialPos = new Vector2(enemy.getPosition());
         enemy.update(0.1f);
@@ -114,9 +114,8 @@ public class EnemyTest {
         when(mockGameplay.getDirection(anyInt(), anyInt())).thenReturn(null);
         Vector2 initialPos = new Vector2(enemy.getPosition());
 
-        enemy.update(1.0f); // delta = 1 seconde
+        enemy.update(1.0f); 
 
-        // L'ennemi à (100,100) et le joueur à (200,100) doivent provoquer un déplacement vers la droite.
         float expectedX = initialPos.x + enemy.getMovementSpeed() * 1.0f;
         assertTrue("L'ennemi doit se déplacer vers le joueur sur l'axe X", enemy.getPosition().x > initialPos.x);
         assertEquals("L'ennemi doit se déplacer de la bonne distance", expectedX, enemy.getPosition().x, DELTA);
