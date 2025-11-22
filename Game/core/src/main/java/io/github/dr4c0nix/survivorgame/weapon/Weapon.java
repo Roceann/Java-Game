@@ -84,12 +84,12 @@ public abstract class Weapon {
     }
     
     public int getEffectiveDamage() {
-        float mul = 1f + 0.10f * (weaponLevel - 1);
+        float mul = 1f + 0.20f * (weaponLevel - 1);
         return Math.round(damage * mul);
     }
 
     public float getEffectiveShotDelay() {
-        float factor = 1f - 0.05f * (weaponLevel - 1);
+        float factor = 1f - 0.10f * (weaponLevel - 1);
         if (factor < 0.05f) factor = 0.05f;
         return shotDelay * factor;
     }
