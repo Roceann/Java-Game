@@ -10,6 +10,9 @@ public abstract class Weapon {
     protected EntityFactory entityFactory;
 
     protected int level;
+    // weapon level for upgrades (1..6)
+    protected int weaponLevel = 1;
+    protected static final int MAX_WEAPON_LEVEL = 6;
     protected int damage;
     protected float shotDelay;
     protected float cooldown;
@@ -45,7 +48,8 @@ public abstract class Weapon {
     }
 
     protected void resetCooldown() {
-        this.cooldown = this.shotDelay;
+        // Use effective shot delay after weapon level modifiers
+        this.cooldown = getEffectiveShotDelay();
     }
 
     protected void cooldownTick(float delta) {
@@ -73,4 +77,28 @@ public abstract class Weapon {
     public float getProjectileBaseHeight() { return projectileBaseHeight; }
     public String getProjectileTexturePath() { return projectileTexturePath; }
     public String getDescription() { return description; }
+    public int getWeaponLevel() { return weaponLevel; }
+    
+    public float getEffectiveProjectileSize() {
+        return projectileSize * (1f + 0.20f * (weaponLevel - 1));
+    }
+    
+    public int getEffectiveDamage() {
+        float mul = 1f + 0.10f * (weaponLevel - 1);
+        return Math.round(damage * mul);
+    }
+
+    public float getEffectiveShotDelay() {
+        float factor = 1f - 0.05f * (weaponLevel - 1);
+        if (factor < 0.05f) factor = 0.05f;
+        return shotDelay * factor;
+    }
+
+    public void setWeaponLevel(int lvl) {
+        weaponLevel = Math.max(1, Math.min(MAX_WEAPON_LEVEL, lvl));
+    }
+    
+    public void increaseWeaponLevel() {
+        if (weaponLevel < MAX_WEAPON_LEVEL) weaponLevel++;
+    }
 }

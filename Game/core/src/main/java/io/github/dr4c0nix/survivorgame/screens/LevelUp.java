@@ -109,6 +109,7 @@ public class LevelUp {
         all.add(new UpgradeOption("Armure", 1, 5, UpgradeOption.StatType.INT));
         all.add(new UpgradeOption("Force", 0.05f, 0.25f, UpgradeOption.StatType.FLOAT));
         all.add(new UpgradeOption("Projectiles", 1, 1, UpgradeOption.StatType.INT));
+        all.add(new UpgradeOption("Niveau Arme", 1, 1, UpgradeOption.StatType.INT));
         all.add(new UpgradeOption("Chance", 1, 10, UpgradeOption.StatType.FLOAT));
         all.add(new UpgradeOption("Régénération HP", 0.5f, 2.0f, UpgradeOption.StatType.FLOAT));
         all.add(new UpgradeOption("Vol de Vie", 1, 5, UpgradeOption.StatType.FLOAT));
@@ -228,6 +229,11 @@ public class LevelUp {
 
             case "Dégâts Critiques": 
                 p.setCritDamage(p.getCritDamage() + u.getValue()); 
+                break;
+            case "Niveau Arme":
+                if (p.getCurrentWeapon() != null) {
+                    p.getCurrentWeapon().increaseWeaponLevel();
+                }
                 break;
 
             default: break;
