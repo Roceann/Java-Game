@@ -15,10 +15,7 @@ allprojects {
   apply plugin: 'idea'
   apply plugin: 'jacoco'
   
-  ext {
-    appName = 'SurvivorGameTest'
-    shapedrawerVersion = '2.5.0' 
-  }
+  ext{shapedrawerVersion = '2.5.0'}
 
   idea {
     module {
