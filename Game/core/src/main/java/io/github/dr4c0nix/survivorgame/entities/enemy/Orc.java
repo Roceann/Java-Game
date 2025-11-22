@@ -31,5 +31,9 @@ public class Orc extends ClassicEnemy {
         this.force = 4f;
 
         lastPos.set(position);
+        
+        if (this.texture != null) {
+            this.hitbox.setSize(this.texture.getWidth(), this.texture.getHeight());
+        }
     }
 }

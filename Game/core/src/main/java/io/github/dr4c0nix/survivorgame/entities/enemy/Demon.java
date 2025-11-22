@@ -39,5 +39,9 @@ public class Demon extends ClassicEnemy {
         this.force = 3.0f;
 
         lastPos.set(position);
+        
+        if (this.texture != null) {
+            this.hitbox.setSize(this.texture.getWidth(), this.texture.getHeight());
+        }
     }
 }
