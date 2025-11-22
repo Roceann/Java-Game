@@ -20,7 +20,7 @@ import io.github.dr4c0nix.survivorgame.weapon.Weapon;
  * @author Roceann
  * @version 1.0
  */
-public abstract class Player extends LivingEntity {
+public class Player extends LivingEntity {
     protected int xpactual;
     protected int level;
     protected int experienceToNextLevel;

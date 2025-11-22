@@ -258,12 +258,7 @@ public class Gameplay implements Screen {
     }
 
     private void initPlayer() {
-        this.player = new Player(spawnPoint) {
-            @Override
-            public void animation() {
-                super.animation();
-            }
-        };
+        this.player = new Player(spawnPoint);
         player.setGameplay(this);
         
         if (hud != null) {
