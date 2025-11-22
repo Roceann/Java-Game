@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import io.github.dr4c0nix.survivorgame.Main;
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
+import io.github.dr4c0nix.survivorgame.weapon.Weapon;
 
 public class PauseScreen implements Screen {
 
@@ -130,18 +131,23 @@ public class PauseScreen implements Screen {
         if (p == null) return;
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Niveau : ").append(p.getLevel()).append("\n");
-        sb.append("XP : ").append(p.getXpactual())
-            .append(" / ").append(p.getExperienceToNextLevel()).append("\n\n");
-
-        sb.append("HP : ").append((int)p.getHp())
-            .append(" / ").append((int)p.getMaxHp()).append("\n");
+        sb.append("XP : ").append(p.getXpactual()).append(" / ").append(p.getExperienceToNextLevel()).append("\n");
+        sb.append("HP : ").append((int) p.getHp()).append(" / ").append((int) p.getMaxHp()).append("\n");
         sb.append("Armure : ").append(p.getArmor()).append("\n");
-        sb.append("Force : ").append(p.getForce()).append("\n\n");
+        sb.append("Chance critique : ").append(String.format("%.1f%%", p.getCritChance())).append("\n");
+        sb.append("Dégâts critiques : x").append(String.format("%.2f", p.getCritDamage())).append("\n");
+        sb.append("Régénération HP : ").append(String.format("%.2f", p.getRegenHP())).append("\n\n");
 
-        sb.append("Crit chance : ").append(p.getCritChance()).append("\n");
-        sb.append("Crit dmg : x").append(p.getCritDamage()).append("\n");
-        sb.append("Regen HP : ").append(p.getRegenHP()).append("\n");
+        Weapon weapon = p.getCurrentWeapon();
+        if (weapon == null) {
+            sb.append("Arme équipée : aucune");
+        } else {
+            sb.append("Arme équipée : ").append(weapon.getClass().getSimpleName()).append("\n");
+            sb.append("Niveau arme : ").append(weapon.getWeaponLevel()).append("\n");
+            sb.append("Dégâts : ").append(weapon.getEffectiveDamage()).append("\n");
+            sb.append("Cadence : ").append(String.format("%.2f secondes", weapon.getEffectiveShotDelay())).append("\n");
+            sb.append("Taille projectile : ").append(String.format("%.2f", weapon.getEffectiveProjectileSize()));
+        }
 
         statsLabel.setText(sb.toString());
     }

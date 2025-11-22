@@ -104,19 +104,30 @@ public class LevelUp {
      */
     private List<UpgradeOption> allPossibleUpgrades() {
         List<UpgradeOption> all = new ArrayList<>();
-        all.add(new UpgradeOption("Vitesse", 0.1f, 0.5f, UpgradeOption.StatType.FLOAT));
-        all.add(new UpgradeOption("Points de Vie Max", 5, 20, UpgradeOption.StatType.FLOAT));
-        all.add(new UpgradeOption("Armure", 1, 5, UpgradeOption.StatType.INT));
-        all.add(new UpgradeOption("Force", 0.05f, 0.25f, UpgradeOption.StatType.FLOAT));
-        all.add(new UpgradeOption("Projectiles", 1, 1, UpgradeOption.StatType.INT));
+        // Weapon level upgrade: +1 level (INT), limited by weapon impl (max 6)
         all.add(new UpgradeOption("Niveau Arme", 1, 1, UpgradeOption.StatType.INT));
-        all.add(new UpgradeOption("Chance", 1, 10, UpgradeOption.StatType.FLOAT));
-        all.add(new UpgradeOption("Régénération HP", 0.5f, 2.0f, UpgradeOption.StatType.FLOAT));
-        all.add(new UpgradeOption("Vol de Vie", 1, 5, UpgradeOption.StatType.FLOAT));
-        all.add(new UpgradeOption("Chance Critique", 2, 10, UpgradeOption.StatType.FLOAT));
-        all.add(new UpgradeOption("Portée de Ramassage", 5, 15, UpgradeOption.StatType.INT));
-        all.add(new UpgradeOption("Dégâts Critiques", 0.1f, 0.5f, UpgradeOption.StatType.FLOAT));
-        all.add(new UpgradeOption("Durée Effets", 0.1f, 0.5f, UpgradeOption.StatType.FLOAT));
+
+        // Player movement speed: spawn = 2, cap = 5 — propose small increments to be balanced
+        all.add(new UpgradeOption("Vitesse", 0.15f, 0.5f, UpgradeOption.StatType.FLOAT));
+
+        // Max HP: base 100 — increase between small and medium steps
+        all.add(new UpgradeOption("Points de Vie Max", 8f, 22f, UpgradeOption.StatType.FLOAT));
+
+        // HP regen: default 5 per 10s (0.5/s) — increase regeneration amount (float)
+        all.add(new UpgradeOption("Régénération HP", 0.3f, 1.2f, UpgradeOption.StatType.FLOAT));
+
+        // Armor: small integer bumps
+        all.add(new UpgradeOption("Armure", 1, 3, UpgradeOption.StatType.INT));
+
+        // Crit chance: increments in percentage points (float)
+        all.add(new UpgradeOption("Chance Critique", 1f, 5f, UpgradeOption.StatType.FLOAT));
+
+        // Crit damage: multiplier increment (e.g. +0.1 => +10% crit multiplier)
+        all.add(new UpgradeOption("Dégâts Critiques", 0.1f, 0.35f, UpgradeOption.StatType.FLOAT));
+
+        // Difficulty: player-controlled difficulty factor (current 1, max 5) - small steps
+        all.add(new UpgradeOption("Difficulté", 0.15f, 0.8f, UpgradeOption.StatType.FLOAT));
+
         return all;
     }
 
@@ -205,35 +216,47 @@ public class LevelUp {
      */
     private void applyUpgradeToPlayer(UpgradeOption u) {
         Player p = gameplay.getPlayer();
+        if (p == null) return;
+
         switch (u.getDisplayName()) {
-            case "Vitesse": 
-                p.setMovementSpeed(p.getMovementSpeed() + u.getValue()); 
-                break;
-            case "Points de Vie Max": 
-                p.setCUrrentHp(p.getHp() + u.getValue());
-                p.setMaxHp(p.getMaxHp() + u.getValue()); 
-                
-                break;
-            case "Armure": 
-                p.setArmor(p.getArmor() + (int) u.getValue()); 
-                break;
-            case "Force": 
-                p.setForce(p.getForce() + u.getValue()); 
-                break;
-            case "Régénération HP": 
-                p.setRegenHP(p.getRegenHP() + u.getValue()); 
-                break;
-            case "Chance de Crit": 
-                p.setCritChance(p.getCritChance() + u.getValue()); 
+            case "Vitesse":
+                float newSpeed = p.getMovementSpeed() + u.getValue();
+                if (newSpeed > 5f) newSpeed = 5f; // clamp to max 5
+                p.setMovementSpeed(newSpeed);
                 break;
 
-            case "Dégâts Critiques": 
-                p.setCritDamage(p.getCritDamage() + u.getValue()); 
+            case "Points de Vie Max":
+                float delta = u.getValue();
+                p.setMaxHp(p.getMaxHp() + delta);
+                p.setCurrentHp(Math.min(p.getHp() + delta, p.getMaxHp()));
                 break;
+
+            case "Armure":
+                p.setArmor(p.getArmor() + (int) u.getValue());
+                break;
+
+            case "Régénération HP":
+                p.setRegenHP(p.getRegenHP() + u.getValue());
+                break;
+
+            case "Chance Critique":
+                p.setCritChance(p.getCritChance() + u.getValue());
+                break;
+
+            case "Dégâts Critiques":
+                p.setCritDamage(p.getCritDamage() + u.getValue());
+                break;
+
             case "Niveau Arme":
                 if (p.getCurrentWeapon() != null) {
-                    p.getCurrentWeapon().increaseWeaponLevel();
+                    p.getCurrentWeapon().increaseWeaponLevel(); // Weapon caps at max internally
                 }
+                break;
+
+            case "Difficulté":
+                float newDiff = p.getDifficulter() + u.getValue();
+                if (newDiff > 5f) newDiff = 5f;
+                p.setDifficulter(newDiff);
                 break;
 
             default: break;

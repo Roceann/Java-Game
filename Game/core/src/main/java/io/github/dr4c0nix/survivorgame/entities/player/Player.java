@@ -251,6 +251,10 @@ public abstract class Player extends LivingEntity {
         return this.xpactual;
     }
 
+    public int getXpRequiredForNextLevel() {
+        return this.experienceToNextLevel;
+    }
+
     /**
      * Ajoute de l'expérience au joueur et gère la montée de niveau.
      *
@@ -337,6 +341,10 @@ public abstract class Player extends LivingEntity {
 
     public void setForce(float force) {
         this.force = force;
+    }
+
+    public void setDifficulter(float difficulter) {
+        this.difficulter = difficulter;
     }
 
     public void setRegenHP(float regenHP) {
