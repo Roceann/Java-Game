@@ -59,3 +59,17 @@ subprojects {
 }
 
 eclipse.project.name = 'SurvivorGameTest' + '-parent'
+
+project(":core") {
+  apply plugin: "java-library"
+
+  dependencies {
+    if (project.hasProperty('headless')) {
+      testImplementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
+      testImplementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    } else {
+      testImplementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+      testImplementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    }
+  }
+}
