@@ -84,21 +84,44 @@ public class Menu implements Screen {
         table.clear();
         table.setFillParent(true);
         table.center();
+
         TextButton play = createButtons("Play", table);
-        TextButton options = createButtons("Options", table);
+        table.add(play).width(300).height(80).pad(10).center();
+        table.row();
+
+        Table middleRow = new Table();
+        TextButton options = createButtons("Options", middleRow);
+        TextButton duration = createButtons("Game Duration", middleRow);
+        middleRow.add(options).width(300).height(80).pad(10).center();
+        middleRow.add(duration).width(300).height(80).pad(10).center();
+        table.add(middleRow);
+        table.row();
+
         TextButton exit = createButtons("Exit", table);
+        table.add(exit).width(300).height(80).pad(10).center();
+        table.row();
+
         play.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Main.changeScreen("Gameplay");
             }
         });
+
         options.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 showOptions(table);
             }
         });
+
+        duration.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                showDurationMenu(table);
+            }
+        });
+
         exit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -162,8 +185,6 @@ public class Menu implements Screen {
         TextButton btn = new TextButton(label, textButtonStyle);
         Label buttonLabel = btn.getLabel();
         buttonLabel.setFontScale(1.4f);
-        table.add(btn).width(300).height(80).pad(10).center();
-        table.row();
         currentButtons.add(btn);
         return btn;
     }
@@ -200,9 +221,17 @@ public class Menu implements Screen {
         table.center();
 
         final TextButton fullscreenBtn = createButtons("Fullscreen: ", table);
+        table.add(fullscreenBtn).width(300).height(80).pad(10).center();
+        table.row();
         final TextButton keybindBtn = createButtons("Configure Keys", table);
+        table.add(keybindBtn).width(300).height(80).pad(10).center();
+        table.row();
         final TextButton audioBtn = createButtons("Audio Settings", table);
+        table.add(audioBtn).width(300).height(80).pad(10).center();
+        table.row();
         final TextButton backBtn = createButtons("Back", table);
+        table.add(backBtn).width(300).height(80).pad(10).center();
+        table.row();
 
         GameOptions options = GameOptions.getInstance();
         isFullscreen = options.isFullscreen();
@@ -698,6 +727,66 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 showOptions(table);
+            }
+        });
+    }
+
+    /**
+     * Sous-menu durée de partie : slider durée, reset, back.
+     */
+    private void showDurationMenu(final Table table) {
+        clearMenu();
+        table.clear();
+        table.setFillParent(true);
+        table.center();
+        ensureStyle();
+        ensureSliderStyle();
+
+        final GameOptions options = GameOptions.getInstance();
+
+        Label titleLabel = new Label("Game Duration Settings", new Label.LabelStyle(font, Color.WHITE));
+        titleLabel.setFontScale(1.8f);
+        table.add(titleLabel).colspan(2).pad(20);
+        table.row();
+
+        Label sliderLabel = new Label("Duration (minutes)", new Label.LabelStyle(font, Color.WHITE));
+        sliderLabel.setFontScale(1.4f);
+        final Slider durationSlider = new Slider(1f, 15f, 1f, false, sliderStyle);
+        durationSlider.setValue(options.getGameDuration());
+        final Label durationValue = new Label(options.getGameDuration() + " min", new Label.LabelStyle(font, Color.WHITE));
+        durationValue.setFontScale(1.2f);
+
+        table.add(sliderLabel).pad(10);
+        table.add(durationSlider).width(350).padLeft(10).padRight(60).padTop(10).padBottom(10);
+        table.row();
+        table.add(durationValue).colspan(2).padBottom(20);
+        table.row();
+
+        durationSlider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
+                int value = (int) durationSlider.getValue();
+                options.setGameDuration(value);
+                durationValue.setText(value + " min");
+            }
+        });
+
+        final TextButton resetBtn = createButtonInline("Reset Duration", table);
+        final TextButton backBtn = createButtonInline("Back", table);
+
+        resetBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                options.setGameDuration(5);
+                durationSlider.setValue(5);
+                durationValue.setText("5 min");
+            }
+        });
+
+        backBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                buildMenu(table);
             }
         });
     }

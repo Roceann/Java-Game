@@ -23,6 +23,7 @@ public class GameOptions {
     private int keyRight;
     private boolean fullscreen;
     private int musicVolume;
+    private int gameDuration;
     
     private static GameOptions instance;
     
@@ -58,6 +59,7 @@ public class GameOptions {
         keyRight = prefs.getInteger("keyRight", Keys.D);
         fullscreen = prefs.getBoolean("fullscreen", true);
         musicVolume = prefs.getInteger("musicVolume", 100);
+        gameDuration = prefs.getInteger("gameDuration", 5);
     }
     
     /**
@@ -81,6 +83,7 @@ public class GameOptions {
         prefs.putInteger("keyRight", keyRight);
         prefs.putBoolean("fullscreen", fullscreen);
         prefs.putInteger("musicVolume", musicVolume);
+        prefs.putInteger("gameDuration", gameDuration);
         prefs.flush();
     }
     
@@ -94,6 +97,7 @@ public class GameOptions {
         keyRight = Keys.D;
         fullscreen = true;
         musicVolume = 100;
+        gameDuration = 5;
         savePreferences();
     }
     
@@ -148,6 +152,15 @@ public class GameOptions {
     
     public void setMusicVolume(int volume) {
         musicVolume = Math.max(0, Math.min(100, volume));
+        savePreferences();
+    }
+    
+    public int getGameDuration() {
+        return gameDuration;
+    }
+    
+    public void setGameDuration(int duration) {
+        gameDuration = Math.max(1, Math.min(60, duration));
         savePreferences();
     }
     
