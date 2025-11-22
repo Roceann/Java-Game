@@ -1,0 +1,388 @@
+package io.github.dr4c0nix.survivorgame.entities.player;
+
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Files;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Preferences; // Import nécessaire
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import io.github.dr4c0nix.survivorgame.GameOptions;
+import io.github.dr4c0nix.survivorgame.screens.Gameplay;
+import io.github.dr4c0nix.survivorgame.weapon.Weapon;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.lang.reflect.Field;
+
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
+/**
+ * Tests unitaires pour la classe Player.
+ */
+public class PlayerTest {
+
+    @Mock
+    private Gameplay mockGameplay;
+    @Mock
+    private Weapon mockWeapon;
+    @Mock
+    private SpriteBatch mockBatch;
+    @Mock
+    private Graphics mockGraphics;
+    @Mock
+    private Input mockInput;
+    @Mock
+    private FileHandle mockFileHandle;
+    @Mock
+    private Application mockApp;
+    @Mock
+    private Files mockFiles;
+    @Mock
+    private GL20 mockGL20;
+    @Mock
+    private Preferences mockPrefs; // Mock ajouté pour les préférences
+
+    private TestPlayer player;
+
+    /**
+     * Classe concrète de test pour Player (qui est abstraite).
+     */
+    private static class TestPlayer extends Player {
+        public TestPlayer(Vector2 spawnPoint) {
+            super(spawnPoint);
+        }
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.openMocks(this);
+
+        // 1. Initialisation des mocks LibGDX
+        Gdx.graphics = null;
+        Gdx.app = mockApp;
+        Gdx.files = mockFiles;
+        Gdx.gl = mockGL20;
+
+        // Mock du comportement des fichiers
+        when(mockFiles.internal(anyString())).thenReturn(mockFileHandle);
+        when(mockFileHandle.exists()).thenReturn(true);
+
+        // --- CORRECTION NPE GameOptions ---
+        // GameOptions.getInstance() appelle Gdx.app.getPreferences()
+        when(mockApp.getPreferences(anyString())).thenReturn(mockPrefs);
+        
+        // On configure le mock pour renvoyer la valeur par défaut (2ème argument)
+        // Cela permet à GameOptions de charger les touches par défaut (Z, Q, S, D) sans planter
+        when(mockPrefs.getInteger(anyString(), anyInt())).thenAnswer(invocation -> invocation.getArgument(1));
+        
+        // Réinitialiser le singleton GameOptions pour éviter les effets de bord entre les tests
+        resetGameOptionsSingleton();
+
+        // 2. Création de l'instance de test
+        player = new TestPlayer(new Vector2(100, 100));
+        player.setGameplay(mockGameplay);
+
+        // 3. Rétablissement des mocks pour les tests de méthodes
+        Gdx.graphics = mockGraphics;
+        Gdx.input = mockInput;
+        
+        when(mockGraphics.getDeltaTime()).thenReturn(0.1f);
+    }
+
+    /**
+     * Réinitialise le champ statique 'instance' de GameOptions à null via réflexion.
+     * Cela force GameOptions à se recharger proprement avec nos nouveaux mocks.
+     */
+    private void resetGameOptionsSingleton() throws Exception {
+        try {
+            Field instance = GameOptions.class.getDeclaredField("instance");
+            instance.setAccessible(true);
+            instance.set(null, null);
+        } catch (NoSuchFieldException e) {
+            // Ignorer si le champ n'existe pas (cas improbable si la classe est correcte)
+        }
+    }
+
+    // ========== CONSTRUCTOR & INITIALIZATION TESTS ==========
+
+    @Test
+    public void testConstructor_InitializesPlayerSpecificValues() {
+        // Vérifie les valeurs par défaut
+        assertEquals("Niveau initial incorrect", 1, player.getLevel());
+        assertEquals("XP initial incorrect", 0, player.getXpactual());
+    }
+
+    // ========== XP & LEVEL UP TESTS ==========
+
+    @Test
+    public void testAddXp_IncreasesXpCorrectly() {
+        player.addXp(10);
+        assertEquals(10, player.getXpactual());
+    }
+
+    @Test
+    public void testAddXp_LevelUpWhenReachingThreshold() {
+        int xpNeeded = player.getExperienceToNextLevel();
+        player.addXp(xpNeeded);
+        assertEquals("Le niveau devrait augmenter", 2, player.getLevel());
+        assertEquals("L'XP devrait être remise à 0 (ou le surplus)", 0, player.getXpactual());
+    }
+
+    @Test
+    public void testAddXp_LevelUpWithExcessXp() {
+        int xpNeeded = player.getExperienceToNextLevel();
+        player.addXp(xpNeeded + 5);
+        assertEquals(2, player.getLevel());
+        assertEquals(5, player.getXpactual());
+    }
+
+    // ========== WEAPON MANAGEMENT TESTS ==========
+
+    @Test
+    public void testSetWeapon_AssignsWeaponCorrectly() {
+        player.setWeapon(mockWeapon);
+        assertEquals(mockWeapon, player.getCurrentWeapon());
+        assertTrue(player.hasWeapon());
+    }
+
+    // ========== DAMAGE & GAMEOVER TESTS ==========
+
+    @Test
+    public void testTakeDamage_CallsGameOverWhenHpZero() {
+        player.setGameplay(mockGameplay);
+        player.setMaxHp(100f);
+        player.setCUrrentHp(10f);
+
+        // Tuer le joueur
+        player.takeDamage(1000f);
+        
+        // Vérifier que la méthode onGameOver du gameplay est appelée
+        verify(mockGameplay, times(1)).onGameOver();
+    }
+
+    @Test
+    public void testTakeDamage_DoesNotCallGameOverWhenAlive() {
+        player.setGameplay(mockGameplay);
+        player.setMaxHp(100f);
+        player.setCUrrentHp(100f);
+        
+        // Infliger peu de dégâts
+        player.takeDamage(10f);
+        
+        verify(mockGameplay, never()).onGameOver();
+    }
+
+    // ========== REGENERATION TESTS ==========
+
+    @Test
+    public void testRegen_IncreasesHpOverTime() throws Exception {
+        player.setMaxHp(100f);
+        player.setCUrrentHp(50f);
+        
+        // Simuler le passage du temps > REGEN_INTERVAL (10s)
+        // update appelle tickRegen
+        player.update(10.1f);
+        
+        // Accès au champ hp via réflexion car il est protected dans LivingEntity
+        Field hpField = io.github.dr4c0nix.survivorgame.entities.LivingEntity.class.getDeclaredField("hp");
+        hpField.setAccessible(true);
+        float hp = (float) hpField.get(player);
+        
+        assertEquals("HP devrait augmenter de 5 après l'intervalle de regen", 55f, hp, 0.001f);
+    }
+
+    @Test
+    public void testRegen_DoesNotExceedMaxHp() throws Exception {
+        player.setMaxHp(100f);
+        player.setCUrrentHp(98f);
+        
+        player.update(10.1f);
+        
+        Field hpField = io.github.dr4c0nix.survivorgame.entities.LivingEntity.class.getDeclaredField("hp");
+        hpField.setAccessible(true);
+        float hp = (float) hpField.get(player);
+        
+        assertEquals("HP devrait être plafonné au MaxHP", 100f, hp, 0.001f);
+    }
+
+    // ========== MOVEMENT INPUT TESTS ==========
+
+    @Test
+    public void testHandleInput_MovesUp() {
+        // Mock des entrées
+        when(mockInput.isKeyPressed(anyInt())).thenReturn(false);
+        // Utilisation de GameOptions qui utilise maintenant nos mocks
+        when(mockInput.isKeyPressed(GameOptions.getInstance().getKeyUp())).thenReturn(true);
+        
+        Vector2 initialPos = new Vector2(player.getPosition());
+        
+        // Update appelle handleInput -> moveBy
+        player.update(0.1f);
+        
+        assertTrue("Position Y devrait augmenter", player.getPosition().y > initialPos.y);
+    }
+
+    @Test
+    public void testHandleInput_MovesDown() {
+        when(mockInput.isKeyPressed(anyInt())).thenReturn(false);
+        when(mockInput.isKeyPressed(GameOptions.getInstance().getKeyDown())).thenReturn(true);
+        
+        Vector2 initialPos = new Vector2(player.getPosition());
+        player.update(0.1f);
+        
+        assertTrue("Position Y devrait diminuer", player.getPosition().y < initialPos.y);
+    }
+    
+    @Test
+    public void testHandleInput_MovesRight() {
+        when(mockInput.isKeyPressed(anyInt())).thenReturn(false);
+        when(mockInput.isKeyPressed(GameOptions.getInstance().getKeyRight())).thenReturn(true);
+        
+        Vector2 initialPos = new Vector2(player.getPosition());
+        player.update(0.1f);
+        
+        assertTrue("Position X devrait augmenter", player.getPosition().x > initialPos.x);
+    }
+    
+    @Test
+    public void testHandleInput_MovesLeft() {
+        when(mockInput.isKeyPressed(anyInt())).thenReturn(false);
+        when(mockInput.isKeyPressed(GameOptions.getInstance().getKeyLeft())).thenReturn(true);
+        
+        Vector2 initialPos = new Vector2(player.getPosition());
+        player.update(0.1f);
+        
+        assertTrue("Position X devrait diminuer", player.getPosition().x < initialPos.x);
+    }
+
+    // ========== COLLISION TESTS ==========
+
+    @Test
+    public void testHandleInput_DoesNotMove_WhenColliding() {
+        // On simule une collision
+        when(mockGameplay.isColliding(any())).thenReturn(true);
+        
+        // On appuie sur la touche DROITE
+        when(mockInput.isKeyPressed(anyInt())).thenReturn(false);
+        when(mockInput.isKeyPressed(GameOptions.getInstance().getKeyRight())).thenReturn(true);
+
+        Vector2 initialPos = new Vector2(player.getPosition());
+        
+        player.update(0.1f);
+
+        assertEquals("Le joueur ne devrait pas bouger en cas de collision", 
+                initialPos.x, player.getPosition().x, 0.001f);
+    }
+
+    // ========== DIRECTION TESTS ==========
+
+    @Test
+    public void testFacingDirection_UpdatesOnMovement() {
+        // Test Droite
+        when(mockInput.isKeyPressed(anyInt())).thenReturn(false);
+        when(mockInput.isKeyPressed(GameOptions.getInstance().getKeyRight())).thenReturn(true);
+        player.update(0.1f);
+        assertEquals(new Vector2(1, 0), player.getFacingDirection());
+
+        // Test Haut
+        when(mockInput.isKeyPressed(GameOptions.getInstance().getKeyRight())).thenReturn(false);
+        when(mockInput.isKeyPressed(GameOptions.getInstance().getKeyUp())).thenReturn(true);
+        player.update(0.1f);
+        assertEquals(new Vector2(0, 1), player.getFacingDirection());
+        
+        // Test Gauche
+        when(mockInput.isKeyPressed(GameOptions.getInstance().getKeyUp())).thenReturn(false);
+        when(mockInput.isKeyPressed(GameOptions.getInstance().getKeyLeft())).thenReturn(true);
+        player.update(0.1f);
+        assertEquals(new Vector2(-1, 0), player.getFacingDirection());
+        
+        // Test Bas
+        when(mockInput.isKeyPressed(GameOptions.getInstance().getKeyLeft())).thenReturn(false);
+        when(mockInput.isKeyPressed(GameOptions.getInstance().getKeyDown())).thenReturn(true);
+        player.update(0.1f);
+        assertEquals(new Vector2(0, -1), player.getFacingDirection());
+    }
+
+    @Test
+    public void testFacingDirection_DefaultIsDown() {
+        // Si on ne bouge pas, par défaut ou après arrêt, c'est souvent down ou la dernière direction
+        // Dans votre code : if (!isMoving) currentDirection = Direction.down;
+        player.update(0.1f); 
+        assertEquals(new Vector2(0, -1), player.getFacingDirection());
+    }
+
+    // ========== ATTACK & WEAPON LOGIC TESTS ==========
+
+    @Test
+    public void testUpdate_UpdatesWeapon_WhenEnabled() {
+        player.setWeapon(mockWeapon);
+        player.setAttacksEnabled(true);
+        
+        player.update(0.1f);
+        
+        // Vérifie que la méthode update de l'arme est appelée
+        verify(mockWeapon, times(1)).update(anyFloat(), eq(player));
+    }
+
+    @Test
+    public void testUpdate_DoesNotUpdateWeapon_WhenDisabled() {
+        player.setWeapon(mockWeapon);
+        player.setAttacksEnabled(false);
+        
+        player.update(0.1f);
+        
+        // Vérifie que l'arme n'est PAS mise à jour
+        verify(mockWeapon, never()).update(anyFloat(), any());
+    }
+    
+    @Test
+    public void testAttacksEnabled_GetterSetter() {
+        player.setAttacksEnabled(true);
+        assertTrue(player.areAttacksEnabled());
+        
+        player.setAttacksEnabled(false);
+        assertFalse(player.areAttacksEnabled());
+    }
+
+    // ========== STATS & UI INTERACTION TESTS ==========
+
+    @Test
+    public void testMobKilled_IncrementsCorrectly() {
+        assertEquals(0, player.getMobKilled());
+        player.incrementMobKilled();
+        assertEquals(1, player.getMobKilled());
+    }
+
+    @Test
+    public void testLevelUp_CallsGameplayShowScreen() {
+        // On force un level up
+        int xpNeeded = player.getExperienceToNextLevel();
+        player.addXp(xpNeeded);
+        
+        // Vérifie que l'écran de level up est demandé
+        verify(mockGameplay, times(1)).showLevelUpScreen();
+    }
+    
+    @Test
+    public void testSetters_AdditionalStats() {
+        player.setArmor(50);
+        assertEquals(50, player.getArmor());
+        
+        player.setForce(2.5f);
+        assertEquals(2.5f, player.getForce(), 0.001f);
+        
+        player.setRegenHP(5.0f);
+        assertEquals(5.0f, player.getRegenHP(), 0.001f);
+        
+        assertEquals(1.0f, player.getDifficulter(), 0.001f); // Getter simple
+    }
+}

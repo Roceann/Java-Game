@@ -143,10 +143,7 @@ public class SpawnManager {
                 }
             }
 
-            // Si toujours null, on saute le type
             if (size == null) continue;
-            
-            
 
             float width = size.x;
             float height = size.y;
