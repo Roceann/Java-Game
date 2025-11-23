@@ -95,7 +95,7 @@ public class Hud implements Screen {
         float hp_W = 300 * scaleX;
         float hp_H = 20 * scaleY;
         float hp_X = barsLeftX;
-        float hp_Y = avatarCenterY + 10 * scaleY;
+        float hp_Y = avatarCenterY + 10 * scaleY - (5 * scaleY);
 
         float xp_W = hp_W;
         float xp_H = 12 * scaleY;
@@ -134,7 +134,7 @@ public class Hud implements Screen {
         font.draw(batch, hpLayout, hpTextX, hpTextY);
 
         String xpText = "XP: " + (int)(xpPercent * 100) + "%";
-        font.draw(batch, xpText, xp_X, xp_Y + xp_H + 16 * scaleY);
+        font.draw(batch, xpText, xp_X, xp_Y + xp_H + 20 * scaleY);
 
         if (iconTexture != null) {
             float iconSize = avatarRadius * 0.8f;

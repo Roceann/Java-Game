@@ -76,8 +76,8 @@ public class Gameplay implements Screen {
     private Rectangle comingFromR2;
     private boolean ccomingFromR1 = true;
     private boolean ccomingFromR2 = false;
-    private float targetAmbient = 0.5f;
-    private float currentAmbient = 0.5f;
+    private float targetAmbient = 0.6f;
+    private float currentAmbient = 0.6f;
 
     private PathfindingMap pathfindingMap;
     private float elapsedTime = 0f;
@@ -214,7 +214,7 @@ public class Gameplay implements Screen {
         lightWorld = new World(new Vector2(0, 0), true);
         RayHandler.setGammaCorrection(true);
         rayHandler = new RayHandler(lightWorld);
-        rayHandler.setAmbientLight(0.5f);
+        rayHandler.setAmbientLight(0.6f);
         torchLights = new ArrayList<>();
         MapLayer lightsLayer = map.getLayers().get("lights");
         if (lightsLayer != null) {
@@ -269,10 +269,10 @@ public class Gameplay implements Screen {
             hud.setPlayer(player);
         }
 
-        if (rayHandler != null && playerLight == null) {
-            playerLight = new PointLight(rayHandler, 128, null, currentLightRadius, player.getPosition().x + player.getHitbox().width / 2f, player.getPosition().y + player.getHitbox().height / 2f);
-            playerLight.setSoft(true);
-        }
+        // if (rayHandler != null && playerLight == null) {
+        //     playerLight = new PointLight(rayHandler, 128, null, currentLightRadius, player.getPosition().x + player.getHitbox().width / 2f, player.getPosition().y + player.getHitbox().height / 2f);
+        //     playerLight.setSoft(true);
+        // }
     }
 
     @Override
@@ -470,7 +470,7 @@ public class Gameplay implements Screen {
                         targetAmbient = 1.0f;
                         targetLightRadius = 0f;
                     } else {
-                        targetAmbient = 0.5f;
+                        targetAmbient = 0.6f;
                         targetLightRadius = maxLightRadius;
                     }
 
@@ -486,13 +486,13 @@ public class Gameplay implements Screen {
             }
         }
 
-        if (playerLight != null) {
-            playerLight.setPosition(player.getPosition().x + player.getHitbox().width / 2f, player.getPosition().y + player.getHitbox().height / 2f);
-            currentLightRadius = MathUtils.lerp(currentLightRadius, targetLightRadius, 0.05f);
-            playerLight.setDistance(currentLightRadius);
+        // if (playerLight != null) {
+        //     playerLight.setPosition(player.getPosition().x + player.getHitbox().width / 2f, player.getPosition().y + player.getHitbox().height / 2f);
+        //     currentLightRadius = MathUtils.lerp(currentLightRadius, targetLightRadius, 0.05f);
+        //     playerLight.setDistance(currentLightRadius);
             currentAmbient = MathUtils.lerp(currentAmbient, targetAmbient, 0.05f);
             rayHandler.setAmbientLight(currentAmbient);
-        }
+        // }
     }
 
     private void clearScreen() {
@@ -530,12 +530,8 @@ public class Gameplay implements Screen {
 
     private void handleGlobalInput() {
         if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
-        main.setScreen(new PauseScreen(main, this));
-        return;
-    }
-
-        if (Gdx.input.isKeyJustPressed(Keys.L)) {
-            showLevelUpScreen();
+            main.setScreen(new PauseScreen(main, this));
+            return;
         }
     }
 

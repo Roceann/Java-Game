@@ -31,10 +31,19 @@ public class LevelUp {
     private final Gameplay gameplay;
     private List<UpgradeOption> upgradeTotal;
     private final Random random;
+    
+    private float scaleX = 1f;
+    private float scaleY = 1f;
 
     public LevelUp(Gameplay gameplay) {
         this.gameplay = gameplay;
         this.random = new Random();
+        updateScale();
+    }
+
+    private void updateScale() {
+        this.scaleX = (Gdx.graphics.getWidth() / 1920f) * 1.2f;
+        this.scaleY = (Gdx.graphics.getHeight() / 1080f) * 1.2f;
     }
 
     /**
@@ -60,10 +69,10 @@ public class LevelUp {
      */
     private void createFonts() {
         font = new BitmapFont();
-        font.getData().setScale(1.3f);
+        font.getData().setScale(1.3f * Math.min(scaleX, scaleY));
         titleFont = new BitmapFont();
-        titleFont.getData().setScale(2.3f);
-        titleFont.setColor(Color.GOLD);
+        titleFont.getData().setScale(2.3f * Math.min(scaleX, scaleY));
+        titleFont.setColor(Color.WHITE);
     }
 
     /**
@@ -72,15 +81,14 @@ public class LevelUp {
      * après création des Textures.
      */
     private void createParts() {
-
         Pixmap p1 = new Pixmap(4, 4, Pixmap.Format.RGBA8888);
-        p1.setColor(0.95f, 0.85f, 0.1f, 1f);
+        p1.setColor(0.35f, 0.35f, 0.35f, 1f);
         p1.fill();
         rectTex = new Texture(p1);
         p1.dispose();
 
         Pixmap p2 = new Pixmap(8, 8, Pixmap.Format.RGBA8888);
-        p2.setColor(0f, 0f, 0f, 0.6f);
+        p2.setColor(0.18f, 0.18f, 0.18f, 1f);
         p2.fill();
         contourTex = new Texture(p2);
         p2.dispose();
@@ -151,25 +159,27 @@ public class LevelUp {
 
         Table visuelle = new Table();
         visuelle.setBackground(new TextureRegionDrawable(new TextureRegion(contourTex)));
-        visuelle.pad(18);
+        visuelle.pad(18 * Math.min(scaleX, scaleY));
         visuelle.center();
 
-        Label title = new Label("LEVEL UP", new Label.LabelStyle(titleFont, Color.GOLD));
+        Label title = new Label("LEVEL UP", new Label.LabelStyle(titleFont, Color.WHITE));
         title.setAlignment(Align.center);
-        visuelle.add(title).colspan(3).padBottom(12).row();
+        visuelle.add(title).colspan(3).padBottom(12 * Math.min(scaleX, scaleY)).row();
+
         float screenW = Gdx.graphics.getWidth();
-        float blockW = screenW / 6f;
-        float blockH = 100f;
+        float blockW = (screenW / 6f) * Math.min(scaleX, scaleY);
+        float blockH = 100f * Math.min(scaleX, scaleY);
 
         for (UpgradeOption u : upgradeTotal) {
             boolean weaponChoiceMode = gameplay.getPlayer() != null && gameplay.getPlayer().getLevel() == 2;
             String text = weaponChoiceMode ? u.getDisplayName() : (u.getDisplayName() + "  +" + u.getFormattedValue());
-            Label label = new Label(text, new Label.LabelStyle(font, Color.BLACK));
+            Label label = new Label(text, new Label.LabelStyle(font, Color.WHITE));
             label.setAlignment(Align.center);
+            label.setWrap(true);
 
             Table box = new Table();
             box.setBackground(new TextureRegionDrawable(new TextureRegion(rectTex)));
-            box.pad(6);
+            box.pad(6 * Math.min(scaleX, scaleY));
             box.add(label).width(blockW).height(blockH).center();
 
             box.addListener(new ClickListener() {
@@ -181,7 +191,7 @@ public class LevelUp {
                 }
             });
 
-            visuelle.add(box).pad(8);
+            visuelle.add(box).pad(8 * Math.min(scaleX, scaleY));
         }
 
         root.add(visuelle).center();

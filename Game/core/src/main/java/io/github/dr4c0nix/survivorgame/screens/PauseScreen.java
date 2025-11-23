@@ -28,12 +28,18 @@ public class PauseScreen implements Screen {
 
     private Stage stage;
     private BitmapFont font;
+    private BitmapFont titleFont;
     private Texture overlayTex;   
-    private Texture panelTex;     // fond des panneaux
+    private Texture panelTex;
+    private Texture contourTex;
+    
+    private float scaleX = 1f;
+    private float scaleY = 1f;
 
     public PauseScreen(Main main, Gameplay gameplay) {
         this.main = main;
         this.gameplay = gameplay;
+        updateScale();
     }
 
     @Override
@@ -43,53 +49,79 @@ public class PauseScreen implements Screen {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-        font = new BitmapFont();
-        font.getData().setScale(1.2f);
-
+        createFonts();
         createTextures();
         buildUI();
     }
 
+    private void updateScale() {
+        this.scaleX = (Gdx.graphics.getWidth() / 1920f) * 1.2f;
+        this.scaleY = (Gdx.graphics.getHeight() / 1080f) * 1.2f;
+    }
+
+    private void createFonts() {
+        font = new BitmapFont();
+        font.getData().setScale(1.3f * Math.min(scaleX, scaleY));
+        
+        titleFont = new BitmapFont();
+        titleFont.getData().setScale(2.3f * Math.min(scaleX, scaleY));
+        titleFont.setColor(Color.WHITE);
+    }
+
     private void createTextures() {
-        // Fond noir sensé être transparent
         Pixmap p1 = new Pixmap(4, 4, Pixmap.Format.RGBA8888);
-        p1.setColor(0f, 0f, 0f, 0.35f); 
+        p1.setColor(0.35f, 0.35f, 0.35f, 1f);
         p1.fill();
-        overlayTex = new Texture(p1);
+        panelTex = new Texture(p1);
         p1.dispose();
-        Pixmap p2 = new Pixmap(4, 4, Pixmap.Format.RGBA8888);
-        p2.setColor(0.15f, 0.15f, 0.15f, 0.9f);
+
+        Pixmap p2 = new Pixmap(8, 8, Pixmap.Format.RGBA8888);
+        p2.setColor(0.18f, 0.18f, 0.18f, 1f);
         p2.fill();
-        panelTex = new Texture(p2);
+        contourTex = new Texture(p2);
         p2.dispose();
     }
 
     private void buildUI() {
-
         Table root = new Table();
         root.setFillParent(true);
-        root.setBackground(new TextureRegionDrawable(new TextureRegion(overlayTex)));
+        root.center();
+
+        Table visuelle = new Table();
+        visuelle.setBackground(new TextureRegionDrawable(new TextureRegion(contourTex)));
+        visuelle.pad(18 * Math.min(scaleX, scaleY));
+        visuelle.center();
+
+        Label title = new Label("PAUSED", new Label.LabelStyle(titleFont, Color.WHITE));
+        title.setAlignment(Align.center);
+        visuelle.add(title).colspan(2).padBottom(12 * Math.min(scaleX, scaleY)).row();
+
         Table leftPanel = new Table();
-        leftPanel.defaults().pad(8f).width(220f).height(55f);
+        float btnWidth = 220f * scaleX;
+        float btnHeight = 55f * scaleY;
+        leftPanel.defaults().pad(8f * Math.min(scaleX, scaleY)).width(btnWidth).height(btnHeight);
+        
         TextButton.TextButtonStyle btnStyle = new TextButton.TextButtonStyle();
         btnStyle.font = font;
         btnStyle.fontColor = Color.WHITE;
         btnStyle.up = new TextureRegionDrawable(new TextureRegion(panelTex));
+        
         TextButton resumeBtn = new TextButton("Resume", btnStyle);
         TextButton menuBtn   = new TextButton("Main Menu", btnStyle);
         TextButton quitBtn   = new TextButton("Quit", btnStyle);
 
-        leftPanel.add(resumeBtn).row();
-        leftPanel.add(menuBtn).row();
-        leftPanel.add(quitBtn).row();
-
+        leftPanel.add(resumeBtn).expandY().top().row();
+        leftPanel.add(menuBtn).expandY().center().row();
+        leftPanel.add(quitBtn).expandY().bottom().row();
 
         Table rightPanel = new Table();
-        rightPanel.defaults().pad(4f);
+        rightPanel.defaults().pad(4f * Math.min(scaleX, scaleY));
         rightPanel.setBackground(new TextureRegionDrawable(new TextureRegion(panelTex)));
-        rightPanel.pad(12f);
-        Label.LabelStyle titleStyle = new Label.LabelStyle(font, Color.GOLD);
+        rightPanel.pad(12f * Math.min(scaleX, scaleY));
+        
+        Label.LabelStyle titleStyle = new Label.LabelStyle(titleFont, Color.WHITE);
         Label.LabelStyle textStyle  = new Label.LabelStyle(font, Color.WHITE);
+        
         Label timeLabel = new Label("Time: " + Gameplay.formatTime(gameplay.getElapsedTime()), textStyle);
         timeLabel.setAlignment(Align.center);
         Label statsTitle = new Label("STATISTICS", titleStyle);
@@ -98,12 +130,15 @@ public class PauseScreen implements Screen {
         statsLabel.setAlignment(Align.topLeft);
         updateStatsText(statsLabel);
 
-        rightPanel.add(timeLabel).padBottom(10f).row();
-        rightPanel.add(statsTitle).padBottom(10f).row();
-        rightPanel.add(statsLabel).width(260f).left().top();
-        root.add(leftPanel).top().left().pad(20f);
-        root.add(rightPanel).top().right().pad(20f);
+        rightPanel.add(timeLabel).padBottom(10f * Math.min(scaleX, scaleY)).row();
+        rightPanel.add(statsTitle).padBottom(10f * Math.min(scaleX, scaleY)).row();
+        rightPanel.add(statsLabel).width(260f * scaleX).left().top();
 
+        visuelle.add(leftPanel).top().left().pad(20f * Math.min(scaleX, scaleY));
+        visuelle.add(rightPanel).top().right().pad(20f * Math.min(scaleX, scaleY));
+
+        root.add(visuelle).center();
+        stage.addActor(root);
 
         resumeBtn.addListener(new ClickListener() {
             @Override public void clicked(InputEvent e, float x, float y) {
@@ -125,8 +160,6 @@ public class PauseScreen implements Screen {
                 Gdx.app.exit();
             }
         });
-
-        stage.addActor(root);
     }
 
     // Mise en public pour les tests
@@ -138,6 +171,7 @@ public class PauseScreen implements Screen {
         sb.append("XP: ").append(p.getXpactual()).append(" / ").append(p.getExperienceToNextLevel()).append("\n");
         sb.append("HP: ").append((int) p.getHp()).append(" / ").append((int) p.getMaxHp()).append("\n");
         sb.append("Armor: ").append(p.getArmor()).append("\n");
+        sb.append("Speed: ").append(String.format("%.2f", p.getMovementSpeed())).append("\n");
         sb.append("Crit Chance: ").append(String.format("%.1f%%", p.getCritChance())).append("\n");
         sb.append("Crit Damage: x").append(String.format("%.2f", p.getCritDamage())).append("\n");
         sb.append("HP Regen: ").append(String.format("%.1f hp/10sec", p.getRegenHP())).append("\n\n");
@@ -163,7 +197,12 @@ public class PauseScreen implements Screen {
         stage.draw();
     }
 
-    @Override public void resize(int w, int h) { stage.getViewport().update(w, h, true); }
+    @Override 
+    public void resize(int w, int h) {
+        updateScale();
+        stage.getViewport().update(w, h, true);
+    }
+
     @Override public void pause() {}
     @Override public void resume() {}
     @Override public void hide() {}
@@ -173,6 +212,8 @@ public class PauseScreen implements Screen {
         if (stage != null) stage.dispose();
         if (overlayTex != null) overlayTex.dispose();
         if (panelTex != null) panelTex.dispose();
+        if (contourTex != null) contourTex.dispose();
         if (font != null) font.dispose();
+        if (titleFont != null) titleFont.dispose();
     }
 }

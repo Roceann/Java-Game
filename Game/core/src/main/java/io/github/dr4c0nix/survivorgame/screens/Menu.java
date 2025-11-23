@@ -15,9 +15,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
@@ -37,13 +38,14 @@ import java.util.List;
  */
 public class Menu implements Screen {
     private OrthographicCamera camera;
-    private FitViewport viewport;
+    private StretchViewport viewport;
     private Stage stage;
 
     private BitmapFont font;
     private TextButton.TextButtonStyle textButtonStyle;
     private Texture buttonTexture;
     private Texture buttonTextureDown;
+    private Texture backgroundTexture;
     private List<TextButton> currentButtons = new ArrayList<>();
     private boolean isFullscreen = false;
     private Music menuMusic;
@@ -62,7 +64,7 @@ public class Menu implements Screen {
      */
     public Menu() {
         camera = new OrthographicCamera();
-        viewport = new FitViewport(800, 600, camera);
+        viewport = new StretchViewport(800, 600, camera);
         menuMusic = Gdx.audio.newMusic(Gdx.files.internal("Song/Penumbra-chosic.wav"));
         menuMusic.setLooping(true);
         updateMenuMusicVolume();
@@ -84,6 +86,13 @@ public class Menu implements Screen {
         table.clear();
         table.setFillParent(true);
         table.center();
+
+        ensureStyle();
+
+        Label title = new Label("Cavazzinni Survivor", new Label.LabelStyle(font, Color.WHITE));
+        title.setFontScale(2.0f);
+        table.add(title).colspan(2).padTop(10).padBottom(20).center();
+        table.row();
 
         TextButton play = createButtons("Play", table);
         table.add(play).width(300).height(80).pad(10).center();
@@ -146,16 +155,16 @@ public class Menu implements Screen {
         font = new BitmapFont();
 
         Pixmap pix = new Pixmap(8, 8, Pixmap.Format.RGBA8888);
-        pix.setColor(0.15f, 0.35f, 0.65f, 1f);
+        pix.setColor(0.247f, 0.078f, 0.075f, 1f);
         pix.fill();
-        pix.setColor(0.05f, 0.12f, 0.25f, 1f);
+        pix.setColor(0.333f, 0.106f, 0.082f, 1f);
         pix.drawRectangle(0, 0, 8, 8);
         buttonTexture = new Texture(pix);
 
         Pixmap pixDown = new Pixmap(8, 8, Pixmap.Format.RGBA8888);
-        pixDown.setColor(0.10f, 0.25f, 0.50f, 1f);
+        pixDown.setColor(0.333f, 0.106f, 0.082f, 1f);
         pixDown.fill();
-        pixDown.setColor(0.03f, 0.08f, 0.18f, 1f);
+        pixDown.setColor(0.247f, 0.078f, 0.075f, 1f);
         pixDown.drawRectangle(0, 0, 8, 8);
         buttonTextureDown = new Texture(pixDown);
 
@@ -502,6 +511,11 @@ public class Menu implements Screen {
         stage = new Stage(viewport);
         Gdx.input.setInputProcessor(stage);
 
+        backgroundTexture = new Texture(Gdx.files.internal("background/menubg.png"));
+        Image background = new Image(backgroundTexture);
+        background.setFillParent(true);
+        stage.addActor(background);
+
         Table table = new Table();
         table.setFillParent(true);
         table.center();
@@ -606,10 +620,8 @@ public class Menu implements Screen {
      */
     @Override
     public void dispose() {
-        // Efface tous les boutons
         clearMenu();
         
-        // Dispose du Stage
         if (stage != null) {
             try {
                 stage.dispose();
@@ -619,7 +631,6 @@ public class Menu implements Screen {
             }
         }
         
-        // Dispose de la police
         if (font != null) {
             try {
                 font.dispose();
@@ -629,7 +640,6 @@ public class Menu implements Screen {
             }
         }
         
-        // Dispose des textures de boutons
         if (buttonTexture != null) {
             try {
                 buttonTexture.dispose();
@@ -647,6 +657,16 @@ public class Menu implements Screen {
                 System.err.println("Error disposing buttonTextureDown: " + e.getMessage());
             }
         }
+
+        if (backgroundTexture != null) {
+            try {
+                backgroundTexture.dispose();
+                backgroundTexture = null;
+            } catch (Exception e) {
+                System.err.println("Error disposing backgroundTexture: " + e.getMessage());
+            }
+        }
+
         if (menuMusic != null) {
             try {
                 menuMusic.stop();
@@ -792,17 +812,17 @@ public class Menu implements Screen {
         if (sliderStyle != null) return;
 
         Pixmap trackPix = new Pixmap(200, 8, Pixmap.Format.RGBA8888);
-        trackPix.setColor(0.15f, 0.35f, 0.65f, 1f);
+        trackPix.setColor(0.247f, 0.078f, 0.075f, 1f);
         trackPix.fill();
-        trackPix.setColor(0.05f, 0.12f, 0.25f, 1f);
+        trackPix.setColor(0.333f, 0.106f, 0.082f, 1f);
         trackPix.drawRectangle(0, 0, 200, 8);
         sliderBackgroundTexture = new Texture(trackPix);
         trackPix.dispose();
 
         Pixmap knobPix = new Pixmap(16, 24, Pixmap.Format.RGBA8888);
-        knobPix.setColor(0.10f, 0.25f, 0.50f, 1f);
+        knobPix.setColor(0.247f, 0.078f, 0.075f, 1f);
         knobPix.fillRectangle(0, 0, 16, 24);
-        knobPix.setColor(0.03f, 0.08f, 0.18f, 1f);
+        knobPix.setColor(0.333f, 0.106f, 0.082f, 1f);
         knobPix.drawRectangle(0, 0, 16, 24);
         sliderKnobTexture = new Texture(knobPix);
         knobPix.dispose();

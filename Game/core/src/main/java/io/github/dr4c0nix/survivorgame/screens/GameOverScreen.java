@@ -36,6 +36,9 @@ public class GameOverScreen implements Screen {
     private Texture panelTex;
     private Texture gameOverBg;
 
+    private float scaleX = 1f;
+    private float scaleY = 1f;
+
     public GameOverScreen(Main main, int kills, int level, float timeSurvived) {
         this.main = main;
         this.kills = kills;
@@ -43,6 +46,12 @@ public class GameOverScreen implements Screen {
         this.timeSurvived = timeSurvived;
 
         gameOverBg = new Texture(Gdx.files.internal("background/gameoverbg.png"));
+        updateScale();
+    }
+
+    private void updateScale() {
+        this.scaleX = (Gdx.graphics.getWidth() / 1920f) * 1.2f;
+        this.scaleY = (Gdx.graphics.getHeight() / 1080f) * 1.2f;
     }
 
     @Override
@@ -58,10 +67,10 @@ public class GameOverScreen implements Screen {
 
     private void createFonts() {
         font = new BitmapFont();
-        font.getData().setScale(1.4f);
+        font.getData().setScale(1.4f * Math.min(scaleX, scaleY));
 
         titleFont = new BitmapFont();
-        titleFont.getData().setScale(2.4f);
+        titleFont.getData().setScale(2.4f * Math.min(scaleX, scaleY));
         titleFont.setColor(Color.RED);
     }
 
@@ -86,7 +95,7 @@ public class GameOverScreen implements Screen {
 
         Table panel = new Table();
         panel.setBackground(new TextureRegionDrawable(new TextureRegion(panelTex)));
-        panel.pad(20);
+        panel.pad(20 * Math.min(scaleX, scaleY));
 
         Label title = new Label("GAME OVER", new Label.LabelStyle(titleFont, Color.RED));
         title.setAlignment(Align.center);
@@ -129,13 +138,13 @@ public class GameOverScreen implements Screen {
             }
         });
 
-        panel.add(title).padBottom(20).row();
-        panel.add(stats).padBottom(20).row();
-        panel.add(retryBtn).width(250).height(60).pad(5).row();
-        panel.add(menuBtn).width(250).height(60).pad(5).row();
-        panel.add(quitBtn).width(250).height(60).pad(5).row();
+        panel.add(title).padBottom(20 * Math.min(scaleX, scaleY)).row();
+        panel.add(stats).padBottom(20 * Math.min(scaleX, scaleY)).row();
+        panel.add(retryBtn).width(250 * scaleX).height(60 * scaleY).pad(5 * Math.min(scaleX, scaleY)).row();
+        panel.add(menuBtn).width(250 * scaleX).height(60 * scaleY).pad(5 * Math.min(scaleX, scaleY)).row();
+        panel.add(quitBtn).width(250 * scaleX).height(60 * scaleY).pad(5 * Math.min(scaleX, scaleY)).row();
 
-        root.add(panel);
+        root.add(panel).center();
         stage.addActor(root);
     }
 
@@ -151,7 +160,9 @@ public class GameOverScreen implements Screen {
         stage.draw();
     }
 
-    @Override public void resize(int w, int h) {
+    @Override
+    public void resize(int w, int h) {
+        updateScale();
         stage.getViewport().update(w, h, true);
     }
 
