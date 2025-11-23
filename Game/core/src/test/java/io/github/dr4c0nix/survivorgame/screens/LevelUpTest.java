@@ -1,6 +1,7 @@
 package io.github.dr4c0nix.survivorgame.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -42,6 +43,8 @@ public class LevelUpTest {
     private BitmapFont mockFont;
     @Mock
     private BitmapFont mockTitleFont;
+    @Mock
+    private Graphics mockGraphics;
 
     private LevelUp levelUp;
 
@@ -53,6 +56,9 @@ public class LevelUpTest {
         MockitoAnnotations.openMocks(this);
 
         Gdx.input = mockInput;
+        Gdx.graphics = mockGraphics;
+        when(mockGraphics.getWidth()).thenReturn(1920);
+        when(mockGraphics.getHeight()).thenReturn(1080);
 
         when(mockGameplay.getPlayer()).thenReturn(mockPlayer);
         when(mockPlayer.getCurrentWeapon()).thenReturn(mockWeapon);
@@ -76,7 +82,6 @@ public class LevelUpTest {
         assertNotNull("La liste des upgrades ne doit pas être null", upgrades);
         assertFalse("La liste des upgrades ne doit pas être vide", upgrades.isEmpty());
 
-        // Les valeurs dans LevelUp sont en anglais
         boolean hasSpeed = upgrades.stream().anyMatch(u -> u.getDisplayName().equals("Speed"));
         boolean hasArmor = upgrades.stream().anyMatch(u -> u.getDisplayName().equals("Armor"));
 
@@ -151,7 +156,6 @@ public class LevelUpTest {
      */
     @Test
     public void testApplyUpgrade_MaxHP() throws Exception {
-        // Utilise la clé anglaise "Max Health"
         UpgradeOption option = new UpgradeOption("Max Health", 10f, 10f, UpgradeOption.StatType.FLOAT);
         setOptionValue(option, 10f);
 
@@ -345,8 +349,7 @@ public class LevelUpTest {
             Field f = UpgradeOption.class.getDeclaredField("value");
             f.setAccessible(true);
             f.set(option, value);
-        } catch (NoSuchFieldException e) {
-            // Fallback si le champ n'existe pas
+        } catch (NoSuchFieldException ignored) {
         }
     }
 
