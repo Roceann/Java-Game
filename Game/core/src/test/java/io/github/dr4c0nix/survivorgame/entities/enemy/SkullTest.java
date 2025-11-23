@@ -31,7 +31,7 @@ public class SkullTest {
 
         // Vérifie les valeurs de l'appel super().
         assertEquals("La vitesse de déplacement doit être 60", 60f, skull.getMovementSpeed(), DELTA);
-        assertEquals("La valeur d'XP doit être 15", 15, skull.getXpValue());
+        assertEquals("La valeur d'XP doit être 30", 30, skull.getXpValue());
         assertEquals("La position initiale doit être (0,0)", new Vector2(0f, 0f), skull.getPosition());
         assertEquals("La largeur de la hitbox doit être 22", 22f, skull.getHitbox().width, DELTA);
         assertEquals("La hauteur de la hitbox doit être 28", 28f, skull.getHitbox().height, DELTA);

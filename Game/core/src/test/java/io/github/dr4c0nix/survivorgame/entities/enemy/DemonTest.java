@@ -31,7 +31,7 @@ public class DemonTest {
 
         // Vérifie les valeurs de l'appel super().
         assertEquals("La vitesse de déplacement doit être 100", 100f, demon.getMovementSpeed(), DELTA);
-        assertEquals("La valeur d'XP doit être 10", 10, demon.getXpValue());
+        assertEquals("La valeur d'XP doit être 25", 25, demon.getXpValue());
         assertEquals("La position initiale doit être (0,0)", new Vector2(0f, 0f), demon.getPosition());
         assertEquals("La largeur de la hitbox doit être 24", 24f, demon.getHitbox().width, DELTA);
         assertEquals("La hauteur de la hitbox doit être 32", 32f, demon.getHitbox().height, DELTA);
