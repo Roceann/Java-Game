@@ -17,7 +17,7 @@ public class Dagger extends Weapon {
             21f,
             "Weapon/Dagger/dagger-effect.png",
             "Une dague rapide et puissante pour les combats rapprochés !", 
-            "Weapon/Sword/Sword.png");
+            "Weapon/Dagger/Dagger.png");
     }
 
     @Override

@@ -17,7 +17,7 @@ public class WoodStick extends Weapon {
             12f,
             "Weapon/WoodStick/woodstick-effect.png",
             "Un bâton en bois simple pour commencer votre aventure !",
-            "Weapon/Sword/Sword.png");
+            "Weapon/WoodStick/WoodStick.png");
     }
 
     @Override

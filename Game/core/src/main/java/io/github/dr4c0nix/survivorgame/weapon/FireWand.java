@@ -17,7 +17,7 @@ public class FireWand extends Weapon {
             32f,
             "Weapon/FireWand/firewand-effect.png",
             "Lancez des boules de feu dévastatrices !",
-            "Weapon/Sword/Sword.png");
+            "Weapon/FireWand/FireWand.png");
     }
 
     @Override
