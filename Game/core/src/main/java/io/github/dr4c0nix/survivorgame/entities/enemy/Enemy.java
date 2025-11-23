@@ -8,32 +8,70 @@ import io.github.dr4c0nix.survivorgame.entities.OrbXp;
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
 import io.github.dr4c0nix.survivorgame.screens.Gameplay;
 
+/**
+ * Classe de base pour tous les ennemis du jeu.
+ * Contient la logique de déplacement, séparation (pour éviter la superposition)
+ * et l'orbe d'XP associée à l'ennemi.
+ */
 public abstract class Enemy extends LivingEntity {
     protected OrbXp xpDrop;
     protected Gameplay gameplay;
 
-    // Vecteurs temporaires pour éviter les allocations mémoire (new Vector2) dans la boucle update
     private final Vector2 tmpVector = new Vector2();
     private final Vector2 velocity = new Vector2();
     private final Vector2 separation = new Vector2();
 
+    /**
+     * Constructeur.
+     *
+     * @param spawnPoint   position d'apparition initiale
+     * @param hitboxWidth  largeur de la hitbox
+     * @param hitboxHeight hauteur de la hitbox
+     * @param xpDrop       valeur d'XP fournie par cet ennemi
+     * @param hp           points de vie
+     * @param armor        armure
+     * @param force        force de l'ennemi (dégâts)
+     * @param texturePath  chemin de la texture
+     */
     public Enemy(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, int xpDrop, float hp, int armor, float force, String texturePath) {
         super(spawnPoint, hitboxWidth, hitboxHeight, hp, armor, force, texturePath);
         this.xpDrop = new OrbXp(xpDrop);
     }
 
+    /**
+     * Associe l'objet Gameplay pour permettre l'accès au joueur, collisions et pathfinding.
+     *
+     * @param gameplay instance de Gameplay
+     */
     public void setGameplay(Gameplay gameplay) {
         this.gameplay = gameplay;
     }
 
+    /**
+     * Valeur d'XP que donne cet ennemi.
+     *
+     * @return valeur d'XP
+     */
     public int getXpValue() {
         return xpDrop.getXpValue();
     }
 
+    /**
+     * Récupère l'objet OrbXp associé (pour spawn d'orbes).
+     *
+     * @return l'orbe d'XP
+     */
     public OrbXp getXpDrop() {
         return xpDrop;
     }
 
+    /**
+     * Mise à jour par frame de l'ennemi.
+     * Gère : pathfinding/direct vers le joueur, séparation entre ennemis, mouvement avec glissement,
+     * et tick d'immunité.
+     *
+     * @param delta temps écoulé depuis la dernière frame (en secondes)
+     */
     @Override
     public void update(float delta) {
         if (!isAlive() || gameplay == null) return;
@@ -48,7 +86,6 @@ public abstract class Enemy extends LivingEntity {
         Vector2 desiredDir = gameplay.getDirection((int) centerX, (int) centerY);
         
         if (desiredDir == null) {
-            // Fallback : ligne droite vers le joueur
             tmpVector.set(player.getPosition()).add(player.getHitbox().width/2, player.getHitbox().height/2);
             tmpVector.sub(centerX, centerY).nor();
             velocity.set(tmpVector);
@@ -56,9 +93,9 @@ public abstract class Enemy extends LivingEntity {
             velocity.set(desiredDir);
         }
 
-        // 2. Force de séparation (Boids) : Évite que les ennemis se superposent trop
+        // 2. Force de séparation : Évite que les ennemis se superposent trop
         calculateSeparationForce(separation);
-        velocity.add(separation).nor(); // On combine direction + évitement et on normalise
+        velocity.add(separation).nor(); 
 
         // 3. Appliquer le mouvement avec glissement sur les murs
         float moveDist = getMovementSpeed() * delta;
@@ -67,7 +104,10 @@ public abstract class Enemy extends LivingEntity {
     }
 
     /**
-     * Calcule une force pour repousser cet ennemi des autres ennemis proches.
+     * Calcule une force de séparation pour éviter la superposition des ennemis proches.
+     * Remplit outSeparation avec le vecteur de séparation (somme des forces).
+     *
+     * @param outSeparation vecteur de sortie modifié par la méthode
      */
     private void calculateSeparationForce(Vector2 outSeparation) {
         outSeparation.set(0, 0);
@@ -97,7 +137,13 @@ public abstract class Enemy extends LivingEntity {
     }
 
     /**
-     * Déplace l'entité axe par axe pour permettre de glisser le long des murs.
+     * Déplace l'entité sur les axes X puis Y pour permettre de glisser le long des murs.
+     * Annule les déplacements qui provoquent une collision et tente de compléter le mouvement
+     * pour conserver la distance totale souhaitée.
+     *
+     * @param dx       déplacement souhaité sur X
+     * @param dy       déplacement souhaité sur Y
+     * @param moveDist distance totale à parcourir (|dx| ou |dy| au max)
      */
     private void moveAndSlide(float dx, float dy, float moveDist) {
         // Essai mouvement X

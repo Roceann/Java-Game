@@ -1,6 +1,5 @@
 package io.github.dr4c0nix.survivorgame.entities.enemy;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -9,12 +8,12 @@ import com.badlogic.gdx.math.Vector2;
 public class Demon extends ClassicEnemy {
 
     private static final String TEX_FRONT = "Entity/Enemy/DemonSimple/demonface.png";
-    private static final String TEX_BACK  = "Entity/Enemy/DemonSimple/demondos.png";
-    private static final String TEX_LEFT  = "Entity/Enemy/DemonSimple/demonleft.png";
-    private static final String TEX_RIGHT = "Entity/Enemy/DemonSimple/demonright.png";
 
     private final Vector2 lastPos = new Vector2();
 
+    /**
+     * Constructeur : initialise les statistiques et la hitbox si la texture est chargée.
+     */
     public Demon() {
         super(
             new Vector2(0f, 0f),
@@ -42,6 +41,11 @@ public class Demon extends ClassicEnemy {
         }
     }
 
+    /**
+     * Taille de l'orbe d'XP lâchée par le Demon.
+     *
+     * @return taille en pixels
+     */
     @Override
     public float getXpOrbSize() {
         return 7.0f;
