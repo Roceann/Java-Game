@@ -11,6 +11,10 @@ public class Main extends Game {
     Menu menu;
     Gameplay gameplay;
 
+    /**
+     * Initialisation du jeu : crée les écrans et affiche le menu.
+     * Méthode appelée par LibGDX au démarrage.
+     */
     @Override
     public void create() {
         this.menu = new Menu();
@@ -18,6 +22,13 @@ public class Main extends Game {
         setScreen(menu);
     }
 
+    /**
+     * Change l'écran courant de l'application.
+     * Dispose l'ancienne instance pour libérer les ressources si nécessaire,
+     * puis instancie et affiche le nouvel écran demandé.
+     *
+     * @param screenName nom de l'écran cible ("Menu" ou "Gameplay")
+     */
     public static void changeScreen(String screenName) {
         Main mainInstance = ((Main) Gdx.app.getApplicationListener());
         switch (screenName) {

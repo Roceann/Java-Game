@@ -22,6 +22,12 @@ public class PathfindingMap {
         {1,1},{1,-1},{-1,1},{-1,-1}
     };
 
+    /**
+     * Crée une map de pathfinding de taille donnée.
+     *
+     * @param width largeur en cellules
+     * @param height hauteur en cellules
+     */
     public PathfindingMap(int width, int height) {
         this.width = width;
         this.height = height;
@@ -29,16 +35,32 @@ public class PathfindingMap {
         this.distances = new int[width][height];
     }
 
+    /**
+     * Marque la cellule (x,y) comme mur (infranchissable).
+     *
+     * @param x coordonnée X de la cellule
+     * @param y coordonnée Y de la cellule
+     */
     public void setWall(int x, int y) {
         if (isValid(x, y)) terrain[x][y] = 1;
     }
 
+    /**
+     * Efface tous les murs de la carte (rend toutes les cellules franchissables).
+     */
     public void clearWalls() {
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
                 terrain[x][y] = 0;
     }
 
+    /**
+     * Recalcule la "heatmap" des distances depuis la cellule du joueur.
+     * Utilise un parcours en largeur (BFS) et évite le "corner cutting" diagonal.
+     *
+     * @param playerX coordonnée X du joueur (cellule)
+     * @param playerY coordonnée Y du joueur (cellule)
+     */
     public void calculateFlow(int playerX, int playerY) {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -73,6 +95,16 @@ public class PathfindingMap {
         }
     }
 
+    /**
+     * Marque une cellule visitée avec une nouvelle distance si elle est meilleure,
+     * et l'ajoute à la file BFS.
+     *
+     * Méthode privée utilitaire utilisée par calculateFlow.
+     *
+     * @param x coordonnée X de la cellule
+     * @param y coordonnée Y de la cellule
+     * @param newDist nouvelle distance candidate depuis le joueur
+     */
     private void visit(int x, int y, int newDist) {
         if (!isValid(x, y)) return;
         if (terrain[x][y] == 1) return;
@@ -84,6 +116,10 @@ public class PathfindingMap {
     /**
      * Retourne la direction normalisée vers un voisin qui diminue la distance jusqu'au joueur.
      * Préfère orthogonales. Retourne null si la cellule est inaccessible ou déjà au joueur.
+     *
+     * @param gx coordonnée X de la cellule d'origine (grille)
+     * @param gy coordonnée Y de la cellule d'origine (grille)
+     * @return vecteur normalisé pointant vers le voisin qui réduit la distance, ou null
      */
     public Vector2 getDirection(int gx, int gy) {
         if (!isValid(gx, gy)) return null;
@@ -116,19 +152,43 @@ public class PathfindingMap {
         return null;
     }
 
+    /**
+     * Vérifie si une cellule donnée est dans les bornes de la grille.
+     *
+     * @param x coordonnée X à tester
+     * @param y coordonnée Y à tester
+     * @return true si (x,y) est valide dans la grille
+     */
     public boolean isValid(int x, int y) {
         return x >= 0 && y >= 0 && x < width && y < height;
     }
 
+    /**
+     * Retourne la distance pré-calculée depuis la cellule (x,y) vers le joueur.
+     *
+     * @param x coordonnée X
+     * @param y coordonnée Y
+     * @return distance (entier) ou INF si invalide / inaccessible
+     */
     public int getDistance(int x, int y) {
         if (!isValid(x, y)) return INF;
         return distances[x][y];
     }
 
+    /**
+     * Largeur de la grille (en cellules).
+     *
+     * @return largeur
+     */
     public int getWidth() {
         return width;
     }
 
+    /**
+     * Hauteur de la grille (en cellules).
+     *
+     * @return hauteur
+     */
     public int getHeight() {
         return height;
     }
