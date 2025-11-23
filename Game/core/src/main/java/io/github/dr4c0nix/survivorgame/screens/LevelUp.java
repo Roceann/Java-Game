@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -29,7 +30,7 @@ import io.github.dr4c0nix.survivorgame.weapon.Sword;
  * - gèle le gameplay,
  * - génère un ensemble d'options d'amélioration (ou choix d'arme),
  * - affiche trois options cliquables et applique l'amélioration sélectionnée au Player,
- * - gère ses propres ressources graphiques (fonts, textures, Stage).
+ * - gère ses propres ressources graphiques (background, fonts, textures, Stage).
  *
  * Le LevelUp est conçu pour être utilisé par Gameplay : show() crée et affiche
  * l'overlay, hide()/dispose() nettoient les ressources et remettent le jeu en route.
@@ -40,6 +41,7 @@ public class LevelUp {
     private BitmapFont titleFont;
     private Texture rectTex;
     private Texture contourTex;
+    private Texture backgroundTexture;
     private final Gameplay gameplay;
     private List<UpgradeOption> upgradeTotal;
     private final Random random;
@@ -73,12 +75,18 @@ public class LevelUp {
      *
      * Actions réalisées :
      * - gèle le jeu (gameplay.setIsPaused(true))
-     * - initialise polices et textures
+     * - initialise background, polices et textures
      * - génère 3 options aléatoires (ou choix d'arme si le joueur est au niveau 2)
      * - construit l'UI et active le Stage comme InputProcessor
      */
     public void show() {
         stage = new Stage(new ScreenViewport());
+        try {
+            backgroundTexture = new Texture(Gdx.files.internal("Background/levelupbg.jpg"));
+            Image background = new Image(backgroundTexture);
+            background.setFillParent(true);
+            stage.addActor(background);
+        } catch (Exception ignored) {}
         gameplay.setIsPaused(true);
         createFonts();
         createParts();
@@ -326,7 +334,10 @@ public class LevelUp {
                 Gdx.input.setInputProcessor(null);
             }
         } catch (Exception ignored) {}
-
+        if (backgroundTexture != null) {
+            backgroundTexture.dispose();
+            backgroundTexture = null;
+        }
         if (stage != null) {
             try {
                 stage.clear();

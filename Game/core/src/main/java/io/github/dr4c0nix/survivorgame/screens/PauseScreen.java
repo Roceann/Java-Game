@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -21,6 +22,19 @@ import io.github.dr4c0nix.survivorgame.Main;
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
 import io.github.dr4c0nix.survivorgame.weapon.Weapon;
 
+/**
+ * Écran de pause (overlay) utilisé lorsque le joueur met la partie en pause.
+ *
+ * Affiche un panneau central avec 3 actions (Resume, Main Menu, Quit) sur la
+ * gauche et des statistiques / informations sur la droite.
+ *
+ * Le PauseScreen :
+ * - gèle le gameplay (gameplay.setIsPaused(true)) lors de l'affichage,
+ * - initialise et dispose ses propres ressources graphiques (Stage, background, fonts, textures),
+ * - adapte la taille des composants à la résolution via scaleX/scaleY.
+ *
+ * Conçu pour être simple et testable depuis Gameplay.
+ */
 public class PauseScreen implements Screen {
 
     private final Main main;
@@ -32,6 +46,7 @@ public class PauseScreen implements Screen {
     private Texture overlayTex;   
     private Texture panelTex;
     private Texture contourTex;
+    private Texture backgroundTexture;
     
     private float scaleX = 1f;
     private float scaleY = 1f;
@@ -48,6 +63,13 @@ public class PauseScreen implements Screen {
 
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
+
+        try {
+            backgroundTexture = new Texture(Gdx.files.internal("Background/pausebg.jpg"));
+            Image background = new Image(backgroundTexture);
+            background.setFillParent(true);
+            stage.addActor(background);
+        } catch (Exception ignored) {}
 
         createFonts();
         createTextures();
@@ -215,5 +237,9 @@ public class PauseScreen implements Screen {
         if (contourTex != null) contourTex.dispose();
         if (font != null) font.dispose();
         if (titleFont != null) titleFont.dispose();
+        if (backgroundTexture != null) {
+            backgroundTexture.dispose();
+            backgroundTexture = null;
+        }
     }
 }
