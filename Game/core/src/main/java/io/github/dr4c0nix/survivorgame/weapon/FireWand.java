@@ -4,8 +4,16 @@ import com.badlogic.gdx.math.Vector2;
 import io.github.dr4c0nix.survivorgame.entities.EntityFactory;
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
 
+/**
+ * FireWand : baguette lançant des projectiles de type boule de feu.
+ */
 public class FireWand extends Weapon {
 
+    /**
+     * Constructeur initialisant les paramètres du FireWand.
+     *
+     * @param factory factory pour création des projectiles
+     */
     public FireWand(EntityFactory factory) {
         super(factory,
             250,
@@ -20,6 +28,12 @@ public class FireWand extends Weapon {
             "Weapon/FireWand/FireWand.png");
     }
 
+    /**
+     * Mise à jour appelée chaque frame : gère le cooldown et tire si possible.
+     *
+     * @param delta temps écoulé depuis la dernière frame (secondes)
+     * @param player joueur qui utilise l'arme (position et direction utilisés)
+     */
     @Override
     public void update(float delta, Player player) {
         cooldownTick(delta);

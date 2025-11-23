@@ -4,8 +4,16 @@ import com.badlogic.gdx.math.Vector2;
 import io.github.dr4c0nix.survivorgame.entities.EntityFactory;
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
 
+/**
+ * Sword : arme polyvalente, cadence moyenne et dégats modérés.
+ */
 public class Sword extends Weapon {
 
+    /**
+     * Constructeur de l'épée avec ses paramètres par défaut.
+     *
+     * @param factory factory pour création des projectiles
+     */
     public Sword(EntityFactory factory) {
         super(factory,
             100,
@@ -20,6 +28,12 @@ public class Sword extends Weapon {
             "Weapon/Sword/sword.png");
     }
 
+    /**
+     * Mise à jour appelée chaque frame : gère le cooldown et crée un projectile si possible.
+     *
+     * @param delta temps écoulé depuis la dernière frame (secondes)
+     * @param player joueur qui utilise l'arme (position et direction utilisés)
+     */
     @Override
     public void update(float delta, Player player) {
         cooldownTick(delta);

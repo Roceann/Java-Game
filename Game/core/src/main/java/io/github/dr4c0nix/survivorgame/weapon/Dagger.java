@@ -4,8 +4,16 @@ import com.badlogic.gdx.math.Vector2;
 import io.github.dr4c0nix.survivorgame.entities.EntityFactory;
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
 
+/**
+ * Dague : arme rapide de mêlée qui génère un projectile court et rapide.
+ */
 public class Dagger extends Weapon {
 
+    /**
+     * Constructeur de la Dagger initialisant les paramètres d'arme.
+     *
+     * @param factory factory pour création des projectiles
+     */
     public Dagger(EntityFactory factory) {
         super(factory,
             80,
@@ -20,6 +28,12 @@ public class Dagger extends Weapon {
             "Weapon/Dagger/Dagger.png");
     }
 
+    /**
+     * Mise à jour appelée chaque frame : gère le cooldown et crée un projectile si possible.
+     *
+     * @param delta temps écoulé depuis la dernière frame (secondes)
+     * @param player joueur qui utilise l'arme (position et direction utilisés)
+     */
     @Override
     public void update(float delta, Player player) {
         cooldownTick(delta);

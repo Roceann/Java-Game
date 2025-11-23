@@ -4,8 +4,16 @@ import com.badlogic.gdx.math.Vector2;
 import io.github.dr4c0nix.survivorgame.entities.EntityFactory;
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
 
+/**
+ * WoodStick : bâton basique pour débuter, cadence correcte.
+ */
 public class WoodStick extends Weapon {
 
+    /**
+     * Constructeur initialisant le WoodStick.
+     *
+     * @param factory factory pour création des projectiles
+     */
     public WoodStick(EntityFactory factory) {
         super(factory,
             75,
@@ -20,6 +28,12 @@ public class WoodStick extends Weapon {
             "Weapon/WoodStick/WoodStick.png");
     }
 
+    /**
+     * Mise à jour appelée chaque frame : effectue le tir si possible.
+     *
+     * @param delta temps écoulé depuis la dernière frame (secondes)
+     * @param player joueur qui utilise l'arme (position et direction utilisés)
+     */
     @Override
     public void update(float delta, Player player) {
         cooldownTick(delta);
