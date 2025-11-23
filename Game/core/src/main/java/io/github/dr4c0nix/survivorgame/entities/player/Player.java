@@ -67,7 +67,7 @@ public class Player extends LivingEntity {
         super(spawnPoint, 32, 32 * 1.3f, 100f, 10, 1.0f, "Entity/Player/static1.png");
         this.description = "Le Romz";
         this.level = 1;
-        this.movementSpeed = 5f;
+        this.movementSpeed = 3f;
         this.experienceToNextLevel = 100;
         this.xpactual = 0;
         this.regenHP = 5f; // 5hp toutes les 10 secondes
@@ -275,7 +275,7 @@ public class Player extends LivingEntity {
             this.level += 1;
             levelUp();
             this.xpactual -= this.experienceToNextLevel;
-            this.experienceToNextLevel = (int) (this.experienceToNextLevel * 1.25);
+            this.experienceToNextLevel = (int) (this.experienceToNextLevel * 1.15f);
         }
     }
 

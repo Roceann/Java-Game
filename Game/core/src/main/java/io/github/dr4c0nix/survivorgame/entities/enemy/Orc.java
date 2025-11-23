@@ -19,7 +19,7 @@ public class Orc extends ClassicEnemy {
     public Orc() {
         super(new Vector2(0f, 0f),
                 28, 36,
-                13,
+                27,
                 120f,
                 1,
                 6f,

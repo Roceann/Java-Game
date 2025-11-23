@@ -23,7 +23,7 @@ public class Demon extends ClassicEnemy {
         super(
             new Vector2(0f, 0f),
             24, 32,          
-            10,
+            25,
             50f,
             0,
             1.2f,

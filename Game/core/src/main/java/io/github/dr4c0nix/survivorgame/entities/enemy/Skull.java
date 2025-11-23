@@ -24,13 +24,13 @@ public class Skull extends ClassicEnemy {
         super(
             new Vector2(0f, 0f),
             22, 28,
-            15,        // xp drop
-            200f,      // HP augmenté : tank
-            4,         // armure : résistant
-            3.0f,      // force : dégâts moyens
+            30,
+            200f,
+            4,
+            3.0f,
             TEX_FRONT,
             null,
-            60f        // movementSpeed : lent
+            60f
         );
 
         this.isAlive = false;
