@@ -157,4 +157,41 @@ public class SpawnManagerTest {
         spawnManager.unlockSpawning();
         assertTrue(spawnManager.isSpawningUnlocked());
     }
+
+    /**
+     * Vérifie que le parsing de la couche 'mobspawn' est insensible à la casse.
+     * On crée une carte avec la couche nommée "MOBSPAWN" (majuscules).
+     */
+    @Test
+    public void testParseMobSpawnLayer_CaseInsensitive() {
+        MapLayers layers = new MapLayers();
+        MapLayer upperLayer = new MapLayer();
+        upperLayer.setName("MOBSPAWN");
+        MapObjects objs = upperLayer.getObjects();
+        RectangleMapObject room1Obj = new RectangleMapObject(30, 30, 50, 50);
+        room1Obj.setName("room1");
+        objs.add(room1Obj);
+        layers.add(upperLayer);
+
+        TiledMap mapUpper = mock(TiledMap.class);
+        when(mapUpper.getLayers()).thenReturn(layers);
+
+        // Crée un nouveau SpawnManager avec la map majuscule
+        SpawnManager spawnManagerUpper = new SpawnManager(mockGameplay, mockEntityFactory, mapUpper);
+
+        // Préparer le joueur dans room1 et aucune collision
+        when(mockPlayer.getHitbox()).thenReturn(new Rectangle(35, 35, 32, 32));
+        when(mockGameplay.isColliding(any(com.badlogic.gdx.math.Rectangle.class))).thenReturn(false);
+
+        // Configurer factory pour renvoyer un type et une taille
+        when(mockEntityFactory.getAvailableEnemyTypes()).thenReturn(new ArrayList<>(Collections.singletonList("Orc")));
+        when(mockEntityFactory.getEnemyHitboxSize("Orc")).thenReturn(new Vector2(20, 20));
+        when(mockEntityFactory.obtainEnemy(anyString(), any(Vector2.class))).thenReturn(mockEnemy);
+
+        spawnManagerUpper.unlockSpawning();
+        spawnManagerUpper.setSpawnInterval(1f);
+        spawnManagerUpper.update(2f, mockPlayer);
+
+        verify(mockEntityFactory, atLeastOnce()).obtainEnemy(eq("Orc"), any(Vector2.class));
+    }
 }

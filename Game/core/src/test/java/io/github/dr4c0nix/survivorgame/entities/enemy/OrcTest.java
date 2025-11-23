@@ -22,16 +22,16 @@ public class OrcTest {
     public void testConstructorInitializesCorrectStats() {
         Orc orc = new Orc();
 
-        // Vérifie les valeurs définies dans le constructeur de Orc.
-        assertEquals("Max HP doit être 160", 160f, orc.getMaxHp(), DELTA);
-        assertEquals("Current HP doit être 160", 160f, orc.getHp(), DELTA);
-        assertEquals("L'armure doit être 0", 0, orc.getArmor());
-        assertEquals("La force doit être 4.0", 4.0f, orc.getForce(), DELTA);
+        // Valeurs attendues basées sur Orc.java
+        assertEquals("Max HP doit être 120", 120f, orc.getMaxHp(), DELTA);
+        assertEquals("Current HP doit être 120", 120f, orc.getHp(), DELTA);
+        assertEquals("L'armure doit être 1", 1, orc.getArmor());
+        assertEquals("La force doit être 6.0", 6.0f, orc.getForce(), DELTA);
         assertFalse("Orc doit être initialisé comme non vivant", orc.isAlive());
 
         // Vérifie les valeurs de l'appel super().
-        assertEquals("La vitesse de déplacement doit être 60", 60f, orc.getMovementSpeed(), DELTA);
-        assertEquals("La valeur d'XP doit être 12", 12, orc.getXpValue());
+        assertEquals("La vitesse de déplacement doit être 65", 65f, orc.getMovementSpeed(), DELTA);
+        assertEquals("La valeur d'XP doit être 13", 13, orc.getXpValue());
         assertEquals("La position initiale doit être (0,0)", new Vector2(0f, 0f), orc.getPosition());
         assertEquals("La largeur de la hitbox doit être 28", 28f, orc.getHitbox().width, DELTA);
         assertEquals("La hauteur de la hitbox doit être 36", 36f, orc.getHitbox().height, DELTA);

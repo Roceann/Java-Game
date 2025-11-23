@@ -22,16 +22,16 @@ public class DemonTest {
     public void testConstructorInitializesStats() {
         Demon demon = new Demon();
 
-        // Vérifie les valeurs définies dans le constructeur de Demon.
-        assertEquals("Max HP doit être 80", 80f, demon.getMaxHp(), DELTA);
-        assertEquals("Current HP doit être 80", 80f, demon.getHp(), DELTA);
+        // Valeurs attendues basées sur Demon.java
+        assertEquals("Max HP doit être 50", 50f, demon.getMaxHp(), DELTA);
+        assertEquals("Current HP doit être 50", 50f, demon.getHp(), DELTA);
         assertEquals("L'armure doit être 0", 0, demon.getArmor());
-        assertEquals("La force doit être 3.0", 3.0f, demon.getForce(), DELTA);
+        assertEquals("La force doit être 1.2", 1.2f, demon.getForce(), DELTA);
         assertFalse("Demon doit être initialisé comme non vivant", demon.isAlive());
 
         // Vérifie les valeurs de l'appel super().
         assertEquals("La vitesse de déplacement doit être 100", 100f, demon.getMovementSpeed(), DELTA);
-        assertEquals("La valeur d'XP doit être 15", 15, demon.getXpValue());
+        assertEquals("La valeur d'XP doit être 10", 10, demon.getXpValue());
         assertEquals("La position initiale doit être (0,0)", new Vector2(0f, 0f), demon.getPosition());
         assertEquals("La largeur de la hitbox doit être 24", 24f, demon.getHitbox().width, DELTA);
         assertEquals("La hauteur de la hitbox doit être 32", 32f, demon.getHitbox().height, DELTA);

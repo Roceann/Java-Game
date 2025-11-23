@@ -84,6 +84,30 @@ public class ProjectileTest {
     }
 
     /**
+     * Teste le comportement quand la direction initiale est (0,0) :
+     * le projectile doit utiliser la direction par défaut (0,-1).
+     */
+    @Test
+    public void testInit_ZeroDirectionDefaultsToDownward() {
+        Vector2 spawn = new Vector2(50f, 50f);
+        Vector2 zeroDir = new Vector2(0f, 0f);
+
+        projectile.init(spawn, zeroDir, 150f, 300f, 5, 1f, mockSource);
+
+        assertTrue("Projectile doit être actif après init", projectile.isAlive());
+        assertEquals("Direction X doit être 0", 0f, projectile.getDirection().x, 1e-6f);
+        assertEquals("Direction Y doit être -1", -1f, projectile.getDirection().y, 1e-6f);
+        assertEquals("Direction doit être de longueur 1", 1f, projectile.getDirection().len(), 1e-6f);
+
+        // velocity = direction * speed
+        assertEquals("Velocity X incorrecte", 0f, projectile.getVelocity().x, 1e-6f);
+        assertEquals("Velocity Y incorrecte", -150f, projectile.getVelocity().y, 1e-3f);
+
+        // rotationAngle pour (0,-1) : angleDeg() = -90 => +90 => 0 mod 360
+        assertEquals("Rotation angle incorrect", 0f, projectile.getRotationAngle(), 1e-6f);
+    }
+
+    /**
      * Teste si la méthode `update` déplace correctement le projectile.
      */
     @Test
@@ -97,6 +121,23 @@ public class ProjectileTest {
         // La position Y ne change pas, elle reste à -10.
         assertEquals("La position Y ne devrait pas avoir changé", -10, projectile.getPosition().y, 0.01);
         assertEquals("La distance parcourue est incorrecte", 50, projectile.getDistanceTraveled(), 0.01);
+    }
+
+    /**
+     * Vérifie que update ne change rien si le projectile est inactif.
+     */
+    @Test
+    public void testUpdate_WhenNotAlive_DoesNothing() {
+        projectile.init(new Vector2(10f, 10f), new Vector2(1f, 0f), 100f, 1000f, 1, 1f, mockSource);
+        projectile.setAlive(false);
+        Vector2 before = projectile.getPosition().cpy();
+        float beforeDistance = projectile.getDistanceTraveled();
+
+        projectile.update(1f);
+
+        assertEquals("Position X ne doit pas changer quand inactif", before.x, projectile.getPosition().x, 1e-6f);
+        assertEquals("Position Y ne doit pas changer quand inactif", before.y, projectile.getPosition().y, 1e-6f);
+        assertEquals("Distance parcourue ne doit pas changer quand inactif", beforeDistance, projectile.getDistanceTraveled(), 1e-6f);
     }
 
     /**
@@ -131,6 +172,18 @@ public class ProjectileTest {
     }
 
     /**
+     * Vérifie que draw n'appelle rien si le projectile est inactif.
+     */
+    @Test
+    public void testDraw_NotAlive_DoesNotCallBatch() {
+        projectile.setAlive(false);
+
+        projectile.draw(mockSpriteBatch);
+
+        verifyNoInteractions(mockSpriteBatch);
+    }
+
+    /**
      * Teste que la méthode `draw` appelle bien la méthode de dessin du SpriteBatch avec les bons paramètres.
      */
     @Test
@@ -151,5 +204,22 @@ public class ProjectileTest {
             eq(1f),
             eq(180f)
         );
+    }
+
+    /**
+     * Vérifie l'initialisation lorsque projectileSize == 0 :
+     * hitbox réduite à (0,0) et position centrée exactement sur spawnCenter.
+     */
+    @Test
+    public void testInit_WithZeroProjectileSize_HitboxZeroAndPositionCentered() {
+        Vector2 spawn = new Vector2(123f, 456f);
+
+        projectile.init(spawn, new Vector2(1f, 0f), 10f, 50f, 2, 0f, mockSource);
+
+        assertTrue("Projectile doit être actif après init", projectile.isAlive());
+        assertEquals("Hitbox width doit être 0", 0f, projectile.getHitbox().width, 1e-6f);
+        assertEquals("Hitbox height doit être 0", 0f, projectile.getHitbox().height, 1e-6f);
+        assertEquals("Position X doit être centrée sur spawn", spawn.x, projectile.getPosition().x, 1e-6f);
+        assertEquals("Position Y doit être centrée sur spawn", spawn.y, projectile.getPosition().y, 1e-6f);
     }
 }

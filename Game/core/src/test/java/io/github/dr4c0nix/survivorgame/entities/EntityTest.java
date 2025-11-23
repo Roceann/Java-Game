@@ -180,4 +180,29 @@ public class EntityTest {
             fail("dispose() ne devrait pas lancer d'exception si la texture est nulle.");
         }
     }
+
+    /**
+     * Vérifie que setHitbox remplace correctement la hitbox interne.
+     */
+    @Test
+    public void testSetHitbox_ReplacesHitbox() {
+        com.badlogic.gdx.math.Rectangle newBox = new com.badlogic.gdx.math.Rectangle(10, 20, 5, 6);
+        testEntity.setHitbox(newBox);
+        assertSame("La hitbox doit être remplacée par l'instance fournie", newBox, testEntity.getHitbox());
+    }
+
+    /**
+     * Vérifie les getters/setters pour currentFrame et texture.
+     */
+    @Test
+    public void testSetAndGetCurrentFrameAndTexture() {
+        com.badlogic.gdx.graphics.g2d.TextureRegion region = new com.badlogic.gdx.graphics.g2d.TextureRegion(mockTexture);
+        testEntity.setCurrentFrame(region);
+        assertEquals("La frame courante doit être récupérable", region, testEntity.getCurrentFrame());
+
+        testEntity.setTexture(null);
+        assertNull("La texture peut être nulle", testEntity.getTexture());
+        testEntity.setTexture(mockTexture);
+        assertEquals("La texture doit être récupérable", mockTexture, testEntity.getTexture());
+    }
 }

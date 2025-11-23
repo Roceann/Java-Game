@@ -89,4 +89,30 @@ public class ClassicEnemyTest {
         assertEquals("reset() doit réinitialiser la position à (0,0)", new Vector2(0, 0), enemy.getPosition());
         assertEquals("reset() doit restaurer les HP actuels aux HP max", 100f, enemy.getHp(), DELTA);
     }
+
+    /**
+     * Vérifie que getXpOrbSize fournie par la sous-classe retourne la valeur attendue.
+     */
+    @Test
+    public void testGetXpOrbSize_ReturnsSubclassValue() {
+        assertEquals("La taille de l'orbe pour TestableClassicEnemy doit être 12f", 12f, enemy.getXpOrbSize(), DELTA);
+    }
+
+    /**
+     * Vérifie que activate peut être appelé plusieurs fois et réinitialise correctement.
+     */
+    @Test
+    public void testActivate_MultipleTimes_ResetsState() {
+        Vector2 p1 = new Vector2(10, 10);
+        Vector2 p2 = new Vector2(20, 30);
+
+        enemy.activate(p1);
+        assertTrue(enemy.isAlive());
+        assertEquals(p1, enemy.getPosition());
+
+        enemy.activate(p2);
+        assertTrue(enemy.isAlive());
+        assertEquals(p2, enemy.getPosition());
+        assertEquals(enemy.getMaxHp(), enemy.getHp(), DELTA);
+    }
 }

@@ -162,4 +162,35 @@ public class LivingEntityTest {
         verify(mockSpriteBatch, never()).setColor(any(Color.class));
         verify(mockSpriteBatch, never()).draw(any(com.badlogic.gdx.graphics.g2d.TextureRegion.class), anyFloat(), anyFloat(), anyFloat(), anyFloat());
     }
+
+    /**
+     * Teste que setMaxHp ajuste correctement maxHp et clamp le HP courant.
+     */
+    @Test
+    public void testSetMaxHp_ClampsCurrentHp() {
+        testEntity.setCurrentHp(90f);
+        testEntity.setMaxHp(50f);
+        assertEquals("Le HP courant doit être plafonné à maxHp", 50f, testEntity.getHp(), 0.01f);
+        assertEquals("Le maxHp doit être mis à jour", 50f, testEntity.getMaxHp(), 0.01f);
+    }
+
+    /**
+     * Teste que setCurrentHp clamp la valeur au maxHp.
+     */
+    @Test
+    public void testSetCurrentHp_ClampsToMax() {
+        testEntity.setCurrentHp(200f);
+        assertEquals("Le HP courant ne doit pas dépasser maxHp", testEntity.getMaxHp(), testEntity.getHp(), 0.01f);
+    }
+
+    /**
+     * Teste les setters pour l'armure et la force.
+     */
+    @Test
+    public void testSetArmorAndForce() {
+        testEntity.setArmor(42);
+        testEntity.setForce(2.5f);
+        assertEquals(42, testEntity.getArmor());
+        assertEquals(2.5f, testEntity.getForce(), 0.01f);
+    }
 }

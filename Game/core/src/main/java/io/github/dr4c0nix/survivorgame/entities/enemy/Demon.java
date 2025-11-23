@@ -1,14 +1,10 @@
 package io.github.dr4c0nix.survivorgame.entities.enemy;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 
 /**
  * Demon: ennemi très rapide mais fragile.
- * - HP faibles
- * - Peu ou pas d'armure
- * - Vitesse de déplacement élevée
  */
 public class Demon extends ClassicEnemy {
 
@@ -32,6 +28,7 @@ public class Demon extends ClassicEnemy {
             100f
         );
 
+        // état initial
         this.isAlive = false;
         this.hp = 50f;
         this.maxHp = 50f;
@@ -39,7 +36,7 @@ public class Demon extends ClassicEnemy {
         this.force = 1.2f;
 
         lastPos.set(position);
-        
+
         if (this.texture != null) {
             this.hitbox.setSize(this.texture.getWidth(), this.texture.getHeight());
         }

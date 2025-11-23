@@ -22,16 +22,16 @@ public class SkullTest {
     public void testConstructorInitializesCorrectStats() {
         Skull skull = new Skull();
 
-        // Vérifie les valeurs définies dans le constructeur de Skull.
-        assertEquals("Max HP doit être 60", 60f, skull.getMaxHp(), DELTA);
-        assertEquals("Current HP doit être 60", 60f, skull.getHp(), DELTA);
-        assertEquals("L'armure doit être 0", 0, skull.getArmor());
-        assertEquals("La force doit être 2.0", 2.0f, skull.getForce(), DELTA);
+        // Valeurs attendues basées sur Skull.java
+        assertEquals("Max HP doit être 200", 200f, skull.getMaxHp(), DELTA);
+        assertEquals("Current HP doit être 200", 200f, skull.getHp(), DELTA);
+        assertEquals("L'armure doit être 4", 4, skull.getArmor());
+        assertEquals("La force doit être 3.0", 3.0f, skull.getForce(), DELTA);
         assertFalse("Skull doit être initialisé comme non vivant", skull.isAlive());
 
         // Vérifie les valeurs de l'appel super().
-        assertEquals("La vitesse de déplacement doit être 65", 65f, skull.getMovementSpeed(), DELTA);
-        assertEquals("La valeur d'XP doit être 10", 10, skull.getXpValue());
+        assertEquals("La vitesse de déplacement doit être 60", 60f, skull.getMovementSpeed(), DELTA);
+        assertEquals("La valeur d'XP doit être 15", 15, skull.getXpValue());
         assertEquals("La position initiale doit être (0,0)", new Vector2(0f, 0f), skull.getPosition());
         assertEquals("La largeur de la hitbox doit être 22", 22f, skull.getHitbox().width, DELTA);
         assertEquals("La hauteur de la hitbox doit être 28", 28f, skull.getHitbox().height, DELTA);

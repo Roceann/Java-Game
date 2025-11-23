@@ -84,4 +84,16 @@ public class OrbXpTest {
         orb.update(1f);
         assertEquals("La position ne doit pas changer après update", initialPosition, orb.getPosition());
     }
+
+    /**
+     * Teste que setSize met bien à jour la hitbox de l'orbe.
+     */
+    @Test
+    public void testSetSize_UpdatesHitbox() {
+        float newSize = 24f;
+        orb.setSize(newSize);
+        assertEquals("orbSize doit être mis à jour", newSize, orb.getOrbSize(), 0.001);
+        assertEquals("La hitbox doit avoir la nouvelle taille", newSize, orb.getHitbox().width, 0.001);
+        assertEquals("La hitbox doit avoir la nouvelle taille", newSize, orb.getHitbox().height, 0.001);
+    }
 }

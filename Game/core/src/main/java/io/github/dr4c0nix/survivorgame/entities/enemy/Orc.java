@@ -1,6 +1,5 @@
 package io.github.dr4c0nix.survivorgame.entities.enemy;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 
@@ -27,6 +26,7 @@ public class Orc extends ClassicEnemy {
                 null,
                 65f);
 
+        // état initial
         this.isAlive = false;
         this.hp = 120f;
         this.maxHp = 120f;
@@ -34,7 +34,7 @@ public class Orc extends ClassicEnemy {
         this.force = 6f;
 
         lastPos.set(position);
-        
+
         if (this.texture != null) {
             this.hitbox.setSize(this.texture.getWidth(), this.texture.getHeight());
         }

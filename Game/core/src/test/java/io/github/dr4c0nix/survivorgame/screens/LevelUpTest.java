@@ -76,11 +76,12 @@ public class LevelUpTest {
         assertNotNull("La liste des upgrades ne doit pas être null", upgrades);
         assertFalse("La liste des upgrades ne doit pas être vide", upgrades.isEmpty());
 
-        boolean hasSpeed = upgrades.stream().anyMatch(u -> u.getDisplayName().equals("Vitesse"));
-        boolean hasArmor = upgrades.stream().anyMatch(u -> u.getDisplayName().equals("Armure"));
+        // Les valeurs dans LevelUp sont en anglais
+        boolean hasSpeed = upgrades.stream().anyMatch(u -> u.getDisplayName().equals("Speed"));
+        boolean hasArmor = upgrades.stream().anyMatch(u -> u.getDisplayName().equals("Armor"));
 
-        assertTrue("La liste doit contenir 'Vitesse'", hasSpeed);
-        assertTrue("La liste doit contenir 'Armure'", hasArmor);
+        assertTrue("La liste doit contenir 'Speed'", hasSpeed);
+        assertTrue("La liste doit contenir 'Armor'", hasArmor);
     }
 
     /**
@@ -131,7 +132,8 @@ public class LevelUpTest {
      */
     @Test
     public void testApplyUpgrade_Vitesse() throws Exception {
-        UpgradeOption option = new UpgradeOption("Vitesse", 0.5f, 0.5f, UpgradeOption.StatType.FLOAT);
+        // Utilise la clé anglaise "Speed"
+        UpgradeOption option = new UpgradeOption("Speed", 0.5f, 0.5f, UpgradeOption.StatType.FLOAT);
         setOptionValue(option, 0.5f);
 
         when(mockPlayer.getMovementSpeed()).thenReturn(1.0f);
@@ -149,7 +151,8 @@ public class LevelUpTest {
      */
     @Test
     public void testApplyUpgrade_MaxHP() throws Exception {
-        UpgradeOption option = new UpgradeOption("Points de Vie Max", 10, 10, UpgradeOption.StatType.FLOAT);
+        // Utilise la clé anglaise "Max Health"
+        UpgradeOption option = new UpgradeOption("Max Health", 10f, 10f, UpgradeOption.StatType.FLOAT);
         setOptionValue(option, 10f);
 
         when(mockPlayer.getHp()).thenReturn(50f);
@@ -168,7 +171,7 @@ public class LevelUpTest {
      */
     @Test
     public void testApplyUpgrade_Armure() throws Exception {
-        UpgradeOption option = new UpgradeOption("Armure", 5, 5, UpgradeOption.StatType.INT);
+        UpgradeOption option = new UpgradeOption("Armor", 5, 5, UpgradeOption.StatType.INT);
         setOptionValue(option, 5f);
 
         when(mockPlayer.getArmor()).thenReturn(10);
@@ -179,13 +182,13 @@ public class LevelUpTest {
     }
 
     /**
-     * Test de l'application d'une amélioration de force.
+     * Test de l'application d'une amélioration de force (difficulty).
      *
      * @throws Exception si la réflexion échoue
      */
     @Test
     public void testApplyUpgrade_Force() throws Exception {
-        UpgradeOption option = new UpgradeOption("Difficulté", 0.2f, 0.2f, UpgradeOption.StatType.FLOAT);
+        UpgradeOption option = new UpgradeOption("Difficulty", 0.2f, 0.2f, UpgradeOption.StatType.FLOAT);
         setOptionValue(option, 0.2f);
         when(mockPlayer.getDifficulter()).thenReturn(1.0f);
         invokeApplyUpgrade(option);
@@ -199,7 +202,7 @@ public class LevelUpTest {
      */
     @Test
     public void testApplyUpgrade_RegenHP() throws Exception {
-        UpgradeOption option = new UpgradeOption("Régénération HP", 1.0f, 1.0f, UpgradeOption.StatType.FLOAT);
+        UpgradeOption option = new UpgradeOption("HP Regeneration", 1.0f, 1.0f, UpgradeOption.StatType.FLOAT);
         setOptionValue(option, 1.0f);
 
         when(mockPlayer.getRegenHP()).thenReturn(0.5f);
@@ -216,7 +219,7 @@ public class LevelUpTest {
      */
     @Test
     public void testApplyUpgrade_CritChance() throws Exception {
-        UpgradeOption option = new UpgradeOption("Chance Critique", 5f, 5f, UpgradeOption.StatType.FLOAT);
+        UpgradeOption option = new UpgradeOption("Critical Chance", 5f, 5f, UpgradeOption.StatType.FLOAT);
         setOptionValue(option, 5f);
         when(mockPlayer.getCritChance()).thenReturn(10f);
         invokeApplyUpgrade(option);
@@ -230,7 +233,7 @@ public class LevelUpTest {
      */
     @Test
     public void testApplyUpgrade_CritDamage() throws Exception {
-        UpgradeOption option = new UpgradeOption("Dégâts Critiques", 0.5f, 0.5f, UpgradeOption.StatType.FLOAT);
+        UpgradeOption option = new UpgradeOption("Critical Damage", 0.5f, 0.5f, UpgradeOption.StatType.FLOAT);
         setOptionValue(option, 0.5f);
 
         when(mockPlayer.getCritDamage()).thenReturn(1.5f);
@@ -247,7 +250,7 @@ public class LevelUpTest {
      */
     @Test
     public void testApplyUpgrade_WeaponLevel() throws Exception {
-        UpgradeOption option = new UpgradeOption("Niveau Arme", 1, 1, UpgradeOption.StatType.INT);
+        UpgradeOption option = new UpgradeOption("Weapon Level", 1, 1, UpgradeOption.StatType.INT);
         setOptionValue(option, 1f);
 
         invokeApplyUpgrade(option);
@@ -264,7 +267,7 @@ public class LevelUpTest {
     public void testApplyUpgrade_WeaponLevel_NoWeapon() throws Exception {
         when(mockPlayer.getCurrentWeapon()).thenReturn(null);
 
-        UpgradeOption option = new UpgradeOption("Niveau Arme", 1, 1, UpgradeOption.StatType.INT);
+        UpgradeOption option = new UpgradeOption("Weapon Level", 1, 1, UpgradeOption.StatType.INT);
         setOptionValue(option, 1f);
 
         invokeApplyUpgrade(option);

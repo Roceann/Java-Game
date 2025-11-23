@@ -160,4 +160,29 @@ public class EnemyTest {
         assertTrue("L'ennemi doit être repoussé sur l'axe X", enemy.getPosition().x < initialPos.x);
         assertTrue("L'ennemi doit être repoussé sur l'axe Y", enemy.getPosition().y < initialPos.y);
     }
+
+    /**
+     * Vérifie que si le pathfinding (gameplay.getDirection) fournit une direction,
+     * l'ennemi se déplace suivant cette direction (et non le fallback).
+     */
+    @Test
+    public void testUpdate_UsesPathfindingDirection() {
+        // Fournir une direction fournie par le pathfinding : droite (1,0)
+        when(mockGameplay.getDirection(anyInt(), anyInt())).thenReturn(new Vector2(1f, 0f));
+
+        Vector2 initialPos = new Vector2(enemy.getPosition());
+        float delta = 1.0f;
+
+        enemy.update(delta);
+
+        float expectedX = initialPos.x + enemy.getMovementSpeed() * delta;
+        assertEquals("L'ennemi doit se déplacer selon la direction fournie par le pathfinding (X)", expectedX, enemy.getPosition().x, DELTA);
+        assertEquals("L'ennemi ne doit pas se déplacer sur Y", initialPos.y, enemy.getPosition().y, DELTA);
+    }
+
+    @Test
+    public void testGetXpValueAndXpDrop_NotNull() {
+        assertNotNull("xpDrop ne doit pas être nul", enemy.getXpDrop());
+        assertEquals("getXpValue doit renvoyer la valeur attendue", enemy.getXpValue(), enemy.getXpDrop().getXpValue());
+    }
 }

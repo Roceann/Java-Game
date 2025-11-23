@@ -10,6 +10,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
@@ -120,5 +122,39 @@ public class EntityFactoryTest {
         entityFactory.updateProjectiles(0.6f);
 
         assertEquals("Le projectile inactif aurait dû être retiré", 0, entityFactory.getActiveProjectiles().size());
+    }
+
+    /**
+     * Vérifie que les types d'ennemis disponibles et les tailles de hitbox sont exposés.
+     */
+    @Test
+    public void testGetAvailableEnemyTypesAndHitboxSize() {
+        ArrayList<String> types = entityFactory.getAvailableEnemyTypes();
+        // initializePools crée Orc, Demon, Skull keys
+        assertTrue("Doit contenir au moins le type Orc", types.contains("Orc"));
+
+        // Force la création d'un prototype dans la pool afin que registerEnemyPrototype ait été appelé
+        ClassicEnemy prototype = entityFactory.obtainEnemy("Orc", new Vector2(0f, 0f));
+        // libérer immédiatement
+        entityFactory.releaseEnemy(prototype);
+
+        Vector2 size = entityFactory.getEnemyHitboxSize("Orc");
+        assertNotNull("La taille de hitbox pour Orc ne doit pas être nulle", size);
+        assertTrue("Largeur positive attendue", size.x > 0);
+        assertTrue("Hauteur positive attendue", size.y > 0);
+    }
+
+    /**
+     * Vérifie que dispose nettoie les pools et rend getAvailableEnemyTypes vide.
+     */
+    @Test
+    public void testDispose_ClearsPoolsAndCreated() {
+        ArrayList<String> before = entityFactory.getAvailableEnemyTypes();
+        assertFalse("Doit y avoir des types disponibles avant dispose", before.isEmpty());
+
+        entityFactory.dispose();
+
+        ArrayList<String> after = entityFactory.getAvailableEnemyTypes();
+        assertTrue("Après dispose, il ne doit plus y avoir de types disponibles", after.isEmpty());
     }
 }

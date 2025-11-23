@@ -1,15 +1,10 @@
 package io.github.dr4c0nix.survivorgame.entities.enemy;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 
 /**
  * Skull : ennemi lambda
- * - HP faibles
- * - Armure nulle
- * - Dégâts faibles
- * - Vitesse moyenne
  */
 public class Skull extends ClassicEnemy {
 
@@ -33,6 +28,7 @@ public class Skull extends ClassicEnemy {
             60f
         );
 
+        // état initial
         this.isAlive = false;
         this.hp = 200f;
         this.maxHp = 200f;
@@ -40,7 +36,7 @@ public class Skull extends ClassicEnemy {
         this.force = 3.0f;
 
         lastPos.set(position);
-        
+
         if (this.texture != null) {
             this.hitbox.setSize(this.texture.getWidth(), this.texture.getHeight());
         }
