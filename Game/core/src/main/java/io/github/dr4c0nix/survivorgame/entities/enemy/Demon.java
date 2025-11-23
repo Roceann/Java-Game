@@ -23,20 +23,20 @@ public class Demon extends ClassicEnemy {
         super(
             new Vector2(0f, 0f),
             24, 32,          
-            15,              
-            80f,             
-            0,               
-            3.0f,            
+            10,
+            50f,
+            0,
+            1.2f,
             TEX_FRONT,
             null,
-            100f             
+            100f
         );
 
         this.isAlive = false;
-        this.hp = 80f;
-        this.maxHp = 80f;
+        this.hp = 50f;
+        this.maxHp = 50f;
         this.armor = 0;
-        this.force = 3.0f;
+        this.force = 1.2f;
 
         lastPos.set(position);
         

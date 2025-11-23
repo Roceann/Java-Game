@@ -19,16 +19,19 @@ public class Orc extends ClassicEnemy {
     public Orc() {
         super(new Vector2(0f, 0f),
                 28, 36,
-                12, 160f, 0, 4f,
+                13,
+                120f,
+                1,
+                6f,
                 TEX_FRONT,
                 null,
-                60f);
+                65f);
 
         this.isAlive = false;
-        this.hp = 160f;
-        this.maxHp = 160f;
-        this.armor = 0;
-        this.force = 4f;
+        this.hp = 120f;
+        this.maxHp = 120f;
+        this.armor = 1;
+        this.force = 6f;
 
         lastPos.set(position);
         

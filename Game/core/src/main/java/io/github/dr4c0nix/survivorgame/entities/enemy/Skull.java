@@ -24,20 +24,20 @@ public class Skull extends ClassicEnemy {
         super(
             new Vector2(0f, 0f),
             22, 28,
-            10,
-            60f,
-            0,
-            2.0f,
+            15,        // xp drop
+            200f,      // HP augmenté : tank
+            4,         // armure : résistant
+            3.0f,      // force : dégâts moyens
             TEX_FRONT,
             null,
-            65f
+            60f        // movementSpeed : lent
         );
 
         this.isAlive = false;
-        this.hp = 60f;
-        this.maxHp = 60f;
-        this.armor = 0;
-        this.force = 2.0f;
+        this.hp = 200f;
+        this.maxHp = 200f;
+        this.armor = 4;
+        this.force = 3.0f;
 
         lastPos.set(position);
         
