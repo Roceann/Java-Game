@@ -18,17 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
+import io.github.dr4c0nix.survivorgame.weapon.Dagger;
+import io.github.dr4c0nix.survivorgame.weapon.FireWand;
+import io.github.dr4c0nix.survivorgame.weapon.Sword;
 
-/**
- * Overlay d'écran affiché lorsqu'un joueur monte de niveau.
- *
- * Cette classe crée une interface simple avec trois choix d'améliorations générés aléatoirement.
- * Lorsque le joueur sélectionne une option, l'amélioration est appliquée au Player fourni via Gameplay.
- * Le rendu utilise un Stage.
- * 
- * @author Roceann
- * @version 1.0
- */
 public class LevelUp {
     private Stage stage;
     private BitmapFont font;
@@ -104,29 +97,14 @@ public class LevelUp {
      */
     private List<UpgradeOption> allPossibleUpgrades() {
         List<UpgradeOption> all = new ArrayList<>();
-        // Weapon level upgrade: +1 level (INT), limited by weapon impl (max 6)
-        all.add(new UpgradeOption("Niveau Arme", 1, 1, UpgradeOption.StatType.INT));
-
-        // Player movement speed: spawn = 2, cap = 5 — propose small increments to be balanced
-        all.add(new UpgradeOption("Vitesse", 0.15f, 0.5f, UpgradeOption.StatType.FLOAT));
-
-        // Max HP: base 100 — increase between small and medium steps
-        all.add(new UpgradeOption("Points de Vie Max", 8f, 22f, UpgradeOption.StatType.FLOAT));
-
-        // HP regen: default 5 per 10s (0.5/s) — increase regeneration amount (float)
-        all.add(new UpgradeOption("Régénération HP", 0.3f, 1.2f, UpgradeOption.StatType.FLOAT));
-
-        // Armor: small integer bumps
-        all.add(new UpgradeOption("Armure", 1, 3, UpgradeOption.StatType.INT));
-
-        // Crit chance: increments in percentage points (float)
-        all.add(new UpgradeOption("Chance Critique", 1f, 5f, UpgradeOption.StatType.FLOAT));
-
-        // Crit damage: multiplier increment (e.g. +0.1 => +10% crit multiplier)
-        all.add(new UpgradeOption("Dégâts Critiques", 0.1f, 0.35f, UpgradeOption.StatType.FLOAT));
-
-        // Difficulty: player-controlled difficulty factor (current 1, max 5) - small steps
-        all.add(new UpgradeOption("Difficulté", 0.15f, 0.8f, UpgradeOption.StatType.FLOAT));
+        all.add(new UpgradeOption("Weapon Level", 1, 1, UpgradeOption.StatType.INT));
+        all.add(new UpgradeOption("Speed", 0.25f, 0.75f, UpgradeOption.StatType.FLOAT));
+        all.add(new UpgradeOption("Max Health", 10f, 25f, UpgradeOption.StatType.FLOAT));
+        all.add(new UpgradeOption("HP Regeneration", 1f, 5f, UpgradeOption.StatType.FLOAT));
+        all.add(new UpgradeOption("Armor", 1, 3, UpgradeOption.StatType.INT));
+        all.add(new UpgradeOption("Critical Chance", 2f, 5f, UpgradeOption.StatType.FLOAT));
+        all.add(new UpgradeOption("Critical Damage", 0.2f, 0.4f, UpgradeOption.StatType.FLOAT)); // 0.2 = 20%
+        all.add(new UpgradeOption("Difficulty", 0.15f, 0.8f, UpgradeOption.StatType.FLOAT));
 
         return all;
     }
@@ -138,6 +116,15 @@ public class LevelUp {
      * La méthode évite les doublons.
      */
     private void generateRandomUpgrades() {
+        Player p = gameplay.getPlayer();
+        if (p != null && p.getLevel() == 2) {
+            upgradeTotal = new ArrayList<>();
+            upgradeTotal.add(new UpgradeOption("Dagger\nShort range, rapid attack", 0, 0, UpgradeOption.StatType.INT));
+            upgradeTotal.add(new UpgradeOption("Sword\nMost balanced", 0, 0, UpgradeOption.StatType.INT));
+            upgradeTotal.add(new UpgradeOption("FireWand\nHigh damage, long range, slow attack", 0, 0, UpgradeOption.StatType.INT));
+            return;
+        }
+
         List<UpgradeOption> all = allPossibleUpgrades();
         upgradeTotal = new ArrayList<>();
         int choisi = 0;
@@ -175,7 +162,8 @@ public class LevelUp {
         float blockH = 100f;
 
         for (UpgradeOption u : upgradeTotal) {
-            String text = u.getDisplayName() + "  +" + u.getFormattedValue();
+            boolean weaponChoiceMode = gameplay.getPlayer() != null && gameplay.getPlayer().getLevel() == 2;
+            String text = weaponChoiceMode ? u.getDisplayName() : (u.getDisplayName() + "  +" + u.getFormattedValue());
             Label label = new Label(text, new Label.LabelStyle(font, Color.BLACK));
             label.setAlignment(Align.center);
 
@@ -218,42 +206,60 @@ public class LevelUp {
         Player p = gameplay.getPlayer();
         if (p == null) return;
 
+        if (p.getLevel() == 2) {
+            switch (u.getDisplayName()) {
+                case "Dagger\nShort range, rapid attack":
+                    p.setWeapon(new Dagger(gameplay.getEntityFactory()));
+                    break;
+                case "Sword\nMost balanced":
+                    p.setWeapon(new Sword(gameplay.getEntityFactory()));
+                    break;
+                case "FireWand\nHigh damage, long range, slow attack":
+                    p.setWeapon(new FireWand(gameplay.getEntityFactory()));
+                    break;
+                default:
+                    break;
+            }
+            gameplay.setIsPaused(false);
+            return;
+        }
+
         switch (u.getDisplayName()) {
-            case "Vitesse":
+            case "Speed":
                 float newSpeed = p.getMovementSpeed() + u.getValue();
-                if (newSpeed > 5f) newSpeed = 5f; // clamp to max 5
+                if (newSpeed > 5f) newSpeed = 5f;
                 p.setMovementSpeed(newSpeed);
                 break;
 
-            case "Points de Vie Max":
+            case "Max Health":
                 float delta = u.getValue();
                 p.setMaxHp(p.getMaxHp() + delta);
                 p.setCurrentHp(Math.min(p.getHp() + delta, p.getMaxHp()));
                 break;
 
-            case "Armure":
+            case "Armor":
                 p.setArmor(p.getArmor() + (int) u.getValue());
                 break;
 
-            case "Régénération HP":
+            case "HP Regeneration":
                 p.setRegenHP(p.getRegenHP() + u.getValue());
                 break;
 
-            case "Chance Critique":
+            case "Critical Chance":
                 p.setCritChance(p.getCritChance() + u.getValue());
                 break;
 
-            case "Dégâts Critiques":
+            case "Critical Damage":
                 p.setCritDamage(p.getCritDamage() + u.getValue());
                 break;
 
-            case "Niveau Arme":
+            case "Weapon Level":
                 if (p.getCurrentWeapon() != null) {
-                    p.getCurrentWeapon().increaseWeaponLevel(); // Weapon caps at max internally
+                    p.getCurrentWeapon().increaseWeaponLevel();
                 }
                 break;
 
-            case "Difficulté":
+            case "Difficulty":
                 float newDiff = p.getDifficulter() + u.getValue();
                 if (newDiff > 5f) newDiff = 5f;
                 p.setDifficulter(newDiff);

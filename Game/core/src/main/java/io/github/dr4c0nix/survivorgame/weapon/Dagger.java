@@ -4,20 +4,20 @@ import com.badlogic.gdx.math.Vector2;
 import io.github.dr4c0nix.survivorgame.entities.EntityFactory;
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
 
-public class Sword extends Weapon {
+public class Dagger extends Weapon {
 
-    public Sword(EntityFactory factory) {
+    public Dagger(EntityFactory factory) {
         super(factory,
-            100,
-            0.75f,
-            100,
-            100f,
-            2f,
-            32f,
-            8f,
-            "Weapon/Sword/sword-effect.png",
-            "Equipez vous d'une épée pour tabasser les triple monstres !",
-            "Weapon/Sword/sword.png");
+            80,
+            0.4f,
+            50,
+            120f,
+            1f,
+            10f,
+            21f,
+            "Weapon/Dagger/dagger-effect.png",
+            "Une dague rapide et puissante pour les combats rapprochés !", 
+            "Weapon/Sword/Sword.png");
     }
 
     @Override

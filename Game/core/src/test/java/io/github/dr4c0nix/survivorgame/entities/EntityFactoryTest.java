@@ -94,7 +94,7 @@ public class EntityFactoryTest {
         assertEquals("La liste des projectiles actifs doit être vide au début", 0, entityFactory.getActiveProjectiles().size());
         LivingEntity mockSource = mock(LivingEntity.class);
 
-        Projectile p = entityFactory.obtainSwordProjectile(new Vector2(0,0), new Vector2(1,0), 100, 200, 10, 1f, 16, 16, "proj.png", mockSource);
+        Projectile p = entityFactory.obtainProjectile(new Vector2(0,0), new Vector2(1,0), 100, 200, 10, 1f, 16, 16, "proj.png", mockSource);
 
         assertNotNull("Le projectile obtenu ne doit pas être nul", p);
         assertTrue("Le projectile doit être dans la liste des actifs", entityFactory.getActiveProjectiles().contains(p));
@@ -112,7 +112,7 @@ public class EntityFactoryTest {
     @Test
     public void testUpdateProjectiles_RemovesInactiveProjectiles() {
         LivingEntity mockSource = mock(LivingEntity.class);
-        entityFactory.obtainSwordProjectile(new Vector2(0,0), new Vector2(1,0), 100, 50, 10, 1f, 16, 16, "proj.png", mockSource);
+        entityFactory.obtainProjectile(new Vector2(0,0), new Vector2(1,0), 100, 50, 10, 1f, 16, 16, "proj.png", mockSource);
         
         assertEquals("Il doit y avoir 1 projectile actif", 1, entityFactory.getActiveProjectiles().size());
 

@@ -4,20 +4,20 @@ import com.badlogic.gdx.math.Vector2;
 import io.github.dr4c0nix.survivorgame.entities.EntityFactory;
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
 
-public class Sword extends Weapon {
+public class FireWand extends Weapon {
 
-    public Sword(EntityFactory factory) {
+    public FireWand(EntityFactory factory) {
         super(factory,
-            100,
-            0.75f,
-            100,
-            100f,
-            2f,
+            250,
+            1.4f,
+            250,
+            150f,
+            1.5f,
+            17f,
             32f,
-            8f,
-            "Weapon/Sword/sword-effect.png",
-            "Equipez vous d'une épée pour tabasser les triple monstres !",
-            "Weapon/Sword/sword.png");
+            "Weapon/FireWand/firewand-effect.png",
+            "Lancez des boules de feu dévastatrices !",
+            "Weapon/Sword/Sword.png");
     }
 
     @Override

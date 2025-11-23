@@ -34,7 +34,7 @@ import io.github.dr4c0nix.survivorgame.entities.OrbXp;
 import io.github.dr4c0nix.survivorgame.entities.SpawnManager;
 import io.github.dr4c0nix.survivorgame.entities.enemy.ClassicEnemy;
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
-import io.github.dr4c0nix.survivorgame.weapon.Sword;
+import io.github.dr4c0nix.survivorgame.weapon.WoodStick;
 import io.github.dr4c0nix.survivorgame.GameOptions;
 import com.badlogic.gdx.audio.Music;
 import io.github.dr4c0nix.survivorgame.entities.Projectile;
@@ -91,12 +91,12 @@ public class Gameplay implements Screen {
         this.main = (Main) Gdx.app.getApplicationListener();
         initCameras();
         initGraphics();
+
+        this.entityFactory = new EntityFactory(this);
         initPlayer();
         
-        this.entityFactory = new EntityFactory(this); 
         this.spawnManager = new SpawnManager(this, entityFactory, map);
         this.spawnManager.unlockSpawning();
-        player.setWeapon(new Sword(entityFactory));
 
         GameOptions options = GameOptions.getInstance();
         maxTime = options.getGameDuration() * 60f;
@@ -261,6 +261,10 @@ public class Gameplay implements Screen {
         this.player = new Player(spawnPoint);
         player.setGameplay(this);
         
+        if (this.entityFactory != null) {
+            player.setWeapon(new WoodStick(this.entityFactory));
+        }
+
         if (hud != null) {
             hud.setPlayer(player);
         }
@@ -677,5 +681,9 @@ public class Gameplay implements Screen {
     public void stopMusics() {
         if (theme1Music != null) theme1Music.stop();
         if (theme2Music != null) theme2Music.stop();
+    }
+
+    public EntityFactory getEntityFactory() {
+        return this.entityFactory;
     }
 }

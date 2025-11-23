@@ -53,7 +53,7 @@ public class SwordTest {
 
         // Capture l'argument de position passé à la factory
         ArgumentCaptor<Vector2> spawnPosCaptor = ArgumentCaptor.forClass(Vector2.class);
-        verify(mockEntityFactory).obtainSwordProjectile(spawnPosCaptor.capture(), any(), anyFloat(), anyFloat(), anyInt(), anyFloat(), anyFloat(), anyFloat(), anyString(), any());
+        verify(mockEntityFactory).obtainProjectile(spawnPosCaptor.capture(), any(), anyFloat(), anyFloat(), anyInt(), anyFloat(), anyFloat(), anyFloat(), anyString(), any());
 
         Vector2 capturedPos = spawnPosCaptor.getValue();
         // Centre du joueur: (100 + 16, 100 + 16) = (116, 116)
@@ -76,7 +76,7 @@ public class SwordTest {
 
         // Capture la direction passée à la factory
         ArgumentCaptor<Vector2> directionCaptor = ArgumentCaptor.forClass(Vector2.class);
-        verify(mockEntityFactory).obtainSwordProjectile(any(), directionCaptor.capture(), anyFloat(), anyFloat(), anyInt(), anyFloat(), anyFloat(), anyFloat(), anyString(), any());
+        verify(mockEntityFactory).obtainProjectile(any(), directionCaptor.capture(), anyFloat(), anyFloat(), anyInt(), anyFloat(), anyFloat(), anyFloat(), anyString(), any());
 
         Vector2 capturedDir = directionCaptor.getValue();
         assertEquals("La direction par défaut doit être vers le bas (X=0)", 0f, capturedDir.x, 0.001f);

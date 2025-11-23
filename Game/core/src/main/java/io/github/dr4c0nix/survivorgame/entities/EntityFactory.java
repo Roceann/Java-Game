@@ -29,12 +29,12 @@ public class EntityFactory {
 
     private final ArrayList<ClassicEnemy> activeEnemies = new ArrayList<>();
     private final ArrayList<ClassicEnemy> createdEnemies = new ArrayList<>();
-    private Pool<Projectile> swordProjectilePool;
+    private Pool<Projectile> projectilePool;
     private final ArrayList<Projectile> activeProjectiles = new ArrayList<>();
     private final ArrayList<Projectile> createdProjectiles = new ArrayList<>();
-    private String swordProjectileTexturePath;
-    private float swordProjectileWidth;
-    private float swordProjectileHeight;
+    private String projectileTexturePath;
+    private float projectileWidth;
+    private float projectileHeight;
     
     // pools par type (ajoute manuellement chaque pool dans initializePools)
     private final Map<String, Pool<ClassicEnemy>> enemyPools = new HashMap<>();
@@ -131,17 +131,14 @@ public class EntityFactory {
         return enemy;
     }
 
-    private void ensureSwordProjectilePool(String texturePath, float width, float height) {
-        if (swordProjectilePool != null) {
-            return;
-        }
-        this.swordProjectileTexturePath = texturePath;
-        this.swordProjectileWidth = width;
-        this.swordProjectileHeight = height;
-        this.swordProjectilePool = new Pool<Projectile>(INITIAL_PROJECTILE_POOL_SIZE, MAX_PROJECTILE_POOL_SIZE) {
+    private void ensureProjectilePool(String texturePath, float width, float height) {
+        this.projectileTexturePath = texturePath;
+        this.projectileWidth = width;
+        this.projectileHeight = height;
+        this.projectilePool = new Pool<Projectile>(INITIAL_PROJECTILE_POOL_SIZE, MAX_PROJECTILE_POOL_SIZE) {
             @Override
             protected Projectile newObject() {
-                Projectile projectile = new Projectile(swordProjectileTexturePath, swordProjectileWidth, swordProjectileHeight);
+                Projectile projectile = new Projectile(projectileTexturePath, projectileWidth, projectileHeight);
                 createdProjectiles.add(projectile);
                 return projectile;
             }
@@ -209,9 +206,9 @@ public class EntityFactory {
         }
     }
 
-    public Projectile obtainSwordProjectile(Vector2 position, Vector2 direction, float speed, float range, int damage, float projectileSize, float projectileBaseWidth, float projectileBaseHeight, String texturePath, LivingEntity source) {
-        ensureSwordProjectilePool(texturePath, projectileBaseWidth, projectileBaseHeight);
-        Projectile projectile = swordProjectilePool.obtain();
+    public Projectile obtainProjectile(Vector2 position, Vector2 direction, float speed, float range, int damage, float projectileSize, float projectileBaseWidth, float projectileBaseHeight, String texturePath, LivingEntity source) {
+        ensureProjectilePool(texturePath, projectileBaseWidth, projectileBaseHeight);
+        Projectile projectile = projectilePool.obtain();
         projectile.init(new Vector2(position), new Vector2(direction), speed, range, damage, projectileSize, source);
         activeProjectiles.add(projectile);
         return projectile;
@@ -240,14 +237,14 @@ public class EntityFactory {
             removeProjectileAt(index);
         } else {
             projectile.reset();
-            swordProjectilePool.free(projectile);
+            projectilePool.free(projectile);
         }
     }
 
     private void removeProjectileAt(int index) {
         Projectile projectile = activeProjectiles.remove(index);
         projectile.reset();
-        swordProjectilePool.free(projectile);
+        projectilePool.free(projectile);
     }
 
     public ArrayList<Projectile> getActiveProjectiles() {
@@ -292,9 +289,9 @@ public class EntityFactory {
             }
         }
         createdProjectiles.clear();
-        if (swordProjectilePool != null) {
-            swordProjectilePool.clear();
-            swordProjectilePool = null;
+        if (projectilePool != null) {
+            projectilePool.clear();
+            projectilePool = null;
         }
 
         // La texture n'est plus gérée par la factory, donc on supprime l'appel à dispose ici.

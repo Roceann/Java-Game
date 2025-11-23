@@ -157,7 +157,7 @@ public class WeaponTest {
         // Assertions
         // Vérifie que la factory a bien été appelée pour créer un projectile
         // On attend des float pour range, baseWidth, baseHeight
-        verify(mockEntityFactory, times(1)).obtainSwordProjectile(
+        verify(mockEntityFactory, times(1)).obtainProjectile(
             any(Vector2.class), any(Vector2.class), anyFloat(), anyFloat(), anyInt(),
             anyFloat(), anyFloat(), anyFloat(), anyString(), eq(mockPlayer)
         );
@@ -183,7 +183,7 @@ public class WeaponTest {
 
         // Assertions
         // Vérifie que la factory n'a PAS été appelée
-        verify(mockEntityFactory, never()).obtainSwordProjectile(
+        verify(mockEntityFactory, never()).obtainProjectile(
             any(), any(), anyFloat(), anyFloat(), anyInt(),
             anyFloat(), anyFloat(), anyFloat(), anyString(), any()
         );

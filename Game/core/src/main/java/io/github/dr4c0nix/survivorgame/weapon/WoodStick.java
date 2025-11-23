@@ -4,20 +4,20 @@ import com.badlogic.gdx.math.Vector2;
 import io.github.dr4c0nix.survivorgame.entities.EntityFactory;
 import io.github.dr4c0nix.survivorgame.entities.player.Player;
 
-public class Sword extends Weapon {
+public class WoodStick extends Weapon {
 
-    public Sword(EntityFactory factory) {
+    public WoodStick(EntityFactory factory) {
         super(factory,
-            100,
-            0.75f,
-            100,
+            75,
+            0.5f,
+            50,
             100f,
-            2f,
-            32f,
-            8f,
-            "Weapon/Sword/sword-effect.png",
-            "Equipez vous d'une épée pour tabasser les triple monstres !",
-            "Weapon/Sword/sword.png");
+            1.5f,
+            19f,
+            12f,
+            "Weapon/WoodStick/woodstick-effect.png",
+            "Un bâton en bois simple pour commencer votre aventure !",
+            "Weapon/Sword/Sword.png");
     }
 
     @Override
