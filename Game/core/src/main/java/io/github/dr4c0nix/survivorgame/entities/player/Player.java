@@ -1,7 +1,5 @@
 package io.github.dr4c0nix.survivorgame.entities.player;
 
-import java.util.ArrayList;
-import java.util.List;
 import io.github.dr4c0nix.survivorgame.entities.LivingEntity;
 import io.github.dr4c0nix.survivorgame.GameOptions;
 import com.badlogic.gdx.Gdx;

@@ -6,11 +6,8 @@ import com.badlogic.gdx.utils.Pool.Poolable;
 
 /**
  * Orbe d'expérience.
- * taille = ORB_SIZE 
+ * taille = ORB_SIZE = 12 pixels par défaut
  * 
- * @author Drac0nix
- * @author Roceann (collision, implementation, documentation)
- * @version 1.1
  */
 public class OrbXp extends Entity implements Poolable {
     private int xpValue;
@@ -30,6 +27,12 @@ public class OrbXp extends Entity implements Poolable {
         this(xpValue, DEFAULT_ORB_SIZE);
     }
 
+    /**
+     * Crée une orbe avec valeur et taille spécifiées.
+     *
+     * @param xpValue valeur d'expérience
+     * @param size taille visuelle (pixels)
+     */
     public OrbXp(int xpValue, float size) {
         super(new Vector2(0, 0), size, size, "xporb.png");
         this.xpValue = xpValue;
@@ -37,9 +40,7 @@ public class OrbXp extends Entity implements Poolable {
         this.setAlive(false);
     }
 
-    /*
-     * Définit la valeur d'expérience de l'orbe.
-     */
+    /** Définit la valeur d'XP. */
     public void setXpValue(int xpValue) {
         this.xpValue = xpValue;
     }
@@ -56,17 +57,17 @@ public class OrbXp extends Entity implements Poolable {
         return this.xpValue;
     }
 
-    /*
-     * Obtient la taille de l'orbe.
-     */
+    /** Retourne la taille de l'orbe. */
     public float getOrbSize() {
         return this.orbSize;
     }
 
+    /** Taille par défaut. */
     public static float getDefaultOrbSize() {
         return DEFAULT_ORB_SIZE;
     }
 
+    /** Définit la taille et met à jour la hitbox si existante. */
     public void setSize(float size) {
         this.orbSize = size;
         if (getHitbox() != null) {
@@ -74,18 +75,17 @@ public class OrbXp extends Entity implements Poolable {
         }
     }
 
-    /*
-     * Vérifie si l'orbe est active (vivante).
-     */
+    /** Active/désactive l'orbe. */
     public void setAlive(boolean v) {
         super.setAlive(v);
     }
 
+    /** Dessine l'orbe si active. */
     @Override
     public void update(float delta) {}
 
-    /*
-     * Réinitialise l'état de l'orbe pour la réutilisation dans le pool.
+    /**
+     * Réinitialise l'orbe pour retour au pool : valeur à 0, non active et position remise.
      */
     @Override
     public void reset() {
@@ -95,5 +95,4 @@ public class OrbXp extends Entity implements Poolable {
         // target = null;
         // isSeeking = false;
     }
-
 }

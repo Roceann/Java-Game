@@ -13,6 +13,10 @@ import io.github.dr4c0nix.survivorgame.entities.player.Player;
 import io.github.dr4c0nix.survivorgame.screens.Gameplay;
 import java.util.ArrayList;
 
+/**
+ * Gère la logique d'apparition (spawn) des ennemis sur la carte.
+ * Parse les zones de spawn depuis la TiledMap et tente de faire spawner des vagues.
+ */
 public class SpawnManager {
     private static final int MAX_SPAWN_ATTEMPTS = 10;
 
@@ -26,12 +30,20 @@ public class SpawnManager {
     private float spawnTimer = 0f;
     private float spawnInterval = 2f;
 
+    /**
+     * Constructeur : conserve gameplay, factory et parse la map pour zones de spawn.
+     *
+     * @param gameplay instance Gameplay
+     * @param entityFactory factory d'entités
+     * @param map carte TiledMap (peut être null pour tests)
+     */
     public SpawnManager(Gameplay gameplay, EntityFactory entityFactory, TiledMap map) {
         this.gameplay = gameplay;
         this.entityFactory = entityFactory;
         parseMobSpawnLayer(map);
     }
 
+    /** Recherche une couche par nom, insensible à la casse. */
     private MapLayer findLayerCaseInsensitive(TiledMap map, String targetName) {
         if (map == null || targetName == null) return null;
         MapLayer direct = map.getLayers().get(targetName);
@@ -44,16 +56,11 @@ public class SpawnManager {
         return null;
     }
 
+    /** Parse la couche "mobspawn" pour extraire les zones d'apparition. */
     private void parseMobSpawnLayer(TiledMap map) {
         if (map == null) return;
         MapLayer layer = findLayerCaseInsensitive(map, "mobspawn");
         if (layer == null) {
-            StringBuilder available = new StringBuilder();
-            for (MapLayer candidate : map.getLayers()) {
-                if (candidate != null && candidate.getName() != null) {
-                    available.append(candidate.getName()).append(", ");
-                }
-            }
             return;
         }
         for (MapObject obj : layer.getObjects()) {
@@ -76,18 +83,27 @@ public class SpawnManager {
         }
     }
 
+    /** Déverrouille le spawn (permet le comportement d'apparition). */
     public void unlockSpawning() {
         this.spawningUnlocked = true;
     }
 
+    /** Indique si le spawn est déverrouillé. */
     public boolean isSpawningUnlocked() {
         return spawningUnlocked;
     }
 
+    /** Définit l'intervalle entre tentatives de spawn (secondes). */
     public void setSpawnInterval(float seconds) {
         this.spawnInterval = seconds;
     }
 
+    /**
+     * Appelé chaque frame pour tenter de faire spawn des ennemis si activé.
+     *
+     * @param delta temps écoulé (secondes)
+     * @param player joueur (position utilisée pour choix de zones)
+     */
     public void update(float delta, Player player) {
         if (!spawningUnlocked || player == null) return;
         spawnTimer += delta;
@@ -96,6 +112,7 @@ public class SpawnManager {
         attemptSpawn(player);
     }
 
+    /** Tente de faire apparaître un groupe d'ennemis autour du joueur. */
     private void attemptSpawn(Player player) {
         ArrayList<Rectangle> zones = selectZones(player);
         if (zones.isEmpty()) return;
@@ -111,6 +128,7 @@ public class SpawnManager {
         }
     }
 
+    /** Sélectionne les zones d'apparition appropriées en fonction de la position du joueur. */
     private ArrayList<Rectangle> selectZones(Player player) {
         ArrayList<Rectangle> result = new ArrayList<>();
         boolean inRoom1 = isPlayerInsideAreas(room1Areas, player);
@@ -128,6 +146,7 @@ public class SpawnManager {
         return result;
     }
 
+    /** Tente de faire apparaître un ennemi dans les zones candidates. */
     private boolean trySpawnOne(ArrayList<Rectangle> candidates, ArrayList<String> types) {
         for (int attempt = 0; attempt < MAX_SPAWN_ATTEMPTS; attempt++) {
             Rectangle zone = candidates.get(MathUtils.random(candidates.size() - 1));
@@ -168,20 +187,19 @@ public class SpawnManager {
         return false;
     }
 
+    /** Calcule le nombre d'ennemis à faire apparaître en fonction du joueur. */
     private int computeSpawnBatch(Player player) {
         float elapsedTime = gameplay.getElapsedTime();
         float difficultyFactor = player.getDifficulter();
         
         float baseSpawn = 1f;
-        
-
         float timeFactor = (float)Math.sqrt(elapsedTime / 60f); 
-        
         float rawValue = baseSpawn + (timeFactor * difficultyFactor);
         
         return MathUtils.clamp((int)Math.floor(rawValue), 1, 15);
     }
 
+    /** Vérifie si le joueur est à l'intérieur de l'une des zones données. */
     private boolean isPlayerInsideAreas(ArrayList<Rectangle> areas, Player player) {
         Rectangle playerRect = player.getHitbox();
         for (Rectangle area : areas) {

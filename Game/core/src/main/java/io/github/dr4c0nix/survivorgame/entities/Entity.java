@@ -16,10 +16,6 @@ import com.badlogic.gdx.math.Vector2;
  * - Vitesse de déplacement
  * - État de vie
  * - Gestion des textures et animations
- *
- * @author Abdelkader1900
- * @author Roceann (relecture, corrections et documentation)
- * @version 1.1
  */
 public abstract class Entity {
     protected Vector2 position;

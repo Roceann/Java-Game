@@ -17,9 +17,6 @@ import com.badlogic.gdx.graphics.Texture;
  * ({@link #takeDamage(float)}), déplacer l'entité ({@link #moveBy(float, float)})
  * et getters pour consulter l'état.
  *
- * @author Abdelkader1900
- * @author Roceann (relecture, corrections et documentation)
- * @version 1.0
  */
 public abstract class LivingEntity extends Entity {
     protected float hp;
@@ -33,15 +30,15 @@ public abstract class LivingEntity extends Entity {
     private static final float IMMUNITY_TIME = 0.2f;
 
     /**
-     * Crée une nouvelle entité vivante.
+     * Constructeur : initialise PV, armure et force.
      *
-     * @param spawnPoint     point d'apparition (coordonnées x,y)
-     * @param hitboxWidth    largeur de la hitbox
-     * @param hitboxHeight   hauteur de la hitbox
-     * @param hp             points de vie initiaux (et maximum)
-     * @param armor          valeur d'armure qui réduit les dégâts
-     * @param force          force appliquée par l'entité (impact)
-     * @param texturePath    chemin vers la texture principale (fichier)
+     * @param spawnPoint point d'apparition
+     * @param hitboxWidth largeur de la hitbox
+     * @param hitboxHeight hauteur de la hitbox
+     * @param hp points de vie initiaux (et max)
+     * @param armor valeur d'armure
+     * @param force valeur de dégâts
+     * @param texturePath chemin de texture
      */
     public LivingEntity(Vector2 spawnPoint, float hitboxWidth, float hitboxHeight, float hp, int armor, float force, String texturePath) {
         super(spawnPoint, hitboxWidth, hitboxHeight, texturePath);
@@ -52,15 +49,10 @@ public abstract class LivingEntity extends Entity {
     }
 
     /**
-     * Inflige des dégâts à l'entité en tenant compte de son armure.
-     * <p>
-     * La réduction est calculée par la formule :
-     * damageReduced = amount * (100 / (100 + armor)).
-     * Si l'entité est déjà morte (isAlive == false), l'appel est ignoré.
-     * Si les PV passent à 0 ou moins, l'entité est marquée comme morte
-     * (isAlive = false) et les PV sont plafonnés à 0.
+     * Applique des dégâts en tenant compte de l'armure.
+     * Ignore l'appel si l'entité est morte ou en période d'immunité.
      *
-     * @param amount montant brut des dégâts à appliquer
+     * @param amount dégâts bruts entrants
      */
     public void takeDamage(float amount) {
         if (immunityTimer > 0 || !isAlive()) return;
@@ -132,29 +124,38 @@ public abstract class LivingEntity extends Entity {
         return force;
     }
 
+    /** Définit le HP max et ajuste hp courant si besoin. */
     public void setMaxHp(float maxHp) {
         this.maxHp = maxHp;
         this.hp = Math.min(this.hp, this.maxHp);
     }
 
+    /** Définit les PV courants (clamp à max). */
     public void setCurrentHp(float amount){
         this.hp = amount;
         this.hp = Math.min(this.hp, this.maxHp);
     }
 
-
+    /** Définit l'armure. */
     public void setArmor(int armor) {
         this.armor = armor;
     }
 
+    /** Définit la force. */
     public void setForce(float force) {
         this.force = force;
     }
 
+    /** Retourne le timer d'immunité restant. */
     public float getImmunityTimer() {
         return immunityTimer;
     }
 
+    /**
+     * Décrémente le timer d'immunité (appelé chaque frame).
+     *
+     * @param delta temps écoulé depuis la dernière frame (secondes)
+     */
     protected void tickImmunity(float delta) {
         if (immunityTimer <= 0f) return;
         immunityTimer -= delta;
