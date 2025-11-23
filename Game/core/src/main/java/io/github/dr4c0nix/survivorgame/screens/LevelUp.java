@@ -22,6 +22,18 @@ import io.github.dr4c0nix.survivorgame.weapon.Dagger;
 import io.github.dr4c0nix.survivorgame.weapon.FireWand;
 import io.github.dr4c0nix.survivorgame.weapon.Sword;
 
+/**
+ * Overlay d'interface affiché lors d'une montée de niveau (Level Up).
+ *
+ * Cet overlay :
+ * - gèle le gameplay,
+ * - génère un ensemble d'options d'amélioration (ou choix d'arme),
+ * - affiche trois options cliquables et applique l'amélioration sélectionnée au Player,
+ * - gère ses propres ressources graphiques (fonts, textures, Stage).
+ *
+ * Le LevelUp est conçu pour être utilisé par Gameplay : show() crée et affiche
+ * l'overlay, hide()/dispose() nettoient les ressources et remettent le jeu en route.
+ */
 public class LevelUp {
     private Stage stage;
     private BitmapFont font;
@@ -35,12 +47,22 @@ public class LevelUp {
     private float scaleX = 1f;
     private float scaleY = 1f;
 
+    /**
+     * Crée un overlay de LevelUp lié à l'instance Gameplay fournie.
+     *
+     * @param gameplay instance Gameplay qui déclenche / reçoit l'amélioration
+     */
     public LevelUp(Gameplay gameplay) {
         this.gameplay = gameplay;
         this.random = new Random();
         updateScale();
     }
 
+    /**
+     * Met à jour les facteurs d'échelle (scaleX/scaleY) à partir de la résolution.
+     *
+     * Appel interne lors de construction et redimensionnement pour adapter l'UI.
+     */
     private void updateScale() {
         this.scaleX = (Gdx.graphics.getWidth() / 1920f) * 1.2f;
         this.scaleY = (Gdx.graphics.getHeight() / 1080f) * 1.2f;
@@ -49,8 +71,11 @@ public class LevelUp {
     /**
      * Crée et affiche le Stage contenant l'UI de level up.
      *
-     * Initialise les fonts, textures, génère les upgrades aléatoires,
-     * construit l'UI et assigne le Stage comme InputProcessor courant.
+     * Actions réalisées :
+     * - gèle le jeu (gameplay.setIsPaused(true))
+     * - initialise polices et textures
+     * - génère 3 options aléatoires (ou choix d'arme si le joueur est au niveau 2)
+     * - construit l'UI et active le Stage comme InputProcessor
      */
     public void show() {
         stage = new Stage(new ScreenViewport());
@@ -63,9 +88,10 @@ public class LevelUp {
     }
 
     /**
-     * Crée et configure les polices utilisées par l'overlay.
-     * <p>
-     * Font principales : une pour les labels, une pour le titre.
+     * Crée et configure les BitmapFont utilisés par l'overlay.
+     *
+     * Les tailles sont adaptées en fonction des facteurs d'échelle pour conserver
+     * une apparence cohérente sur différentes résolutions.
      */
     private void createFonts() {
         font = new BitmapFont();
@@ -76,9 +102,9 @@ public class LevelUp {
     }
 
     /**
-     * Crée des textures simples (rectTex et contourTex) utilisées comme
-     * arrière-plans des blocs d'UI. Les Pixmaps sont immédiatement disposés
-     * après création des Textures.
+     * Crée des textures simples (Pixmap -> Texture) pour les blocs visuels.
+     *
+     * Les Pixmaps sont immédiatement disposés après la création des Texture.
      */
     private void createParts() {
         Pixmap p1 = new Pixmap(4, 4, Pixmap.Format.RGBA8888);
@@ -95,13 +121,12 @@ public class LevelUp {
     }
 
     /**
-     * Retourne la liste de toutes les améliorations possibles.
+     * Retourne la liste complète des améliorations potentielles.
      *
-     * Chaque élément contient un nom affiché, une plage min/max et un type
-     * (INT ou FLOAT). Cette liste est utilisée comme base pour sélectionner
-     * des options aléatoires à proposer au joueur.
+     * Cette liste sert de réservoir pour sélectionner 3 options aléatoires
+     * proposées au joueur lors d'un level up normal.
      *
-     * @return liste complète des UpgradeOption possibles
+     * @return liste de toutes les UpgradeOption disponibles
      */
     private List<UpgradeOption> allPossibleUpgrades() {
         List<UpgradeOption> all = new ArrayList<>();
@@ -120,8 +145,8 @@ public class LevelUp {
     /**
      * Sélectionne aléatoirement trois améliorations distinctes à proposer.
      *
-     * Chaque option choisie voit sa valeur générée via generateRandomValue(Random).
-     * La méthode évite les doublons.
+     * Comportement spécial : si le joueur est exactement au niveau 2,
+     * on propose un choix d'armes (Dagger, Sword, FireWand) au lieu d'upgrades numériques.
      */
     private void generateRandomUpgrades() {
         Player p = gameplay.getPlayer();
@@ -148,9 +173,13 @@ public class LevelUp {
     }
 
     /**
-     * Construit l'interface graphique du LevelUp dans un Table et l'ajoute
-     * au Stage. Pour chaque option disponible, crée un bouton/box cliquable
-     * qui applique l'amélioration au Player et ferme l'overlay.
+     * Construit l'interface graphique affichant les trois options et rattache
+     * les ClickListener qui appliqueront l'amélioration sélectionnée.
+     *
+     * Chaque option clique :
+     * - applique l'amélioration sur le Player
+     * - ferme l'overlay (hide())
+     * - notifie Gameplay via onLevelUpOverlayClosed()
      */
     private void buildUI() {
         Table root = new Table();
@@ -200,17 +229,23 @@ public class LevelUp {
 
     /**
      * Retourne le Stage utilisé par cet overlay.
+     *
+     * Retour utile pour que Gameplay puisse intégrer le stage dans la boucle
+     * de rendu/act si nécessaire.
+     *
+     * @return Stage actif (ou null si fermé)
      */
     public Stage getStage() {
         return stage;
     }
 
     /**
-     * Applique l'UpgradeOption fournie au Player courant.
+     * Applique l'UpgradeOption sélectionnée au Player courant.
      *
-     * Effectue le mapping entre le nom affiché de l'upgrade et les setters
-     * correspondants sur Player. Les conversions de types (int/float) sont
-     * réalisées selon les besoins.
+     * Pour les choix d'arme (niveau 2) remplace l'arme du joueur par la nouvelle.
+     * Pour les upgrades numériques, effectue le mapping vers les setters du Player.
+     *
+     * @param u option sélectionnée
      */
     private void applyUpgradeToPlayer(UpgradeOption u) {
         Player p = gameplay.getPlayer();
@@ -281,9 +316,9 @@ public class LevelUp {
     }
 
     /**
-     * Ferme l'overlay et libère ses ressources internes (Stage, fonts, textures).
+     * Ferme l'overlay et libère ses ressources internes (Stage, polices, textures).
      *
-     * Après appel, getStage() retournera null.
+     * Après appel, getStage() retournera null et le jeu reprendra si possible.
      */
     public void hide() {
         try {
@@ -326,7 +361,8 @@ public class LevelUp {
 
     /**
      * Alias de hide() pour la gestion explicite des ressources.
-     * Conserve le comportement identique.
+     *
+     * Conserve le comportement identique (fermeture + cleanup).
      */
     public void dispose() {
         hide();
