@@ -1,18 +1,28 @@
 # Cavazzinni Survivor
+
 Cavazzinni Survivor est un jeu développé avec LibGDX en Java. Le joueur doit survivre face à des vagues d'ennemis, améliorer son arme et ses statistiques au fil du temps et des niveaux.
 
+---
+
 ## But du projet
+
 Réaliser un jeu de type "survivor" (inspiré de Vampire Survivor) en 3 semaines dans le cadre d'un projet à Epitech. Objectif : se challenger sur la production rapide d'un jeu avec LibGDX.
 
+---
+
 ## Ressources principales
-- Game design (GDD) — description des ennemis, du joueur, des mécaniques et globalement du jeu : [Game design document](<URL_VERS_GDD>)
+
+- Game design (GDD) — description des ennemis, du joueur, des mécaniques et globalement du jeu : [Game design document](<URL_VERS_GDD>)  
 - Diagramme de classes : [diagramme de classes](<URL_VERS_DIAGRAMME_DE_CLASSE>)
 
+---
+
 ## Prérequis
-- Java JDK (11+ recommandé)
-- Git
-- Terminal Linux (ou WSL)
-- Gradle wrapper inclus (./gradlew)
+
+- Java JDK (11+ recommandé)  
+- Git  
+- Terminal Linux (ou WSL)  
+- Gradle wrapper inclus (./gradlew)  
 - (Optionnel) IDE Java : IntelliJ IDEA, VS Code (avec extensions Java)
 
 Commandes d'installation (exemples)
@@ -34,27 +44,40 @@ Vérifier la version Java :
 java -version
 ```
 
+---
+
 ## Cloner le dépôt
+
 ```bash
 git clone <git@github.com:EpitechMscProPromo2028/T-JAV-501-PAR_1.git>
-cd "projet java/T-JAV-501-PAR_1"
+cd /T-JAV-501-PAR_1/Game
 ```
 
+---
+
 ## Installation / compilation
+
 Le projet utilise le Gradle wrapper. Pour compiler :
 ```bash
 ./gradlew clean build
 ```
 
+---
+
 ## Lancer le jeu
-- Depuis un IDE : ouvrir le projet et exécuter la configuration du module desktop/lwjgl3 (classe Main du module d'exécution).
+
+- Depuis un IDE : ouvrir le projet et exécuter la configuration du module desktop/lwjgl3 (classe Main du module d'exécution).  
 - Depuis le terminal (exemple, adapter le nom du module si besoin) :
 ```bash
 ./gradlew lwjgl3:run
 ```
 
+---
+
 ## Tests unitaires et rapports JaCoCo
+
 Scripts fournis :
+
 - Test rapide (exécute tests, génère rapports et ouvre les rapports si tout passe) :
 ```bash
 chmod +x Game/run-test.sh
@@ -77,9 +100,15 @@ Rapports générés (exemples) :
 - JaCoCo XML : core/build/reports/jacoco/test/jacocoTestReport.xml  
 - Rapport de tests : core/build/reports/tests/test/index.html
 
+---
+
 ## Intégration continue (CI)
+
 Les tests sont automatisés sur GitHub via GitHub Actions (workflow présent : .github/workflows/ci.yml). Les builds/tests s'exécutent à chaque push et à l'ouverture d'une pull request (configuration du workflow : push et pull_request).
 
+---
+
 ## Notes / limitations
-- Le jeu est en anglais. La doc et ce README sont en français.
+
+- Le jeu est en anglais. La doc et ce README sont en français.  
 - Pour des informations détaillées sur les ennemis, le joueur, les armes et l'équilibrage, se référer au GDD (lien ci‑dessus).
