@@ -9,16 +9,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.graphics.Color; // Nécessaire pour l'effet visuel
-import com.badlogic.gdx.graphics.g2d.SpriteBatch; // Nécessaire pour draw
+import com.badlogic.gdx.graphics.Color; 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import io.github.dr4c0nix.survivorgame.screens.Gameplay;
 import io.github.dr4c0nix.survivorgame.weapon.Weapon;
 
 /**
- * Classe abstraite représentant un joueur dans le jeu.
- *
- * @author Roceann
- * @version 1.0
+ * Représente le joueur contrôlable.
+ * Contient les statistiques, gestion d'input, animation, arme et progression (XP/level).
  */
 public class Player extends LivingEntity {
     protected int xpactual;
@@ -53,15 +51,9 @@ public class Player extends LivingEntity {
     /**
      * Constructeur du Player.
      *
-     * Initialise les stats de base (hp, armure, force, etc...),les valeurs de progression et les frames d'animations.
+     * Initialise les stats de base, les valeurs de progression et les frames d'animation.
      *
      * @param spawnPoint point d'apparition (coordonnées x,y)
-     * @param baseHp points de vie de base (max et courant)
-     * @param baseArmor armure de base
-     * @param baseForce multiplicateur de dégâts de base
-     * @param texturePath chemin vers la texture principale (fichier)
-     * @param walkingTexture texture de marche / animation
-     * @param description description textuelle du joueur
      */
     public Player(Vector2 spawnPoint) {
         super(spawnPoint, 32, 32 * 1.3f, 100f, 10, 1.0f, "Entity/Player/static1.png");
@@ -117,7 +109,11 @@ public class Player extends LivingEntity {
     }
 
     /**
-     * Teste si le joueur peut se déplacer de (dx,dy) en testant uniquement les pieds.
+     * Teste si le joueur peut se déplacer d'un pas (dx,dy) en vérifiant uniquement la zone des pieds.
+     *
+     * @param dx déplacement normalisé sur X (-1,0,1)
+     * @param dy déplacement normalisé sur Y (-1,0,1)
+     * @return true si la case pieds n'est pas en collision
      */
     private boolean canMoveTo(float dx, float dy) {
         if (gameplay == null) return true;
@@ -128,9 +124,8 @@ public class Player extends LivingEntity {
     }
 
     /**
-     * Gère l'entrée utilisateur pour déplacer le joueur.
-     *
-     * Utilise Z/S/Q/D pour monter/descendre/gauche/droite et appelle moveBy.
+     * Lit l'entrée clavier et déplace le joueur (Z/S/Q/D ou les touches configurées).
+     * Met à jour la direction courante et le flag isMoving.
      */
     public void handleInput() {
         GameOptions options = GameOptions.getInstance();
@@ -171,7 +166,8 @@ public class Player extends LivingEntity {
     }
 
     /**
-     * permet de gérer l'animation de déplacement
+     * Met à jour l'animation du joueur selon isMoving et la direction.
+     * Protège contre l'absence de textures (mode test).
      */
     public void animation() {
         // Protection pour ne pas animer si les textures ne sont pas chargées (mode test)
@@ -202,8 +198,8 @@ public class Player extends LivingEntity {
     }
 
     /**
-     * Demande à Gameplay d'afficher l'overlay de montée de niveau.
-     * Gameplay centralise l'affichage / gestion d'input et la pause.
+     * Demande l'affichage de l'écran de montée de niveau via Gameplay.
+     * Ne fait rien si gameplay est null.
      */
     public void levelUp(){
         if (gameplay != null) {
@@ -212,12 +208,19 @@ public class Player extends LivingEntity {
     }
 
     /**
-     * Stocke la référence Gameplay (appelé depuis Gameplay lors de l'initialisation).
+     * Définit la référence vers Gameplay (utilisé par l'écran pour lier le joueur).
+     *
+     * @param gameplay instance Gameplay à associer
      */
     public void setGameplay(Gameplay gameplay) {
         this.gameplay = gameplay;
     }
 
+    /**
+     * Mise à jour par frame : input, animation, arme, régénération et immunité.
+     *
+     * @param delta temps écoulé depuis la dernière frame (en secondes)
+     */
     @Override
     public void update(float delta) {
         handleInput(); 
@@ -233,6 +236,11 @@ public class Player extends LivingEntity {
         tickImmunity(delta);
     }
 
+    /**
+     * Dessine le joueur (animation + clignotement en cas de prise de dégâts).
+     *
+     * @param batch SpriteBatch utilisé pour le rendu
+     */
     @Override
     public void draw(SpriteBatch batch) {
         if (!isAlive) return;
@@ -254,20 +262,29 @@ public class Player extends LivingEntity {
         batch.setColor(Color.WHITE);
     }
 
+    /**
+     * Retourne l'expérience courante du joueur.
+     *
+     * @return expérience actuelle
+     */
     public int getXpactual() {
         return this.xpactual;
     }
 
+    /**
+     * Retourne l'expérience requise pour le prochain niveau.
+     *
+     * @return seuil d'expérience suivant
+     */
     public int getXpRequiredForNextLevel() {
         return this.experienceToNextLevel;
     }
 
     /**
-     * Ajoute de l'expérience au joueur et gère la montée de niveau.
+     * Ajoute de l'expérience et gère la montée de niveau (levelUp).
+     * Si le seuil est atteint, incrémente level, appelle levelUp() et ajuste l'XP restant.
      *
-     * Si xp >= experienceToNextLevel, augmente le level, appelle levelUp(),
-     * décrémente l'expérience utilisée et augmente le seuil suivant.
-     *
+     * @param value quantité d'expérience à ajouter
      */
     public void addXp(int value) {
         this.xpactual += value;
@@ -279,6 +296,12 @@ public class Player extends LivingEntity {
         }
     }
 
+    /**
+     * Applique des dégâts au joueur (hérite de LivingEntity.takeDamage).
+     * Si le joueur meurt, notifie Gameplay via onGameOver().
+     *
+     * @param amount montant de dégâts
+     */
     @Override
     public void takeDamage(float amount) {
         if (!isAlive) return;
@@ -288,18 +311,38 @@ public class Player extends LivingEntity {
         }
     }
 
+    /**
+     * Définit l'arme courante du joueur.
+     *
+     * @param weapon arme à équiper (peut être null)
+     */
     public void setWeapon(Weapon weapon) {
         this.currentWeapon = weapon;
     }
     
+    /**
+     * Retourne l'arme équipée (ou null).
+     *
+     * @return arme actuelle
+     */
     public Weapon getCurrentWeapon() {
         return currentWeapon;
     }
     
+    /**
+     * Indique si le joueur possède une arme équipée.
+     *
+     * @return true si une arme est équipée
+     */
     public boolean hasWeapon() {
         return currentWeapon != null;
     }
 
+    /**
+     * Retourne un vecteur directionnel pointant vers la direction courante.
+     *
+     * @return vecteur normalisé de direction
+     */
     public Vector2 getFacingDirection() {
         switch (currentDirection) {
             case up: return new Vector2(0f, 1f);
@@ -310,85 +353,180 @@ public class Player extends LivingEntity {
         }
     }
 
+    /**
+     * Retourne le niveau courant.
+     *
+     * @return niveau du joueur
+     */
     public int getLevel() {
         return this.level;
     }
 
+    /**
+     * Retourne l'expérience requise pour le prochain niveau.
+     *
+     * @return expérience nécessaire
+     */
     public int getExperienceToNextLevel() {
         return this.experienceToNextLevel;
     }
 
+    /**
+     * Retourne la quantité de HP régénérée tous les REGEN_INTERVAL.
+     *
+     * @return points de vie régénérés
+     */
     public float getRegenHP() {
         return this.regenHP;
     }
 
+    /**
+     * Retourne la chance de coup critique (en pourcentage).
+     *
+     * @return chance critique
+     */
     public float getCritChance() {
         return this.critChance;
     }
 
+    /**
+     * Retourne la difficulté appliquée au joueur (facteur).
+     *
+     * @return difficulté
+     */
     public float getDifficulter() {
         return this.difficulter;
     }
 
+    /**
+     * Retourne le multiplicateur de dégâts critiques.
+     *
+     * @return dégâts critique
+     */
     public float getCritDamage() {
         return this.critDamage;
     }
 
+    /**
+     * Retourne la description textuelle du joueur.
+     *
+     * @return description
+     */
     public String getDescription() {
         return this.description;
     }
 
+    /**
+     * Définit le HP maximum du joueur.
+     *
+     * @param maxHp nouvelle valeur max HP
+     */
     public void setMaxHp(float maxHp) {
         this.maxHp = maxHp;
     }
 
+    /**
+     * Définit l'armure du joueur.
+     *
+     * @param armor nouvelle armure
+     */
     public void setArmor(int armor) {
         this.armor = armor;
     }
 
+    /**
+     * Définit la force (dégâts) du joueur.
+     *
+     * @param force nouveau multiplicateur de force
+     */
     public void setForce(float force) {
         this.force = force;
     }
 
+    /**
+     * Définit la difficulté (facteur) du joueur.
+     *
+     * @param difficulter nouveau facteur de difficulté
+     */
     public void setDifficulter(float difficulter) {
         this.difficulter = difficulter;
     }
 
+    /**
+     * Définit la valeur de régénération HP (par tick).
+     *
+     * @param regenHP points restaurés tous les REGEN_INTERVAL
+     */
     public void setRegenHP(float regenHP) {
         this.regenHP = regenHP;
     }
 
+    /**
+     * Définit la chance de critique.
+     *
+     * @param critChance pourcentage de critique
+     */
     public void setCritChance(float critChance) {
         this.critChance = critChance;
     }
 
+    /**
+     * Définit le multiplicateur de dégâts critiques.
+     *
+     * @param critDamage multiplicateur critique
+     */
     public void setCritDamage(float critDamage) {
         this.critDamage = critDamage;
     }
 
+    /**
+     * Définit les PV courants du joueur.
+     *
+     * @param amount nouvelle valeur de HP courant
+     */
     public void setCurrentHp(float amount){
         this.hp = amount;
     }
 
+    /**
+     * Active ou désactive les attaques du joueur.
+     *
+     * @param enabled true pour autoriser les attaques
+     */
     public void setAttacksEnabled(boolean enabled) {
         this.attacksEnabled = enabled;
     }
 
+    /**
+     * Indique si les attaques sont activées.
+     *
+     * @return true si les attaques sont autorisées
+     */
     public boolean areAttacksEnabled() {
         return attacksEnabled;
     }
 
+    /**
+     * Incrémente le compteur de monstres tués.
+     */
     public void incrementMobKilled() {
         this.mobKilled++;
     }
 
+    /**
+     * Retourne le nombre de monstres tués.
+     *
+     * @return compteur de mobs tués
+     */
     public int getMobKilled() {
         return this.mobKilled;
     }
     
     /**
-     * Tick la régénération périodique : toutes les REGEN_INTERVAL secondes,
-     * restaure REGEN_AMOUNT HP (clampé à maxHp).
+     * Gère la régénération périodique de HP.
+     * Toutes les REGEN_INTERVAL secondes, restaure regenHP (clampé à maxHp).
+     *
+     * @param delta temps écoulé depuis la dernière frame (en secondes)
      */
     private void tickRegen(float delta) {
         if (!isAlive) return;
