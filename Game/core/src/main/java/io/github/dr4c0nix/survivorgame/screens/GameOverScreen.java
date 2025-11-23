@@ -45,7 +45,7 @@ public class GameOverScreen implements Screen {
         this.level = level;
         this.timeSurvived = timeSurvived;
 
-        gameOverBg = new Texture(Gdx.files.internal("background/gameoverbg.png"));
+        gameOverBg = new Texture(Gdx.files.internal("Background/gameoverbg.png"));
         updateScale();
     }
 

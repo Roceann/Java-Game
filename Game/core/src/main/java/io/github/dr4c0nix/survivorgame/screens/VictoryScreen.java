@@ -45,7 +45,7 @@ public class VictoryScreen implements Screen {
         this.level = level;
         this.timeSurvived = timeSurvived;
 
-        victoryBg = new Texture(Gdx.files.internal("background/victorybg.png"));
+        victoryBg = new Texture(Gdx.files.internal("Background/victorybg.png"));
         updateScale();
     }
 
